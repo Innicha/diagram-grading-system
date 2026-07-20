@@ -8,7 +8,7 @@ try
         MultipartFormDataRequest mrequest = new MultipartFormDataRequest(request);
         String user        = new String(mrequest.getParameter("user").getBytes("iso-8859-1"),"UTF-8").toString().trim();  
         //Connect database 
-        if( user.equals("b") )
+        if( user.equals("pp") )
         {
             session.setAttribute("LoginStatus_admin","Pass_Login");
             response.sendRedirect("main.jsp");
