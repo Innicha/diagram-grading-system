@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="2" />
+<mytag:header menu="3" />
 
 <!-- Check Login File -->
 <mytag:check_login />  
@@ -47,7 +47,6 @@
 <!-- ============================================== -->
 <div class="card mt-4 mb-4">
     <div class="card-header bg-dark text-white">ระบบสร้าง Flowchart 
-        <small class="text-warning ms-3">(💡 คลิกเลือกกล่องแล้วกด Delete เพื่อลบ | ดับเบิลคลิกเพื่อแก้ข้อความ)</small>
     </div>
     <div class="card-body p-0">
         <div class="flowchart-wrapper">

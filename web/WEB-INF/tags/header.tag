@@ -8,9 +8,33 @@
                 <% if( menu.equals("1") ) { %>
                     <li class="nav-item"><a class="nav-link active" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
-                <% } else { %>
+                    <li class="nav-item"><a class="nav-link" href="Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Pseudocode.jsp">Pseudocode</a></li>
+                <% } else if(menu.equals("2")){ %>
                     <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link active" href="main.jsp">MAIN</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Pseudocode.jsp">Pseudocode</a></li>
+                <% } else if(menu.equals("3")){ %>
+                    <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
+                    <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Pseudocode.jsp">Pseudocode</a></li>
+                <% } else if(menu.equals("4")){ %>
+                    <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
+                    <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Pseudocode.jsp">Pseudocode</a></li>
+                <% } else{ %>
+                    <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
+                    <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="Pseudocode.jsp">Pseudocode</a></li>
                 <% } %>
             </ul>
         </div>
