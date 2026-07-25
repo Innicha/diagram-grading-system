@@ -1,0 +1,131 @@
+/* ==========================================
+   Common Layout
+========================================== */
+
+.flowchart-wrapper {
+    display: flex;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 600px;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* ==========================================
+   Sidebar
+========================================== */
+
+.fc-sidebar {
+    width: 200px;
+    background: #eef2f5;
+    padding: 20px;
+    border-right: 2px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* ==========================================
+   Canvas
+========================================== */
+
+.fc-canvas {
+    flex-grow: 1;
+    position: relative;
+    margin: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* ==========================================
+   Toolbar
+========================================== */
+
+.fc-toolbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ==========================================
+   Base Shape
+========================================== */
+
+.fc-shape {
+    width: 100px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #777;
+    box-shadow: 2px 2px 5px rgba(0,0,0,.1);
+    cursor: grab;
+    user-select: none;
+    text-align: center;
+    font-size: 12px;
+    transition: box-shadow .2s;
+    z-index: 2;
+}
+
+.fc-shape:active {
+    cursor: grabbing;
+}
+
+/* ==========================================
+   Text
+========================================== */
+
+.fc-text-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.fc-text {
+    width: 90%;
+    outline: none;
+    word-break: break-word;
+}
+
+/* ==========================================
+   Canvas Node
+========================================== */
+
+.fc-node {
+    position: absolute;
+    cursor: move;
+}
+
+/* ==========================================
+   SVG
+========================================== */
+
+#fc-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ==========================================
+   Submit Button
+========================================== */
+
+#fc-submitBtn {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 10;
+}

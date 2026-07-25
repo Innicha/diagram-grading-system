@@ -1,0 +1,42 @@
+.fc-shape {
+    width: 100px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: grab;
+    border: 2px solid #777;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    user-select: none;
+    z-index: 2;
+    text-align: center;
+    transition: box-shadow .2s;
+}
+
+.fc-shape:active {
+    cursor: grabbing;
+}
+
+.fc-pill {
+    border-radius: 25px;
+    background: #fff59d;
+}
+
+.fc-rect-grey {
+    background: #e0e0e0;
+}
+
+.fc-rect-blue {
+    background: #90caf9;
+}
+
+.fc-diamond {
+    width: 60px;
+    height: 60px;
+    background: #f48fb1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(45deg);
+}

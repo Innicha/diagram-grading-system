@@ -4,7 +4,8 @@
 
 <mytag:ReadFile />
 <mytag:header menu="3" />
-
+<link rel="stylesheet" href="css/pages/CenterLayout.css">
+<link rel="stylesheet" href="css/pages/flowchart.css">
 <!-- Check Login File -->
 <mytag:check_login />  
 
@@ -12,35 +13,6 @@
     String Link = request.getAttribute("Loadfile5").toString();  
 %>
 
-<!-- ============================================== -->
-<!-- CSS สำหรับ Flowchart -->
-<!-- ============================================== -->
-<style>
-    .flowchart-wrapper { display: flex; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 600px; margin: 20px 0; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
-    .fc-sidebar { width: 200px; background: #eef2f5; padding: 20px; border-right: 2px solid #ccc; display: flex; flex-direction: column; align-items: center; gap: 20px; overflow-y: auto; z-index: 10; }
-    
-    .fc-canvas { flex-grow: 1; background: #ffffff; position: relative; border: 2px dashed #8e44ad; margin: 10px; overflow: hidden; }
-    
-    .fc-toolbar { position: absolute; top: 10px; left: 10px; z-index: 10; display: flex; gap: 10px; align-items: center; }
-    .fc-toolbar h3 { color: #5e649d; margin: 0; }
-
-    .fc-shape { width: 100px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: grab; border: 2px solid #777; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); user-select: none; z-index: 2; text-align: center; transition: box-shadow 0.2s;}
-    .fc-shape:active { cursor: grabbing; }
-    
-    .fc-pill { border-radius: 25px; background: #fff59d; } 
-    .fc-rect-grey { background: #e0e0e0; } 
-    .fc-rect-blue { background: #90caf9; } 
-    .fc-diamond { background: #f48fb1; width: 60px; height: 60px; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; }
-    
-    .fc-text-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
-    .fc-text { outline: none; width: 90%; word-break: break-all; } 
-
-    .fc-node { position: absolute; cursor: move; }
-    #fc-submitBtn { position: absolute; bottom: 20px; right: 20px; z-index: 10; }
-    
-    #fc-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-</style>
 
 <!-- ============================================== -->
 <!-- ระบบสร้าง Flowchart -->

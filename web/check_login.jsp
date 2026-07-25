@@ -6,8 +6,9 @@ try
     if (MultipartFormDataRequest.isMultipartFormData(request))  
     {
         MultipartFormDataRequest mrequest = new MultipartFormDataRequest(request);
-        String user        = new String(mrequest.getParameter("user").getBytes("iso-8859-1"),"UTF-8").toString().trim();  
-        //Connect database 
+        String user  = new String(mrequest.getParameter("user").getBytes("iso-8859-1"),"UTF-8").toString().trim();  
+        //Connect database
+         
         if( user.equals("pp") )
         {
             session.setAttribute("LoginStatus_admin","Pass_Login");

@@ -1,0 +1,236 @@
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    /* 1. พื้นที่ด้านบนสำหรับใส่โจทย์ */
+    #task-header {
+      height: 120px;
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #e0e0e0;
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+
+    #task-header h2 {
+      font-size: 18px;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    #task-header p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    /* ส่วนพื้นที่ทำงานหลัก (แบ่งซ้าย-ขวา) */
+    #main-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 120px);
+    }
+
+    /* 2. แถบเครื่องมือด้านซ้าย (Sidebar) */
+    #sidebar {
+      width: 200px;
+      background-color: #f0f2f5;
+      border-right: 1px solid #d0d0d0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow-y: auto;
+    }
+
+    #sidebar h3 {
+      font-size: 14px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .shape-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    /* สไตล์ของ Shape ใน Sidebar */
+    .draggable-shape {
+      width: 60px;
+      height: 40px;
+      border: 2px solid #333;
+      background-color: #fff;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      user-select: none;
+      transition: transform 0.1s ease;
+    }
+
+    .draggable-shape:hover {
+      transform: scale(1.05);
+    }
+
+    /* รูปทรงต่างๆ */
+    .shape-rectangle { border-radius: 0; }
+    .shape-ellipse { border-radius: 50%; }
+    .shape-diamond { 
+      transform: rotate(45deg); 
+      width: 40px; 
+      height: 40px; 
+    }
+    .shape-diamond:hover {
+      transform: rotate(45deg) scale(1.05);
+    }
+
+    /* 3. พื้นที่วาดรูป (Canvas Panel) - สีขาวเรียบ */
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      background-color: #ffffff; /* พื้นหลังสีขาวเรียบ ไม่มี Grid */
+      overflow: hidden;
+    }
+
+    /* รูปทรงที่ถูกวางบน Canvas */
+    .placed-shape {
+      position: absolute;
+      border: 2px solid #333;
+      background-color: #fff;
+      cursor: move;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .placed-shape.rectangle {
+      width: 100px;
+      height: 60px;
+    }
+
+    .placed-shape.ellipse {
+      width: 100px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+    .placed-shape.diamond {
+      width: 70px;
+      height: 70px;
+      transform: rotate(45deg);
+    }
+    /* ============================================== */
+    /* CSS เพิ่มเติมสำหรับ ER Diagram & Task Header */
+    /* ============================================== */
+    .er-task-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e0e0e0;
+        padding: 15px 20px;
+    }
+    .er-task-header h5 {
+        margin-bottom: 5px;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+    
+    /* สไตล์ Canvas แบบไม่มีลายตาราง (พื้นสีขาวเรียบ) */
+    .fc-canvas {
+        background-color: #ffffff !important;
+        background-image: none !important;
+        position: relative;
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    /* สไตล์ Shape สำหรับ ER Diagram */
+    .fc-shape[data-type="entity"] {
+        border-radius: 0px;
+        border: 2px solid #333;
+        background-color: #ffffff;
+    }
+    .fc-shape[data-type="attribute"] {
+        border-radius: 50%;
+        border: 2px solid #333;
+        background-color: #ffffff;
+    }
+    .fc-shape[data-type="relationship"] {
+        transform: rotate(45deg);
+        border: 2px solid #333;
+        background-color: #ffffff;
+        width: 60px !important;
+        height: 60px !important;
+    }
+    /* ดัดแก้ตัวหนังสือข้างใน Relationship ไม่ให้เอียงตามรูปทรง */
+    .fc-shape[data-type="relationship"] .fc-text-wrapper {
+        transform: rotate(-45deg);
+    }
+
+        /* ============================================== */
+    /* CSS เพิ่มเติมสำหรับ ER Diagram & Task Header */
+    /* ============================================== */
+.fc-shape[data-type="entity"],
+.fc-shape[data-type="attribute"],
+.fc-shape[data-type="relationship"],
+.fc-shape[data-type="weakEntity"],
+.fc-shape[data-type="identifyingRelationship"]{
+    border:2px solid #000;
+    background:#fff;
+}
+
+.fc-shape[data-type="entity"]{
+    border-radius:0;
+}
+
+.fc-shape[data-type="attribute"]{
+    border-radius:50%;
+}
+
+.fc-shape[data-type="relationship"]{
+    width:60px!important;
+    height:60px!important;
+    transform:rotate(45deg);
+}
+
+.fc-shape[data-type="weakEntity"]{
+    width:120px;
+    height:60px;
+    position:relative;
+}
+
+.fc-shape[data-type="identifyingRelationship"]{
+    width:70px;
+    height:70px;
+    position:relative;
+    transform:rotate(45deg);
+    margin:15px;
+}
+
+.fc-shape[data-type="weakEntity"]::after,
+.fc-shape[data-type="identifyingRelationship"]::after{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border:2px solid #000;
+}
+
+.fc-shape[data-type="relationship"] .fc-text-wrapper,
+.fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper{
+    transform:rotate(-45deg);
+}
