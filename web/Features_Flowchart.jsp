@@ -13,13 +13,14 @@
     String Link = request.getAttribute("Loadfile5").toString();  
 %>
 
-
 <!-- ============================================== -->
 <!-- ระบบสร้าง Flowchart -->
 <!-- ============================================== -->
 <div class="card mt-4 mb-4">
     <div class="card-header bg-dark text-white">ระบบสร้าง Flowchart 
+            <a href="Ans_Flowchart.jsp" class="btn btn-info text-white">📝 ไปหน้าสร้างเฉลย</a>
     </div>
+    
     <div class="card-body p-0">
         <div class="flowchart-wrapper">
             <!-- แถบด้านซ้าย -->
@@ -46,15 +47,17 @@
                     </defs>
                 </svg>
 
-                <form action="processFlowchart.jsp" method="POST" id="flowchartForm">
+                <!-- เพิ่มปุ่มไปหน้าสร้างเฉลยไว้ข้างปุ่ม Submit -->
+                <form action="processFlowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
                     <input type="hidden" name="flowchartData" id="flowchartData">
-                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit Flowchart</button>
+                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit</button>
+                    <!-- เปลี่ยน "ชื่อไฟล์หน้าเฉลย.jsp" ให้ตรงกับไฟล์ที่คุณบันทึกไว้ -->
+                    
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 <!-- ============================================== -->
 <!-- Script สำหรับ Flowchart -->
 <!-- ============================================== -->

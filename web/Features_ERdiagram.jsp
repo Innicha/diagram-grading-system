@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="3" />
+<mytag:header menu="4" />
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/pages/ERdiagram.css">
 <!-- Check Login File -->
@@ -76,7 +76,7 @@
 
                 <form action="processFlowchart.jsp" method="POST" id="flowchartForm">
                     <input type="hidden" name="flowchartData" id="flowchartData">
-                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit Diagram</button>
+                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit</button>
                 </form>
             </div>
         </div>
