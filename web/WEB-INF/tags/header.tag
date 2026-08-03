@@ -11,30 +11,42 @@
                     <li class="nav-item"><a class="nav-link" href="Features_Flowchart.jsp">Flowchart</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_ERdiagram.jsp">ER Diagram</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Pseudocode.jsp">Pseudocode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
                 <% } else if(menu.equals("2")){ %>
                     <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link active" href="main.jsp">MAIN</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Flowchart.jsp">Flowchart</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_ERdiagram.jsp">ER Diagram</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Pseudocode.jsp">Pseudocode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
                 <% } else if(menu.equals("3")){ %>
                     <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
                     <li class="nav-item"><a class="nav-link active" href="Features_Flowchart.jsp">Flowchart</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_ERdiagram.jsp">ER Diagram</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Pseudocode.jsp">Pseudocode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
                 <% } else if(menu.equals("4")){ %>
                     <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Flowchart.jsp">Flowchart</a></li>
                     <li class="nav-item"><a class="nav-link active" href="Features_ERdiagram.jsp">ER Diagram</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Pseudocode.jsp">Pseudocode</a></li>
-                <% } else{ %>
+                    <li class="nav-item"><a class="nav-link" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
+                <% } else if(menu.equals("5")){ %>
                     <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
                     <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_Flowchart.jsp">Flowchart</a></li>
                     <li class="nav-item"><a class="nav-link" href="Features_ERdiagram.jsp">ER Diagram</a></li>
                     <li class="nav-item"><a class="nav-link active" href="Features_Pseudocode.jsp">Pseudocode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
+                <% } else{ %>
+                    <li class="nav-item"><a class="nav-link" href="index.jsp">INDEX</a></li>
+                    <li class="nav-item"><a class="nav-link" href="main.jsp">MAIN</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Features_Flowchart.jsp">Flowchart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Features_ERdiagram.jsp">ER Diagram</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Features_Pseudocode.jsp">Pseudocode</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="CreateAnswerkeys.jsp">Create Answer Keys</a></li>
                 <% } %>
             </ul>
         </div>
