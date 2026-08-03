@@ -4,6 +4,8 @@
 
 <mytag:ReadFile />
 <mytag:header menu="3" />
+<link rel="stylesheet" href="css/CreateAssignment/CenterLayout.css">
+<link rel="stylesheet" href="css/global.css">
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/pages/flowchart.css">
 <!-- Check Login File -->

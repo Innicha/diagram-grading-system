@@ -1,0 +1,313 @@
+/* GLOBAL & PAGE LAYOUT*/
+body {
+    background: #f5f7fb;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.page-header h3 {
+    color: #1e3a8a;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* BUTTONS & GENERAL UTILITIES*/
+.btn-back {
+    border: 1px solid #1e3a8a;
+    color: #1e3a8a;
+}
+
+.btn-save-page {
+    margin-left: auto;
+    background: #1e3a8a;
+    border-color: #1e3a8a;
+    color: #eef6ff;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, .25);
+}
+
+.btn-icon {
+    border: none;
+    background: transparent;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.btn-icon:hover {
+    background-color: #f1f5f9;
+}
+
+.btn-icon-sm {
+    border: none;
+    background: transparent;
+    padding: 0 4px;
+}
+
+.fs-7 {
+    font-size: 0.75rem !important;
+}
+
+.form-select-sm, 
+.form-control-sm {
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+
+.bg-primary-subtle {
+    background-color: #eff6ff !important;
+    border: 1px solid #dbeafe;
+}
+
+/* QUESTION BOX SECTION (แก้จุดนี้: กล่องโจทย์จะย่อความสูงกระชับพอดีแล้ว)*/
+.question-box-card {
+    background-color: #ffffff;
+    border: 1px solid #dbe4f3;
+    border-radius: 16px;
+    color: #1e3a8a;
+    height: auto !important; /* ปล่อยความสูงอิสระตามเนื้อหา ไม่โดนฟิกซ์ 600px */
+}
+
+.question-textarea {
+    resize: vertical;
+    min-height: 100px;
+    max-height: 250px;
+    overflow-y: auto;
+    border-color: #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #334155;
+    background-color: #f8fafc;
+    transition: all 0.2s ease-in-out;
+}
+
+.question-textarea:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* ENTITY & ATTRIBUTE COMPONENTS*/
+.entity-card-wrapper {
+    margin-bottom: 1.5rem !important;
+}
+
+.entity-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    transition: all 0.2s ease-in-out;
+}
+
+.entity-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.entity-header {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 16px;
+}
+
+.entity-title-input {
+    border-bottom: 1px transparent;
+    padding: 0 4px;
+}
+
+.entity-title-input:focus {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: none;
+}
+
+.attribute-row {
+    background-color: #ffffff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    margin-bottom: 10px !important;
+    gap: 8px !important;
+}
+
+.attribute-row .form-select-sm {
+    font-size: 0.85rem;
+    padding-right: 20px;
+}
+
+.drag-handle {
+    cursor: grab;
+    font-size: 0.8rem;
+}
+
+.attr-type-select {
+    width: 130px !important;
+    max-width: 100%;
+}
+
+/* Badges (PK / FK) */
+.badge-type-tag {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: none;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-pk {
+    display: inline-block !important;
+    background-color: #f3e8ff;
+    color: #7e22ce;
+    border: 1px solid #d8b4fe;
+}
+
+.badge-fk {
+    display: inline-block !important;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+}
+
+/* Buttons for Entity / Attribute */
+.btn-add-entity {
+    border: 2px dashed #93c5fd;
+    background-color: #f0f9ff;
+    color: #0284c7;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-add-entity:hover {
+    background-color: #e0f2fe;
+    border-color: #38bdf8;
+    color: #0369a1;
+}
+
+.btn-add-attr-sq {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #475569;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-add-attr-sq:hover {
+    background-color: #e2e8f0;
+    border-color: #94a3b8;
+    color: #1e293b;
+}
+
+.btn-add-attr-sq:focus {
+    box-shadow: none;
+}
+
+/* RELATIONSHIP COMPONENTS*/
+.rel-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.rel-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.btn-add-rel {
+    border: 2px dashed #93c5fd;
+    background-color: #f0f9ff;
+    color: #0284c7;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.btn-add-rel:hover {
+    background-color: #e0f2fe;
+    border-color: #38bdf8;
+    color: #0369a1;
+}
+
+/*FIXED HEIGHT & SCROLLBAR (ปรับแก้เรื่องการพับแล้วห่าง)*/
+.row.g-4 {
+    align-items: stretch !important;
+}
+
+
+.er-main-card {
+    background-color: #ffffff;
+    border: 1px solid #dbe4f3;
+    border-radius: 16px;
+    color: #1e3a8a;
+    height: 600px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.er-main-card > .card-body {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+
+#entityContainer,
+#relationshipContainer,
+.er-scroll-container {
+    flex: 1 1 auto !important;  
+    align-content: flex-start !important; 
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-right: 6px;
+    margin-bottom: 12px;
+}
+
+/* ล็อคปุ่มกดเพิ่มให้อยู่ล่างสุดของการ์ดใหญ่เสมอ */
+.er-main-card .mt-auto {
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* Custom Scrollbar */
+.er-scroll-container::-webkit-scrollbar,
+#entityContainer::-webkit-scrollbar,
+#relationshipContainer::-webkit-scrollbar,
+.question-textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.er-scroll-container::-webkit-scrollbar-track,
+#entityContainer::-webkit-scrollbar-track,
+#relationshipContainer::-webkit-scrollbar-track,
+.question-textarea::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.er-scroll-container::-webkit-scrollbar-thumb,
+#entityContainer::-webkit-scrollbar-thumb,
+#relationshipContainer::-webkit-scrollbar-thumb,
+.question-textarea::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.er-scroll-container::-webkit-scrollbar-thumb:hover,
+#entityContainer::-webkit-scrollbar-thumb:hover,
+#relationshipContainer::-webkit-scrollbar-thumb:hover,
+.question-textarea::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

@@ -230,6 +230,7 @@
     border:2px solid #000;
 }
 
+
 .fc-shape[data-type="relationship"] .fc-text-wrapper,
 .fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper{
     transform:rotate(-45deg);

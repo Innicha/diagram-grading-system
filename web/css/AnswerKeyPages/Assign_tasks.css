@@ -1,0 +1,49 @@
+body{
+    background:#f5f7fb;
+    font-family:'Anuphan',sans-serif;
+}
+
+.page-title,
+.card-title{
+    font-weight:700;
+}
+
+.page-title{
+    color:#1e3a8a;
+}
+
+.select-card{
+    display:block;
+    height:100%;
+    border:1px solid #c4e7f2;
+    border-radius:18px;
+    color:#333;
+    text-decoration:none;
+    cursor:pointer;
+    transition:.25s;
+    box-shadow:0 12px 30px rgba(173,216,230,.3);
+}
+
+.select-card:hover,
+.select-card:hover .card-title{
+    color:#1e3a8a;
+}
+
+.select-card:hover{
+    text-decoration:none;
+    transform:translateY(-8px);
+    border-color:#1e3a8a;
+    box-shadow:0 18px 40px rgba(173,216,230,.45);
+}
+
+.icon{
+    font-size:60px;
+}
+
+.card-title{
+    margin-top:15px;
+}
+
+.card-text{
+    color:#666;
+}
