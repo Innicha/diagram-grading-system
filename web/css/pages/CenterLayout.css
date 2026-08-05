@@ -4,12 +4,11 @@
 
 .flowchart-wrapper {
     display: flex;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 600px;
-    margin: 20px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+    margin: 0;
+    border: 1px solid #dbe4f3;
+    border-radius: 16px;
+    background-color: #ffffff;
 }
 
 /* ==========================================

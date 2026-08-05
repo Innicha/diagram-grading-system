@@ -1,237 +1,277 @@
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-    }
-
-    /* 1. พื้นที่ด้านบนสำหรับใส่โจทย์ */
-    #task-header {
-      height: 120px;
-      background-color: #f8f9fa;
-      border-bottom: 2px solid #e0e0e0;
-      padding: 15px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      z-index: 10;
-    }
-
-    #task-header h2 {
-      font-size: 18px;
-      color: #2c3e50;
-      margin-bottom: 8px;
-    }
-
-    #task-header p {
-      font-size: 14px;
-      color: #555;
-      line-height: 1.4;
-    }
-
-    /* ส่วนพื้นที่ทำงานหลัก (แบ่งซ้าย-ขวา) */
-    #main-container {
-      display: flex;
-      flex: 1;
-      height: calc(100vh - 120px);
-    }
-
-    /* 2. แถบเครื่องมือด้านซ้าย (Sidebar) */
-    #sidebar {
-      width: 200px;
-      background-color: #f0f2f5;
-      border-right: 1px solid #d0d0d0;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      overflow-y: auto;
-    }
-
-    #sidebar h3 {
-      font-size: 14px;
-      color: #444;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .shape-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    /* สไตล์ของ Shape ใน Sidebar */
-    .draggable-shape {
-      width: 60px;
-      height: 40px;
-      border: 2px solid #333;
-      background-color: #fff;
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      user-select: none;
-      transition: transform 0.1s ease;
-    }
-
-    .draggable-shape:hover {
-      transform: scale(1.05);
-    }
-
-    /* รูปทรงต่างๆ */
-    .shape-rectangle { border-radius: 0; }
-    .shape-ellipse { border-radius: 50%; }
-    .shape-diamond { 
-      transform: rotate(45deg); 
-      width: 40px; 
-      height: 40px; 
-    }
-    .shape-diamond:hover {
-      transform: rotate(45deg) scale(1.05);
-    }
-
-    /* 3. พื้นที่วาดรูป (Canvas Panel) - สีขาวเรียบ */
-    #canvas-container {
-      flex: 1;
-      position: relative;
-      background-color: #ffffff; /* พื้นหลังสีขาวเรียบ ไม่มี Grid */
-      overflow: hidden;
-    }
-
-    /* รูปทรงที่ถูกวางบน Canvas */
-    .placed-shape {
-      position: absolute;
-      border: 2px solid #333;
-      background-color: #fff;
-      cursor: move;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .placed-shape.rectangle {
-      width: 100px;
-      height: 60px;
-    }
-
-    .placed-shape.ellipse {
-      width: 100px;
-      height: 60px;
-      border-radius: 50%;
-    }
-
-    .placed-shape.diamond {
-      width: 70px;
-      height: 70px;
-      transform: rotate(45deg);
-    }
-    /* ============================================== */
-    /* CSS เพิ่มเติมสำหรับ ER Diagram & Task Header */
-    /* ============================================== */
-    .er-task-header {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #e0e0e0;
-        padding: 15px 20px;
-    }
-    .er-task-header h5 {
-        margin-bottom: 5px;
-        color: #2c3e50;
-        font-weight: bold;
-    }
-    
-    /* สไตล์ Canvas แบบไม่มีลายตาราง (พื้นสีขาวเรียบ) */
-    .fc-canvas {
-        background-color: #ffffff !important;
-        background-image: none !important;
-        position: relative;
-        min-height: 500px;
-        overflow: hidden;
-    }
-
-    /* สไตล์ Shape สำหรับ ER Diagram */
-    .fc-shape[data-type="entity"] {
-        border-radius: 0px;
-        border: 2px solid #333;
-        background-color: #ffffff;
-    }
-    .fc-shape[data-type="attribute"] {
-        border-radius: 50%;
-        border: 2px solid #333;
-        background-color: #ffffff;
-    }
-    .fc-shape[data-type="relationship"] {
-        transform: rotate(45deg);
-        border: 2px solid #333;
-        background-color: #ffffff;
-        width: 60px !important;
-        height: 60px !important;
-    }
-    /* ดัดแก้ตัวหนังสือข้างใน Relationship ไม่ให้เอียงตามรูปทรง */
-    .fc-shape[data-type="relationship"] .fc-text-wrapper {
-        transform: rotate(-45deg);
-    }
-
-        /* ============================================== */
-    /* CSS เพิ่มเติมสำหรับ ER Diagram & Task Header */
-    /* ============================================== */
-.fc-shape[data-type="entity"],
-.fc-shape[data-type="attribute"],
-.fc-shape[data-type="relationship"],
-.fc-shape[data-type="weakEntity"],
-.fc-shape[data-type="identifyingRelationship"]{
-    border:2px solid #000;
-    background:#fff;
+html {
+    height: auto !important;
+    min-height: 100%;
 }
 
-.fc-shape[data-type="entity"]{
-    border-radius:0;
+body {
+    background-color: #f5f7fb !important;
+    font-family: 'Anuphan', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    position: static !important;
 }
 
-.fc-shape[data-type="attribute"]{
-    border-radius:50%;
+/* Custom Scrollbar */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
-.fc-shape[data-type="relationship"]{
-    width:60px!important;
-    height:60px!important;
-    transform:rotate(45deg);
+/* 2. TASK HEADER SECTION (ส่วนโจทย์) */
+.er-task-header {
+    background-color: #ffffff;
+    border: 1px solid #dbe4f3;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    color: #1e3a8a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
 }
 
-.fc-shape[data-type="weakEntity"]{
-    width:120px;
-    height:60px;
-    position:relative;
+.er-task-header h5 {
+    color: #1e3a8a;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.fc-shape[data-type="identifyingRelationship"]{
-    width:70px;
-    height:70px;
-    position:relative;
-    transform:rotate(45deg);
-    margin:15px;
+.er-task-header p {
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 0;
 }
 
-.fc-shape[data-type="weakEntity"]::after,
-.fc-shape[data-type="identifyingRelationship"]::after{
-    content:"";
-    position:absolute;
-    inset:8px;
-    border:2px solid #000;
+/* 3. FLOWCHART CONTAINER & WRAPPER */
+.flowchart-wrapper {
+    display: flex !important;
+    height: 620px !important;
+    min-height: 620px !important;
+    max-height: 620px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #dbe4f3 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: relative !important;
 }
 
+/* 4. SIDEBAR (แถบเครื่องมือซ้าย) */
+.fc-sidebar {
+    width: 220px !important;
+    height: 100% !important;
+    background-color: #f8fafc !important;
+    border-right: 1px solid #e2e8f0 !important;
+    padding: 1.25rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1.25rem !important;
+    overflow-y: auto !important;
+    z-index: 10 !important;
+    flex-shrink: 0 !important;
+}
 
-.fc-shape[data-type="relationship"] .fc-text-wrapper,
-.fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper{
-    transform:rotate(-45deg);
+.fc-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.fc-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.fc-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* 5. BASE SHAPES (รูปทรง ER Diagram) */
+.fc-shape {
+    width: 110px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #1e3a8a;
+    background-color: #ffffff;
+    color: #1e3a8a;
+    font-weight: 600;
+    font-size: 0.825rem;
+    box-shadow: 0 2px 6px rgba(30, 58, 138, 0.08);
+    cursor: grab;
+    user-select: none;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    z-index: 2;
+}
+
+.fc-shape:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.fc-shape:active {
+    cursor: grabbing;
+}
+
+/* Specific Shape Types */
+.fc-shape[data-type="entity"] {
+    border-radius: 8px;
+}
+
+.fc-shape[data-type="attribute"] {
+    border-radius: 50px;
+    width: 100px;
+    height: 46px;
+}
+
+.fc-shape[data-type="relationship"] {
+    width: 58px !important;
+    height: 58px !important;
+    transform: rotate(45deg);
+    margin: 10px 0;
+}
+
+.fc-shape[data-type="relationship"] .fc-text-wrapper {
+    transform: rotate(-45deg);
+}
+
+.fc-shape[data-type="weakEntity"] {
+    border-radius: 8px;
+    position: relative;
+    width: 110px;
+    height: 48px;
+}
+
+.fc-shape[data-type="weakEntity"]::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1.5px solid #1e3a8a;
+    border-radius: 5px;
+    pointer-events: none;
+}
+
+.fc-shape[data-type="identifyingRelationship"] {
+    width: 62px !important;
+    height: 62px !important;
+    position: relative;
+    transform: rotate(45deg);
+    margin: 12px 0;
+}
+
+.fc-shape[data-type="identifyingRelationship"]::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1.5px solid #1e3a8a;
+    pointer-events: none;
+}
+
+.fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper {
+    transform: rotate(-45deg);
+}
+
+.fc-text-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.fc-text {
+    width: 90%;
+    outline: none;
+    word-break: break-word;
+    font-family: 'Anuphan', sans-serif;
+}
+
+/* 6. CANVAS PANEL */
+.fc-canvas {
+    flex-grow: 1;
+    height: 100% !important;
+    position: relative !important;
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px) !important;
+    background-size: 20px 20px !important;
+    overflow: hidden;
+}
+
+.fc-node {
+    position: absolute;
+    cursor: move;
+}
+
+/* 7. TOOLBAR & BUTTONS */
+.fc-toolbar {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(4px);
+}
+
+.fc-toolbar span {
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+#connectModeBtn {
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    transition: all 0.2s ease;
+}
+
+#fc-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#fc-submitBtn {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 10;
+    background-color: #1e3a8a;
+    border-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 8px 22px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+    transition: all 0.2s ease;
+}
+
+#fc-submitBtn:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+    box-shadow: 0 6px 14px rgba(29, 78, 216, 0.35);
 }

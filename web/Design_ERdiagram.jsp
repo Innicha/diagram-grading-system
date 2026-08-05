@@ -4,92 +4,151 @@
 
 <mytag:ReadFile />
 <mytag:header menu="3" />
+
+<!-- Google Fonts & Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<!-- Stylesheets -->
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/pages/ERdiagram.css">
-<!-- Check Login File -->
+<link rel="stylesheet" href="css/AnswerKeyPages/AnswerKey_ERDiagram.css">
+
 <mytag:check_login />  
 
 <%
-    String Link = request.getAttribute("Loadfile5").toString();  
+    String Link = request.getAttribute("Loadfile5") != null ? request.getAttribute("Loadfile5").toString() : "";  
 %>
 
-
-<!-- ============================================== -->
-<!-- พื้นที่ด้านบนสำหรับใส่โจทย์ (Task Header) -->
-<!-- ============================================== -->
-<!-- <div class="card mt-3">
-    <div class="er-task-header">
-        <h5> โจทย์: การออกแบบ ER Diagram สำหรับระบบจัดการข้อมูล</h5>
-        <p class="mb-0 text-muted">
-            ให้นักเรียนลากรูปทรงจากแถบด้านซ้ายมาวางบนพื้นที่ทำงาน จากนั้นใช้ <strong>"โหมดเชื่อมเส้น"</strong> เพื่อเชื่อมต่อความสัมพันธ์ระหว่าง Entity, Attribute และ Relationship ให้ถูกต้อง (ดับเบิ้ลคลิกที่กล่องเพื่อแก้ไขข้อความ)
-        </p>
+<div class="container-fluid p-4" style="min-height: 100vh; overflow-y: auto;">
+    <div class="page-header d-flex align-items-center mb-4">
+        <a href="CreateAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
+            <h3>สร้าง ER Diagram</h3>
+            <button type="button" class="btn btn-success btn-save-page" onclick="submitFlow()">
+                <i class="bi bi-send-fill me-1"></i> Submit
+            </button>
     </div>
-</div> -->
-
-<!-- ============================================== -->
-<!-- ระบบสร้าง ER Diagram -->
-<!-- ============================================== -->
-<div class="card mt-3 mb-4">
-    <div class="card-header bg-dark text-white">ระบบสร้าง ER Diagram</div>
-    <div class="card-body p-0">
-        <div class="flowchart-wrapper">
-            <!-- แถบด้านซ้าย (Shapes) -->
-            <div class="fc-sidebar">
-                <div class="fc-shape" data-type="entity" draggable="true" ondragstart="fcDrag(event)">
-                    <div class="fc-text-wrapper"><span class="fc-text">Entity</span></div>
-                </div>
-
-                <div class="fc-shape" data-type="attribute" draggable="true" ondragstart="fcDrag(event)">
-                    <div class="fc-text-wrapper"><span class="fc-text">Attribute</span></div>
-                </div>
-
-                <div class="fc-shape" data-type="relationship" draggable="true" ondragstart="fcDrag(event)">
-                    <div class="fc-text-wrapper"><span class="fc-text">Relation</span></div>
-                </div>
-
-                <div class="fc-shape" data-type="weakEntity" draggable="true" ondragstart="fcDrag(event)">
-                    <div class="fc-text-wrapper"><span class="fc-text">Weak Entity</span>
-                    </div>
-                </div>
-
-                <div class="fc-shape" data-type="identifyingRelationship" draggable="true" ondragstart="fcDrag(event)">
-                    <div class="fc-text-wrapper"><span class="fc-text">Identifying</span>
-                    </div>
-                </div>
+    <!-- Question Box (กล่องแสดงโจทย์ปัญหา) -->
+    <div class="card question-box-card shadow-sm border-0 mb-4">
+        <!-- Header -->
+        <div class="card-header bg-transparent d-flex align-items-center justify-content-between py-3 px-4 border-bottom-0">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
+                <h5 class="m-0 fw-bold text-dark">โจทย์ปัญหา / คำถาม (Question)</h5>
             </div>
+            <!-- ปุ่มพับ/กาง สำหรับกล่องโจทย์ -->
+            <button type="button" class="btn btn-icon text-muted toggle-question-btn" id="toggleQuestionBtn" title="พับ/กาง โจทย์">
+                <i class="bi bi-chevron-down question-toggle-icon"></i>
+            </button>
+        </div>
 
-            <!-- พื้นที่ Canvas ด้านขวา (ไม่มีลายตาราง) -->
-            <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
-                
-                <div class="fc-toolbar">
-                    <span class="fw-bold">ลากกล่องมาวาง ➔</span>
-                    <button type="button" class="btn btn-primary btn-sm ms-3" id="connectModeBtn" onclick="toggleConnectMode()">🔗 เปิดโหมดเชื่อมเส้น</button>
-                </div>
-                
-                <svg id="fc-svg">
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
-                        </marker>
-                    </defs>
-                </svg>
-
-                <form action="processFlowchart.jsp" method="POST" id="flowchartForm">
-                    <input type="hidden" name="flowchartData" id="flowchartData">
-                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit</button>
-                </form>
+        <!-- Body (แสดงรายละเอียดโจทย์ ไม่ใช่อินพุต) -->
+        <div class="card-body px-4 pb-4 pt-0 question-collapse-body" id="questionCollapseBody">
+            <div class="question-display-wrapper p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                <h6 class="fw-bold text-primary mb-2">
+                    <i class="bi bi-diagram-2 me-1"></i> โจทย์: การออกแบบ ER Diagram สำหรับระบบจัดการข้อมูล
+                </h6>
+                <p class="text-secondary m-0" style="line-height: 1.6; font-size: 0.95rem;">
+                    ให้นักเรียนลากรูปทรงจากแถบด้านซ้ายมาวางบนพื้นที่ทำงาน จากนั้นใช้ 
+                    <strong class="text-primary">"โหมดเชื่อมเส้น"</strong> เพื่อเชื่อมต่อความสัมพันธ์ระหว่าง Entity, Attribute และ Relationship ให้ถูกต้อง (ดับเบิ้ลคลิกที่กล่องเพื่อแก้ไขข้อความ)
+                </p>
             </div>
         </div>
     </div>
+
+    <!-- ระบบสร้าง ER Diagram Container -->
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px; overflow: hidden;">
+        <!-- <div class="card-header text-white fw-bold py-3 px-4 d-flex align-items-center gap-2" style="background-color: #1e3a8a;">
+            <i class="bi bi-diagram-3-fill fs-5"></i>
+            <span>ระบบสร้าง ER Diagram</span>
+        </div> -->
+        <div class="card-body p-0">
+            <div class="flowchart-wrapper">
+                
+                <!-- แถบด้านซ้าย (Sidebar Shapes) -->
+                <div class="fc-sidebar">
+                    <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-1">องค์ประกอบ</div>
+
+                    <div class="fc-shape" data-type="entity" draggable="true" ondragstart="fcDrag(event)">
+                        <div class="fc-text-wrapper"><span class="fc-text">Entity</span></div>
+                    </div>
+
+                    <div class="fc-shape" data-type="attribute" draggable="true" ondragstart="fcDrag(event)">
+                        <div class="fc-text-wrapper"><span class="fc-text">Attribute</span></div>
+                    </div>
+
+                    <div class="fc-shape" data-type="relationship" draggable="true" ondragstart="fcDrag(event)">
+                        <div class="fc-text-wrapper"><span class="fc-text">Relation</span></div>
+                    </div>
+
+                    <div class="fc-shape" data-type="weakEntity" draggable="true" ondragstart="fcDrag(event)">
+                        <div class="fc-text-wrapper"><span class="fc-text">Weak Entity</span></div>
+                    </div>
+
+                    <div class="fc-shape" data-type="identifyingRelationship" draggable="true" ondragstart="fcDrag(event)">
+                        <div class="fc-text-wrapper"><span class="fc-text">Identifying</span></div>
+                    </div>
+                </div>
+
+                <!-- พื้นที่ Canvas ด้านขวา -->
+                <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
+                    
+                    <div class="fc-toolbar">
+                        <span class="fw-semibold text-secondary">
+                            <i class="bi bi-hand-index-thumb me-1"></i> ลากกล่องมาวาง ➔
+                        </span>
+                        <button type="button" class="btn btn-primary btn-sm ms-2" id="connectModeBtn" onclick="toggleConnectMode()">
+                            <i class="bi bi-link-45deg me-1"></i> เปิดโหมดเชื่อมเส้น
+                        </button>
+                    </div>
+                    
+                    <svg id="fc-svg">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#1e3a8a" />
+                            </marker>
+                        </defs>
+                    </svg>
+
+                    <form action="processFlowchart.jsp" method="POST" id="flowchartForm">
+                        <input type="hidden" name="flowchartData" id="flowchartData">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- ============================================== -->
-<!-- Script สำหรับ ER Diagram -->
-<!-- ============================================== -->
+<!-- Script สำหรับ ER Diagram (อัปเดตให้ย้ายรูปทรงได้ตลอดเวลาแม้ในโหมดเชื่อมเส้น) -->
 <script>
     let connections = []; 
     let selectedNode = null; 
     let isConnectMode = false; 
+
+    // ระบบพับ/กาง กล่องโจทย์ (Question Box Collapse)
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggleQuestionBtn');
+        const questionBody = document.getElementById('questionCollapseBody');
+        const toggleIcon = toggleBtn.querySelector('.question-toggle-icon');
+
+        toggleBtn.addEventListener('click', function() {
+            const isCollapsed = questionBody.classList.contains('d-none');
+            
+            if (isCollapsed) {
+                questionBody.classList.remove('d-none');
+                toggleIcon.classList.remove('bi-chevron-up');
+                toggleIcon.classList.add('bi-chevron-down');
+            } else {
+                questionBody.classList.add('d-none');
+                toggleIcon.classList.remove('bi-chevron-down');
+                toggleIcon.classList.add('bi-chevron-up');
+            }
+        });
+    });
 
     // กดปุ่ม Delete / Backspace เพื่อลบกล่อง
     document.addEventListener('keydown', function(e) {
@@ -115,17 +174,17 @@
         deselectNode(); 
 
         if (isConnectMode) {
-            btn.className = "btn btn-danger btn-sm ms-3";
-            btn.innerHTML = "❌ ปิดโหมดเชื่อมเส้น";
+            btn.className = "btn btn-danger btn-sm ms-2";
+            btn.innerHTML = '<i class="bi bi-x-circle me-1"></i> ปิดโหมดเชื่อมเส้น';
         } else {
-            btn.className = "btn btn-primary btn-sm ms-3";
-            btn.innerHTML = "🔗 เปิดโหมดเชื่อมเส้น";
+            btn.className = "btn btn-primary btn-sm ms-2";
+            btn.innerHTML = '<i class="bi bi-link-45deg me-1"></i> เปิดโหมดเชื่อมเส้น';
         }
     }
 
     function deselectNode() {
         if (selectedNode) {
-            selectedNode.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)"; 
+            selectedNode.style.boxShadow = "0 2px 6px rgba(30, 58, 138, 0.08)"; 
             selectedNode = null;
         }
     }
@@ -159,6 +218,7 @@
 
     function makeFcInteractive(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let isDragging = false;
         let textSpan = elmnt.querySelector('.fc-text');
 
         elmnt.ondblclick = function(e) {
@@ -168,66 +228,78 @@
             elmnt.style.cursor = "text";
             deselectNode(); 
         };
+
         textSpan.onblur = function() {
             this.contentEditable = "false";
             elmnt.style.cursor = "move";
         };
 
         elmnt.onmousedown = function(e) {
-            if(textSpan.contentEditable === "true") return; 
+            if (textSpan.contentEditable === "true") return; 
             e.stopPropagation();
-            
-            if (isConnectMode) {
-                if (!selectedNode) {
-                    selectedNode = elmnt;
-                    elmnt.style.boxShadow = "0 0 10px red"; 
-                } else if (selectedNode !== elmnt) {
-                    
-                    let lineLabel = "";
-                    // ถ้าโหนดต้นทางเป็น Relationship (ข้าวหลามตัด) ให้ถาม Cardinality (1, M, N)
-                    if (selectedNode.getAttribute("data-type") === "relationship") {
-                        let userInput = prompt("ระบุอัตราส่วนความสัมพันธ์ (เช่น 1, M, N):", "1");
-                        if (userInput === null) {
-                            deselectNode();
-                            return;
-                        }
-                        lineLabel = userInput;
-                    }
 
-                    connections.push({ from: selectedNode, to: elmnt, label: lineLabel }); 
-                    deselectNode();
-                    drawLines();
-                } else {
-                    deselectNode(); 
-                }
-            } 
-            else {
-                deselectNode();
-                selectedNode = elmnt;
-                elmnt.style.boxShadow = "0 0 10px #0d6efd"; 
+            isDragging = false;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
 
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
+            // กำหนดการ Drag เสมอไม่ว่าจะอยู่ในโหมดใด
+            document.onmousemove = elementDrag;
+            document.onmouseup = closeDragElement;
         };
 
         function elementDrag(e) {
             e.preventDefault();
+            
+            // เช็กระยะการลากเพื่อไม่ให้สับสนกับการคลิกปกติ
+            if (Math.abs(pos3 - e.clientX) > 2 || Math.abs(pos4 - e.clientY) > 2) {
+                isDragging = true;
+            }
+
             pos1 = pos3 - e.clientX;
             pos2 = pos4 - e.clientY;
             pos3 = e.clientX;
             pos4 = e.clientY;
+
             elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
             elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+
+            // คำนวณเส้นใหม่ทุกครั้งที่ลากรูปทรง
             drawLines();
         }
 
         function closeDragElement() {
             document.onmouseup = null;
             document.onmousemove = null;
+
+            // ถ้าไม่ได้เป็นการกดลาก (เป็นการคลิกเลือกโหนดปกติ)
+            if (!isDragging) {
+                if (isConnectMode) {
+                    if (!selectedNode) {
+                        selectedNode = elmnt;
+                        elmnt.style.boxShadow = "0 0 0 3px rgba(225, 29, 72, 0.6)"; 
+                    } else if (selectedNode !== elmnt) {
+                        let lineLabel = "";
+                        if (selectedNode.getAttribute("data-type") === "relationship") {
+                            let userInput = prompt("ระบุอัตราส่วนความสัมพันธ์ (เช่น 1, M, N):", "1");
+                            if (userInput === null) {
+                                deselectNode();
+                                return;
+                            }
+                            lineLabel = userInput;
+                        }
+
+                        connections.push({ from: selectedNode, to: elmnt, label: lineLabel }); 
+                        deselectNode();
+                        drawLines();
+                    } else {
+                        deselectNode(); 
+                    }
+                } else {
+                    deselectNode();
+                    selectedNode = elmnt;
+                    elmnt.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.5)"; 
+                }
+            }
         }
     }
 
@@ -247,17 +319,15 @@
             const x2 = rect2.left - canvasRect.left + (rect2.width / 2);
             const y2 = rect2.top - canvasRect.top + (rect2.height / 2);
 
-            // สร้างเส้นเชื่อม
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             line.setAttribute('x1', x1);
             line.setAttribute('y1', y1);
             line.setAttribute('x2', x2);
             line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#333');
+            line.setAttribute('stroke', '#1e3a8a');
             line.setAttribute('stroke-width', '2');
             svg.appendChild(line);
 
-            // ใส่ข้อความ (1, M, N) บนเส้น
             if (conn.label) {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 const midX = (x1 + x2) / 2;
@@ -266,9 +336,9 @@
                 text.setAttribute('x', midX);
                 text.setAttribute('y', midY - 8);
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#d9534f');
+                text.setAttribute('fill', '#0284c7');
                 text.setAttribute('font-weight', 'bold');
-                text.setAttribute('font-size', '14px');
+                text.setAttribute('font-size', '13px');
                 text.textContent = conn.label;
                 text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff";
                 

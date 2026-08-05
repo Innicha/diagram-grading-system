@@ -19,9 +19,6 @@
 <!-- ระบบสร้าง Flowchart -->
 <!-- ============================================== -->
 <div class="card mt-4 mb-4">
-    <div class="card-header bg-dark text-white">ระบบสร้าง Flowchart 
-            <a href="CreateAnswerKey_Flowchart.jsp" class="btn btn-info text-white">📝 ไปหน้าสร้างเฉลย</a>
-    </div>
     
     <div class="card-body p-0">
         <div class="flowchart-wrapper">

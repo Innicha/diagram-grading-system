@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="6" />
+<mytag:header menu="3" />
 
 <mytag:check_login />  
 <!DOCTYPE html>
@@ -35,7 +35,7 @@
         <div class="row g-4 justify-content-center">
             <!-- ER -->
             <div class="col-lg-4 col-md-6">
-                <a href="Features_ERdiagram.jsp" class="select-card">
+                <a href="Design_ERdiagram.jsp" class="select-card">
                     <div class="card-body text-center p-5">
                         <div class="icon">
                             <i class="bi bi-diagram-3-fill"></i>
@@ -50,7 +50,7 @@
 
             <!-- Flowchart -->
             <div class="col-lg-4 col-md-6">
-                <a href="Features_Flowchart.jsp" class="select-card">
+                <a href="Design_Flowchart.jsp" class="select-card">
                     <div class="card-body text-center p-5">
                         <div class="icon">
                             <i class="bi bi-bezier2"></i>
@@ -65,7 +65,7 @@
 
             <!-- Pseudocode -->
             <div class="col-lg-4 col-md-6">
-                <a href="Features_Pseudocode.jsp" class="select-card">
+                <a href="Design_Pseudocode.jsp" class="select-card">
                     <div class="card-body text-center p-5">
                         <div class="icon">
                             <i class="bi bi-code-slash"></i>
