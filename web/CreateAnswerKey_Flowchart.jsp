@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="3" />
+<mytag:header menu="6"/>
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/AnswerKeyPages/AnswerKey_Flowchart.css">
 <!-- Check Login File -->
@@ -19,10 +19,13 @@
 <body>
 
 <div class="container main-container">
-    <h3 class="title-text">สร้างเฉลย Flowchart & Pseudocode</h3>
-        
-        <!-- ส่วนที่ 1: โจทย์/คำอธิบาย (วงกลมบนสุด) -->
-        <div class="section-box">
+    <div class="back-button-container">
+        <a href="CreateAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
+        <h3 class="title-text">สร้างเฉลย Flowchart & Pseudocode</h3>
+    </div>
+
+    <!-- ส่วนที่ 1: โจทย์/คำอธิบาย (วงกลมบนสุด) -->
+    <div class="section-box">
             <textarea class="form-control" name="problem_description" rows="3" placeholder="เขียน Flowchart...">เขียน Flowchart&#13;&#10;รับค่าจำนวนเต็ม N จากผู้ใช้ จากนั้นหาผลรวมของเลขคู่ตั้งแต่ 1 ถึง N แล้วแสดงผลรวม หากผลรวมมากกว่า 50 ให้แสดงข้อความ "Large" มิฉะนั้นให้แสดงข้อความ "Small"</textarea>
         </div>
 
@@ -40,7 +43,7 @@
                         </ul>
                         <label>Output</label>
                         <ul>
-                            <li>ผลรวม</li>
+                            <li><input type="text" name="output_var_name" class="form-control form-control-sm w-75" value="ผลรวม"></li>
                             <!-- วงกลม Large หรือ Small -->
                             <li><input type="text" name="output_var_name" class="form-control form-control-sm w-75" value="Large หรือ Small"></li>
                         </ul>

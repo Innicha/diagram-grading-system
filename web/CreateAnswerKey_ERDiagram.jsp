@@ -1,5 +1,10 @@
+<%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
+
+<mytag:ReadFile />
+<mytag:header menu="6"/>
+<mytag:check_login />  
 <html>
     <head>
         <meta charset="UTF-8">
