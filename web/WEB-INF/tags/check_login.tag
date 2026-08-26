@@ -2,8 +2,10 @@
 <%
 try
 {
-    String s = session.getAttribute("LoginStatus_admin").toString();
-    if( !s.equals("Pass_Login") )
+    // เช็กว่ามี session "User" ที่เซ็ตมาจาก check_login.jsp หรือไม่
+    String user = (String) session.getAttribute("User");
+    
+    if( user == null || user.trim().isEmpty() )
     {
         response.sendRedirect( "index.jsp" );
     }
