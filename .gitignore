@@ -3,3 +3,4 @@ dist/
 nbproject/private/
 *.class
 .DS_Store
+db.properties
