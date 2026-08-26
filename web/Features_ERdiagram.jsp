@@ -3,11 +3,9 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="3" />
-<link rel="stylesheet" href="css/CreateAssignment/CenterLayout.css">
-<link rel="stylesheet" href="css/global.css">
+<mytag:header menu="4" />
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
-<link rel="stylesheet" href="css/pages/flowchart.css">
+<link rel="stylesheet" href="css/pages/ERdiagram.css">
 <!-- Check Login File -->
 <mytag:check_login />  
 
@@ -15,29 +13,56 @@
     String Link = request.getAttribute("Loadfile5").toString();  
 %>
 
+
 <!-- ============================================== -->
-<!-- ระบบสร้าง Flowchart -->
+<!-- พื้นที่ด้านบนสำหรับใส่โจทย์ (Task Header) -->
 <!-- ============================================== -->
-<div class="card mt-4 mb-4">
-    <div class="card-header bg-dark text-white">ระบบสร้าง Flowchart 
-            <a href="CreateAnswerKey_Flowchart.jsp" class="btn btn-info text-white">📝 ไปหน้าสร้างเฉลย</a>
+<!-- <div class="card mt-3">
+    <div class="er-task-header">
+        <h5> โจทย์: การออกแบบ ER Diagram สำหรับระบบจัดการข้อมูล</h5>
+        <p class="mb-0 text-muted">
+            ให้นักเรียนลากรูปทรงจากแถบด้านซ้ายมาวางบนพื้นที่ทำงาน จากนั้นใช้ <strong>"โหมดเชื่อมเส้น"</strong> เพื่อเชื่อมต่อความสัมพันธ์ระหว่าง Entity, Attribute และ Relationship ให้ถูกต้อง (ดับเบิ้ลคลิกที่กล่องเพื่อแก้ไขข้อความ)
+        </p>
     </div>
-    
+</div> -->
+
+<!-- ============================================== -->
+<!-- ระบบสร้าง ER Diagram -->
+<!-- ============================================== -->
+<div class="card mt-3 mb-4">
+    <div class="card-header bg-dark text-white">ระบบสร้าง ER Diagram</div>
     <div class="card-body p-0">
         <div class="flowchart-wrapper">
-            <!-- แถบด้านซ้าย -->
+            <!-- แถบด้านซ้าย (Shapes) -->
             <div class="fc-sidebar">
-                <div class="fc-shape fc-pill" draggable="true" ondragstart="fcDrag(event)" data-type="start"><div class="fc-text-wrapper"><span class="fc-text">Start/End</span></div></div>
-                <div class="fc-shape fc-rect-grey" draggable="true" ondragstart="fcDrag(event)" data-type="grey"><div class="fc-text-wrapper"><span class="fc-text">Process 1</span></div></div>
-                <div class="fc-shape fc-rect-blue" draggable="true" ondragstart="fcDrag(event)" data-type="blue"><div class="fc-text-wrapper"><span class="fc-text">Process 2</span></div></div>
-                <div class="fc-shape fc-diamond" draggable="true" ondragstart="fcDrag(event)" data-type="decision"><div class="fc-text-wrapper"><span class="fc-text">Decision</span></div></div>
+                <div class="fc-shape" data-type="entity" draggable="true" ondragstart="fcDrag(event)">
+                    <div class="fc-text-wrapper"><span class="fc-text">Entity</span></div>
+                </div>
+
+                <div class="fc-shape" data-type="attribute" draggable="true" ondragstart="fcDrag(event)">
+                    <div class="fc-text-wrapper"><span class="fc-text">Attribute</span></div>
+                </div>
+
+                <div class="fc-shape" data-type="relationship" draggable="true" ondragstart="fcDrag(event)">
+                    <div class="fc-text-wrapper"><span class="fc-text">Relation</span></div>
+                </div>
+
+                <div class="fc-shape" data-type="weakEntity" draggable="true" ondragstart="fcDrag(event)">
+                    <div class="fc-text-wrapper"><span class="fc-text">Weak Entity</span>
+                    </div>
+                </div>
+
+                <div class="fc-shape" data-type="identifyingRelationship" draggable="true" ondragstart="fcDrag(event)">
+                    <div class="fc-text-wrapper"><span class="fc-text">Identifying</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- พื้นที่ Canvas ด้านขวา -->
+            <!-- พื้นที่ Canvas ด้านขวา (ไม่มีลายตาราง) -->
             <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
                 
                 <div class="fc-toolbar">
-                    <h3>ลากกล่องมาวาง ➔</h3>
+                    <span class="fw-bold">ลากกล่องมาวาง ➔</span>
                     <button type="button" class="btn btn-primary btn-sm ms-3" id="connectModeBtn" onclick="toggleConnectMode()">🔗 เปิดโหมดเชื่อมเส้น</button>
                 </div>
                 
@@ -49,19 +74,17 @@
                     </defs>
                 </svg>
 
-                <!-- เพิ่มปุ่มไปหน้าสร้างเฉลยไว้ข้างปุ่ม Submit -->
-                <form action="processFlowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
+                <form action="processFlowchart.jsp" method="POST" id="flowchartForm">
                     <input type="hidden" name="flowchartData" id="flowchartData">
                     <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit</button>
-                    <!-- เปลี่ยน "ชื่อไฟล์หน้าเฉลย.jsp" ให้ตรงกับไฟล์ที่คุณบันทึกไว้ -->
-                    
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <!-- ============================================== -->
-<!-- Script สำหรับ Flowchart -->
+<!-- Script สำหรับ ER Diagram -->
 <!-- ============================================== -->
 <script>
     let connections = []; 
@@ -122,18 +145,13 @@
         const canvas = document.getElementById("fc-canvas");
 
         const newNode = document.createElement("div");
-        let shapeClass = "fc-shape fc-node ";
-        if (type === 'start') shapeClass += "fc-pill";
-        else if (type === 'grey') shapeClass += "fc-rect-grey";
-        else if (type === 'blue') shapeClass += "fc-rect-blue";
-        else if (type === 'decision') shapeClass += "fc-diamond";
-
-        newNode.className = shapeClass;
+        newNode.className = "fc-shape fc-node";
+        newNode.setAttribute("data-type", type);
         newNode.innerHTML = `<div class="fc-text-wrapper"><span class="fc-text">${text}</span></div>`;
 
         const rect = canvas.getBoundingClientRect();
-        newNode.style.left = (ev.clientX - rect.left - 50) + "px"; 
-        newNode.style.top = (ev.clientY - rect.top - 25) + "px";
+        newNode.style.left = (ev.clientX - rect.left - 40) + "px"; 
+        newNode.style.top = (ev.clientY - rect.top - 20) + "px";
 
         makeFcInteractive(newNode);
         canvas.appendChild(newNode);
@@ -162,16 +180,15 @@
             if (isConnectMode) {
                 if (!selectedNode) {
                     selectedNode = elmnt;
-                    elmnt.style.boxShadow = "0 0 15px red"; 
+                    elmnt.style.boxShadow = "0 0 10px red"; 
                 } else if (selectedNode !== elmnt) {
                     
                     let lineLabel = "";
-                    // เช็คว่าต้นทางเป็น Decision (ข้าวหลามตัด) หรือไม่
-                    if (selectedNode.classList.contains("fc-diamond")) {
-                        // ถามผู้ใช้ว่าเส้นนี้ชื่ออะไร
-                        let userInput = prompt("ระบุเงื่อนไขสำหรับเส้นนี้ (เช่น Yes, No):", "Yes");
+                    // ถ้าโหนดต้นทางเป็น Relationship (ข้าวหลามตัด) ให้ถาม Cardinality (1, M, N)
+                    if (selectedNode.getAttribute("data-type") === "relationship") {
+                        let userInput = prompt("ระบุอัตราส่วนความสัมพันธ์ (เช่น 1, M, N):", "1");
                         if (userInput === null) {
-                            deselectNode(); // ถ้ายกเลิก ไม่ต้องลากเส้น
+                            deselectNode();
                             return;
                         }
                         lineLabel = userInput;
@@ -187,7 +204,7 @@
             else {
                 deselectNode();
                 selectedNode = elmnt;
-                elmnt.style.boxShadow = "0 0 15px blue"; 
+                elmnt.style.boxShadow = "0 0 10px #0d6efd"; 
 
                 e.preventDefault();
                 pos3 = e.clientX;
@@ -238,25 +255,22 @@
             line.setAttribute('y2', y2);
             line.setAttribute('stroke', '#333');
             line.setAttribute('stroke-width', '2');
-            line.setAttribute('marker-end', 'url(#arrowhead)');
             svg.appendChild(line);
 
-            // ใส่ข้อความ (Yes/No) บนเส้นถ้ามี
+            // ใส่ข้อความ (1, M, N) บนเส้น
             if (conn.label) {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 const midX = (x1 + x2) / 2;
                 const midY = (y1 + y2) / 2;
                 
                 text.setAttribute('x', midX);
-                text.setAttribute('y', midY - 10); // ดันให้ตัวหนังสือลอยขึ้นเหนือเส้นนิดนึง
+                text.setAttribute('y', midY - 8);
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e74c3c'); // สีตัวหนังสือ (แดง)
+                text.setAttribute('fill', '#d9534f');
                 text.setAttribute('font-weight', 'bold');
                 text.setAttribute('font-size', '14px');
                 text.textContent = conn.label;
-                
-                // เพิ่มพื้นหลังสีขาวเล็กๆ ให้ตัวหนังสืออ่านง่ายขึ้น (วาดทับเส้น)
-                text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff";
+                text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff";
                 
                 svg.appendChild(text);
             }
@@ -264,6 +278,6 @@
     }
 
     function submitFlow() {
-        alert("ทดสอบปุ่ม Submit Flowchart");
+        alert("บันทึก ER Diagram เรียบร้อยแล้ว");
     }
 </script>
