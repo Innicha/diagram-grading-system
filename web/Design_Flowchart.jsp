@@ -16,50 +16,200 @@
 %>
 
 <!-- ============================================== -->
-<!-- ระบบสร้าง Flowchart -->
+<!-- CSS สำหรับ Layout ทั้งหมด -->
 <!-- ============================================== -->
-<div class="card mt-4 mb-4">
-    <div class="card-header bg-dark text-white">ระบบสร้าง Flowchart 
-            <a href="CreateAnswerKey_Flowchart.jsp" class="btn btn-info text-white">📝 ไปหน้าสร้างเฉลย</a>
+<style>
+    /* สีพื้นหลังหน้าเว็บ (ให้คล้ายหน้า ER) */
+    body { background-color: #f4f6f9; }
+
+    /* จัดการ Layout หลักของพื้นที่วาด */
+    .flowchart-wrapper {
+        display: flex;
+        height: 750px; 
+        position: relative;
+    }
+
+    /* ตกแต่ง Sidebar */
+    .fc-sidebar {
+        width: 260px;
+        min-width: 260px;
+        height: 100%;
+        overflow-y: auto;
+        background-color: #f4f6f9;
+        padding: 30px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-right: 1px solid #dee2e6;
+    }
+
+    .fc-sidebar-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: 80px; 
+        margin-bottom: 15px; 
+    }
+
+    /* สัญลักษณ์พื้นฐาน */
+    .fc-shape {
+        width: 140px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: grab;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+        font-size: 14px;
+        color: #333;
+        user-select: none;
+    }
+    .fc-shape:active { cursor: grabbing; }
+
+    /* รูปทรงแต่ละแบบ */
+    .fc-pill { background-color: #fce473; border-radius: 50px; border: 1px solid #333; }
+    .fc-rect-green { background-color: #00e676; border: 1px solid #333; }
+    .fc-parallelogram { background-color: #f8bbd0; transform: skew(-20deg); border: 1px solid #333; }
+    .fc-parallelogram .fc-text-wrapper { transform: skew(20deg); }
+    .fc-display { background-color: #29b6f6; border-radius: 0 25px 25px 0; clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); border: 1px solid #333; }
+    .fc-display .fc-text-wrapper { padding-left: 10px; }
+    .fc-diamond { background-color: #ab47bc; transform: rotate(45deg); border: 1px solid #333; width: 65px; height: 65px; }
+    .fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
+    .fc-circle { background-color: #f44336; border-radius: 50%; width: 50px !important; height: 50px !important; border: 1px solid #333; }
+    .fc-diamond .fc-text, .fc-circle .fc-text { color: white; }
+
+    /* ส่วนเครื่องมือเลือกเส้น */
+    .fc-sidebar-divider {
+        width: 80%;
+        margin: 15px 0 25px 0;
+        border-top: 2px dashed #ccc;
+    }
+    .fc-tool-line {
+        width: 150px;
+        padding: 12px;
+        margin-bottom: 12px; 
+        background-color: #ffffff;
+        border: 1px solid #888;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        transition: all 0.2s;
+        user-select: none;
+        box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
+    }
+    .fc-tool-line:hover { background-color: #f1f1f1; border-color: #555; }
+    .fc-tool-line.active { background-color: #e8f0fe; color: #0d6efd; border: 2px solid #0d6efd; box-shadow: 0 0 8px rgba(13, 110, 253, 0.4); }
+
+    /* พื้นที่วาด Canvas */
+    .fc-canvas {
+        flex-grow: 1;
+        position: relative;
+        background-color: #ffffff;
+        overflow: hidden;
+    }
+
+    /* ปุ่ม Submit ขวาล่างสุด */
+    .fc-submit-area {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        z-index: 999;
+    }
+</style>
+
+<!-- เริ่มต้น Container สำหรับหน้าเว็บ -->
+<div class="container-fluid px-4 py-3">
+
+    <!-- ============================================== -->
+    <!-- หัวข้อหน้าเว็บ (Header แบบเดียวกับ ER) -->
+    <!-- ============================================== -->
+    <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary btn-sm px-3 shadow-sm bg-white">← กลับ</button>
+            <h3 class="mb-0 fw-bold" style="color: #1a3c7c;">สร้าง Flowchart</h3>
+        </div>
     </div>
-    
-    <div class="card-body p-0">
-        <div class="flowchart-wrapper">
-            <!-- แถบด้านซ้าย -->
-            <div class="fc-sidebar">
-                <div class="fc-shape fc-pill" draggable="true" ondragstart="fcDrag(event)" data-type="start"><div class="fc-text-wrapper"><span class="fc-text">Start/End</span></div></div>
-                <div class="fc-shape fc-rect-grey" draggable="true" ondragstart="fcDrag(event)" data-type="grey"><div class="fc-text-wrapper"><span class="fc-text">Process 1</span></div></div>
-                <div class="fc-shape fc-rect-blue" draggable="true" ondragstart="fcDrag(event)" data-type="blue"><div class="fc-text-wrapper"><span class="fc-text">Process 2</span></div></div>
-                <div class="fc-shape fc-diamond" draggable="true" ondragstart="fcDrag(event)" data-type="decision"><div class="fc-text-wrapper"><span class="fc-text">Decision</span></div></div>
-            </div>
 
-            <!-- พื้นที่ Canvas ด้านขวา -->
-            <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
-                
-                <div class="fc-toolbar">
-                    <h3>ลากกล่องมาวาง ➔</h3>
-                    <button type="button" class="btn btn-primary btn-sm ms-3" id="connectModeBtn" onclick="toggleConnectMode()">🔗 เปิดโหมดเชื่อมเส้น</button>
+    <!-- ============================================== -->
+    <!-- กล่องโจทย์ปัญหา (Question Box) -->
+    <!-- ============================================== -->
+    <div class="card shadow-sm border-0 mb-4 rounded-3">
+        <!-- สามารถใช้ Bootstrap data-bs-toggle="collapse" เพื่อให้คลิกพับได้ -->
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#questionCollapse">
+            <h6 class="mb-0 text-dark fw-bold">
+                <span class="text-primary me-2">📄</span> โจทย์ปัญหา / คำถาม (Question)
+            </h6>
+            <span class="text-muted">˅</span>
+        </div>
+        <div class="collapse show" id="questionCollapse">
+            <div class="card-body pt-0 pb-3 px-4">
+                <div class="p-3 rounded-2" style="background-color: #f2f7ff; border: 1px solid #d5e5fb;">
+                    <div class="text-primary fw-bold mb-1" style="font-size: 14px;">
+                        <span class="me-1">🏢</span> โจทย์: การออกแบบผังงาน (Flowchart)
+                    </div>
+                    <div class="text-secondary" style="font-size: 13.5px;">
+                        ให้นักเรียนลากรูปทรงจากแถบด้านซ้ายมาวางบนพื้นที่ทำงาน จากนั้นใช้ "เครื่องมือเชื่อมเส้น" ที่ด้านล่างของเมนู เพื่อเชื่อมต่อขั้นตอนการทำงานให้ถูกต้อง (ดับเบิ้ลคลิกที่กล่องเพื่อแก้ไขข้อความ)
+                    </div>
                 </div>
-                
-                <svg id="fc-svg">
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
-                        </marker>
-                    </defs>
-                </svg>
+            </div>
+        </div>
+    </div>
 
-                <!-- เพิ่มปุ่มไปหน้าสร้างเฉลยไว้ข้างปุ่ม Submit -->
-                <form action="processFlowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
-                    <input type="hidden" name="flowchartData" id="flowchartData">
-                    <button type="button" class="btn btn-success" id="fc-submitBtn" onclick="submitFlow()">Submit</button>
-                    <!-- เปลี่ยน "ชื่อไฟล์หน้าเฉลย.jsp" ให้ตรงกับไฟล์ที่คุณบันทึกไว้ -->
+    <!-- ============================================== -->
+    <!-- ระบบสร้าง Flowchart (พื้นที่ทำงาน) -->
+    <!-- ============================================== -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-5">
+        <div class="card-body p-0">
+            <div class="flowchart-wrapper">
+                <!-- แถบด้านซ้าย -->
+                <div class="fc-sidebar">
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-pill" draggable="true" ondragstart="fcDrag(event)" data-type="start"><div class="fc-text-wrapper"><span class="fc-text">Start/End</span></div></div></div>
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-rect-green" draggable="true" ondragstart="fcDrag(event)" data-type="process"><div class="fc-text-wrapper"><span class="fc-text">Process</span></div></div></div>
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-parallelogram" draggable="true" ondragstart="fcDrag(event)" data-type="input"><div class="fc-text-wrapper"><span class="fc-text">Input/Output</span></div></div></div>
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-display" draggable="true" ondragstart="fcDrag(event)" data-type="display"><div class="fc-text-wrapper"><span class="fc-text">Display</span></div></div></div>
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-diamond" draggable="true" ondragstart="fcDrag(event)" data-type="decision"><div class="fc-text-wrapper"><span class="fc-text">Decision</span></div></div></div>
+                    <div class="fc-sidebar-item"><div class="fc-shape fc-circle" draggable="true" ondragstart="fcDrag(event)" data-type="connector"><div class="fc-text-wrapper"><span class="fc-text">A</span></div></div></div>
                     
-                </form>
+                    <!-- ส่วนเลือกประเภทของเส้น -->
+                    <div class="fc-sidebar-divider"></div>
+                    <div style="font-size:14px; color:#555; text-align:center; font-weight:bold; margin-bottom:15px;">เครื่องมือเชื่อมเส้น</div>
+                    <div class="fc-tool-line" onclick="selectLineTool('normal')" id="tool-normal">➔ เส้นธรรมดา</div>
+                    <div class="fc-tool-line" onclick="selectLineTool('yes')" id="tool-yes">➔ เส้น Yes</div>
+                    <div class="fc-tool-line" onclick="selectLineTool('no')" id="tool-no">➔ เส้น No</div>
+                    <div class="fc-tool-line" onclick="selectLineTool('loop')" id="tool-loop">➔ เส้น Loop (โค้ง)</div>
+                </div>
+
+                <!-- พื้นที่ Canvas ด้านขวา -->
+                <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
+                    
+                    <!-- คอนเทนเนอร์ปุ่ม Submit ขวาล่าง -->
+                    <div class="fc-submit-area">
+                        <form action="processFlowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
+                            <input type="hidden" name="flowchartData" id="flowchartData">
+                            <button type="button" class="btn btn-success btn-lg px-4 shadow" id="fc-submitBtn" onclick="submitFlow()">
+                                <span class="me-1">📤</span> Submit
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- วาดเส้นเชื่อมที่นี่ -->
+                    <svg id="fc-svg" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none; z-index:1;">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <!-- ============================================== -->
 <!-- Script สำหรับ Flowchart -->
 <!-- ============================================== -->
@@ -67,8 +217,27 @@
     let connections = []; 
     let selectedNode = null; 
     let isConnectMode = false; 
+    let currentLineType = null; 
 
-    // กดปุ่ม Delete / Backspace เพื่อลบกล่อง
+    function selectLineTool(type) {
+        deselectNode();
+        if (currentLineType === type) {
+            currentLineType = null;
+            isConnectMode = false;
+        } else {
+            currentLineType = type;
+            isConnectMode = true;
+        }
+        
+        document.querySelectorAll('.fc-tool-line').forEach(el => el.classList.remove('active'));
+        if (currentLineType) {
+            document.getElementById('tool-' + currentLineType).classList.add('active');
+            document.getElementById('fc-canvas').style.cursor = 'crosshair'; 
+        } else {
+            document.getElementById('fc-canvas').style.cursor = 'default';
+        }
+    }
+
     document.addEventListener('keydown', function(e) {
         if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode) {
             if (document.activeElement.isContentEditable) return; 
@@ -86,23 +255,9 @@
         }
     });
 
-    function toggleConnectMode() {
-        isConnectMode = !isConnectMode;
-        const btn = document.getElementById("connectModeBtn");
-        deselectNode(); 
-
-        if (isConnectMode) {
-            btn.className = "btn btn-danger btn-sm ms-3";
-            btn.innerHTML = "❌ ปิดโหมดเชื่อมเส้น";
-        } else {
-            btn.className = "btn btn-primary btn-sm ms-3";
-            btn.innerHTML = "🔗 เปิดโหมดเชื่อมเส้น";
-        }
-    }
-
     function deselectNode() {
         if (selectedNode) {
-            selectedNode.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)"; 
+            selectedNode.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.15)"; 
             selectedNode = null;
         }
     }
@@ -110,8 +265,8 @@
     function fcAllowDrop(ev) { ev.preventDefault(); }
 
     function fcDrag(ev) {
-        ev.dataTransfer.setData("type", ev.target.getAttribute('data-type'));
-        let textElem = ev.target.querySelector('.fc-text');
+        ev.dataTransfer.setData("type", ev.target.closest('.fc-shape').getAttribute('data-type'));
+        let textElem = ev.target.closest('.fc-shape').querySelector('.fc-text');
         ev.dataTransfer.setData("text", textElem ? textElem.innerText : "Text");
     }
 
@@ -123,17 +278,28 @@
 
         const newNode = document.createElement("div");
         let shapeClass = "fc-shape fc-node ";
+        
         if (type === 'start') shapeClass += "fc-pill";
-        else if (type === 'grey') shapeClass += "fc-rect-grey";
-        else if (type === 'blue') shapeClass += "fc-rect-blue";
+        else if (type === 'process') shapeClass += "fc-rect-green";
+        else if (type === 'input') shapeClass += "fc-parallelogram";
+        else if (type === 'display') shapeClass += "fc-display";
         else if (type === 'decision') shapeClass += "fc-diamond";
+        else if (type === 'connector') shapeClass += "fc-circle";
 
         newNode.className = shapeClass;
+        newNode.style.position = "absolute";
+        newNode.style.zIndex = "2"; 
         newNode.innerHTML = `<div class="fc-text-wrapper"><span class="fc-text">${text}</span></div>`;
 
         const rect = canvas.getBoundingClientRect();
-        newNode.style.left = (ev.clientX - rect.left - 50) + "px"; 
-        newNode.style.top = (ev.clientY - rect.top - 25) + "px";
+        
+        let offsetX = 70;
+        let offsetY = 22;
+        if (type === 'connector') { offsetX = 25; offsetY = 25; }
+        if (type === 'decision') { offsetX = 32; offsetY = 32; }
+
+        newNode.style.left = (ev.clientX - rect.left - offsetX) + "px"; 
+        newNode.style.top = (ev.clientY - rect.top - offsetY) + "px";
 
         makeFcInteractive(newNode);
         canvas.appendChild(newNode);
@@ -152,7 +318,7 @@
         };
         textSpan.onblur = function() {
             this.contentEditable = "false";
-            elmnt.style.cursor = "move";
+            elmnt.style.cursor = "grab";
         };
 
         elmnt.onmousedown = function(e) {
@@ -164,30 +330,23 @@
                     selectedNode = elmnt;
                     elmnt.style.boxShadow = "0 0 15px red"; 
                 } else if (selectedNode !== elmnt) {
-                    
                     let lineLabel = "";
-                    // เช็คว่าต้นทางเป็น Decision (ข้าวหลามตัด) หรือไม่
-                    if (selectedNode.classList.contains("fc-diamond")) {
-                        // ถามผู้ใช้ว่าเส้นนี้ชื่ออะไร
-                        let userInput = prompt("ระบุเงื่อนไขสำหรับเส้นนี้ (เช่น Yes, No):", "Yes");
-                        if (userInput === null) {
-                            deselectNode(); // ถ้ายกเลิก ไม่ต้องลากเส้น
-                            return;
-                        }
-                        lineLabel = userInput;
-                    }
+                    if (currentLineType === 'yes') lineLabel = "Yes";
+                    else if (currentLineType === 'no') lineLabel = "No";
+                    else if (currentLineType === 'loop') lineLabel = "Loop";
 
-                    connections.push({ from: selectedNode, to: elmnt, label: lineLabel }); 
+                    connections.push({ from: selectedNode, to: elmnt, label: lineLabel, type: currentLineType }); 
+                    
                     deselectNode();
                     drawLines();
                 } else {
                     deselectNode(); 
                 }
-            } 
-            else {
+            } else {
                 deselectNode();
                 selectedNode = elmnt;
                 elmnt.style.boxShadow = "0 0 15px blue"; 
+                elmnt.style.cursor = "grabbing";
 
                 e.preventDefault();
                 pos3 = e.clientX;
@@ -211,6 +370,7 @@
         function closeDragElement() {
             document.onmouseup = null;
             document.onmousemove = null;
+            elmnt.style.cursor = "grab";
         }
     }
 
@@ -230,32 +390,53 @@
             const x2 = rect2.left - canvasRect.left + (rect2.width / 2);
             const y2 = rect2.top - canvasRect.top + (rect2.height / 2);
 
-            // สร้างเส้นเชื่อม
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', x1);
-            line.setAttribute('y1', y1);
-            line.setAttribute('x2', x2);
-            line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#333');
-            line.setAttribute('stroke-width', '2');
-            line.setAttribute('marker-end', 'url(#arrowhead)');
-            svg.appendChild(line);
+            let midX, midY;
 
-            // ใส่ข้อความ (Yes/No) บนเส้นถ้ามี
+            if (conn.type === 'loop') {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                let cx = (x1 + x2) / 2 + 140; 
+                let cy = (y1 + y2) / 2;
+                
+                path.setAttribute('d', `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`);
+                path.setAttribute('stroke', '#333');
+                path.setAttribute('stroke-width', '2');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-dasharray', '6,4');
+                path.setAttribute('marker-end', 'url(#arrowhead)');
+                svg.appendChild(path);
+
+                midX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+                midY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+            } else {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#333');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('marker-end', 'url(#arrowhead)');
+                svg.appendChild(line);
+
+                midX = (x1 + x2) / 2;
+                midY = (y1 + y2) / 2;
+            }
+
             if (conn.label) {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                const midX = (x1 + x2) / 2;
-                const midY = (y1 + y2) / 2;
-                
                 text.setAttribute('x', midX);
-                text.setAttribute('y', midY - 10); // ดันให้ตัวหนังสือลอยขึ้นเหนือเส้นนิดนึง
+                text.setAttribute('y', midY - 10); 
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#e74c3c'); // สีตัวหนังสือ (แดง)
+                
+                if (conn.type === 'yes') text.setAttribute('fill', '#2ecc71'); 
+                else if (conn.type === 'no') text.setAttribute('fill', '#e74c3c'); 
+                else if (conn.type === 'loop') text.setAttribute('fill', '#f39c12'); 
+                else text.setAttribute('fill', '#333'); 
+
                 text.setAttribute('font-weight', 'bold');
                 text.setAttribute('font-size', '14px');
                 text.textContent = conn.label;
                 
-                // เพิ่มพื้นหลังสีขาวเล็กๆ ให้ตัวหนังสืออ่านง่ายขึ้น (วาดทับเส้น)
                 text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff";
                 
                 svg.appendChild(text);
