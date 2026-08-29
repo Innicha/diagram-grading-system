@@ -1,0 +1,229 @@
+/* ==========================
+   Background
+========================== */
+body{
+    background:#f5f7fb;
+    font-family:'Segoe UI',Tahoma,sans-serif;
+}
+
+/* Container */
+.main-container{
+    max-width:1200px;
+    margin:30px auto;
+    padding:0 20px;
+}
+
+/* ==========================
+   Title
+========================== */
+
+.title-text{
+    font-size:42px;
+    font-weight:700;
+    color:#173b8c;
+    margin-bottom:25px;
+}
+
+/* ==========================
+   Card
+========================== */
+
+.section-box{
+    background:#fff;
+    border-radius:22px;
+    padding:25px;
+    margin-bottom:25px;
+
+    border:1px solid #edf1f7;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.06);
+}
+
+/* ==========================
+   Card Header
+========================== */
+
+.section-box h6{
+    font-size:28px;
+    font-weight:600;
+    color:#1d3557;
+    margin-bottom:25px;
+}
+
+/* ==========================
+   Textarea
+========================== */
+
+textarea.form-control{
+    border-radius:15px;
+    border:1px solid #d8dee8;
+    background:#f9fbfd;
+    font-size:17px;
+    resize:vertical;
+    padding:18px;
+    transition:.25s;
+}
+
+textarea.form-control:focus{
+    border-color:#2f80ed;
+    box-shadow:0 0 0 .2rem rgba(47,128,237,.15);
+}
+
+/* ==========================
+   Label
+========================== */
+
+label{
+    font-weight:600;
+    color:#555;
+    margin-bottom:8px;
+}
+
+/* ==========================
+   Input
+========================== */
+
+.form-control{
+    border-radius:10px;
+    border:1px solid #d8dee8;
+    transition:.25s;
+}
+
+.form-control:focus{
+    border-color:#2f80ed;
+    box-shadow:0 0 0 .15rem rgba(47,128,237,.18);
+}
+
+/* ==========================
+   Table
+========================== */
+
+.table{
+    border-radius:15px;
+    overflow:hidden;
+    margin-bottom:0;
+}
+
+.table thead{
+    background:#f7f9fc;
+}
+
+.table th{
+    color:#30475e;
+    font-weight:600;
+    text-align:center;
+    vertical-align:middle;
+}
+
+.table td{
+    vertical-align:middle;
+    background:white;
+}
+
+/* ==========================
+   Table Input
+========================== */
+
+.table-input{
+    width:100%;
+    border:1px solid #d8dee8;
+    border-radius:8px;
+    padding:6px 10px;
+    transition:.2s;
+}
+
+.table-input:focus{
+    outline:none;
+    border-color:#2f80ed;
+    box-shadow:0 0 0 .15rem rgba(47,128,237,.15);
+}
+
+/* ==========================
+   Save Button
+========================== */
+
+.save-button-container{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:25px;
+}
+
+.save-button-container .btn{
+    background:#1f4db8;
+    border:none;
+    color:white;
+    border-radius:12px;
+    padding:12px 35px;
+    font-size:18px;
+    font-weight:600;
+    transition:.25s;
+}
+
+.save-button-container .btn:hover{
+    background:#173f9c;
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,.12);
+}
+
+/* ==========================
+   Row Gap
+========================== */
+
+.row{
+    row-gap:25px;
+}
+
+/* ==========================
+   Scroll Table
+========================== */
+
+.section-box{
+    overflow:hidden;
+}
+
+/* ==========================
+   Bootstrap Card Feeling
+========================== */
+
+.col-md-5 .section-box,
+.col-md-7 .section-box{
+    min-height:530px;
+}
+
+/* ==========================
+   Rounded Table
+========================== */
+
+.table-bordered{
+    border-radius:15px;
+    overflow:hidden;
+}
+
+/* ==========================
+   Placeholder
+========================== */
+
+::placeholder{
+    color:#9aa4b2;
+}
+
+/* ==========================
+   Responsive
+========================== */
+
+@media(max-width:992px){
+
+.title-text{
+    font-size:32px;
+}
+
+.section-box h6{
+    font-size:22px;
+}
+
+.save-button-container{
+    justify-content:center;
+}
+
+}

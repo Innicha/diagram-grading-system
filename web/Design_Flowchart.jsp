@@ -18,108 +18,7 @@
 <!-- ============================================== -->
 <!-- CSS สำหรับ Layout ทั้งหมด -->
 <!-- ============================================== -->
-<style>
-    /* สีพื้นหลังหน้าเว็บ (ให้คล้ายหน้า ER) */
-    body { background-color: #f4f6f9; }
 
-    /* จัดการ Layout หลักของพื้นที่วาด */
-    .flowchart-wrapper {
-        display: flex;
-        height: 750px; 
-        position: relative;
-    }
-
-    /* ตกแต่ง Sidebar */
-    .fc-sidebar {
-        width: 260px;
-        min-width: 260px;
-        height: 100%;
-        overflow-y: auto;
-        background-color: #f4f6f9;
-        padding: 30px 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border-right: 1px solid #dee2e6;
-    }
-
-    .fc-sidebar-item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        min-height: 80px; 
-        margin-bottom: 15px; 
-    }
-
-    /* สัญลักษณ์พื้นฐาน */
-    .fc-shape {
-        width: 140px;
-        height: 45px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: grab;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
-        font-size: 14px;
-        color: #333;
-        user-select: none;
-    }
-    .fc-shape:active { cursor: grabbing; }
-
-    /* รูปทรงแต่ละแบบ */
-    .fc-pill { background-color: #fce473; border-radius: 50px; border: 1px solid #333; }
-    .fc-rect-green { background-color: #00e676; border: 1px solid #333; }
-    .fc-parallelogram { background-color: #f8bbd0; transform: skew(-20deg); border: 1px solid #333; }
-    .fc-parallelogram .fc-text-wrapper { transform: skew(20deg); }
-    .fc-display { background-color: #29b6f6; border-radius: 0 25px 25px 0; clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); border: 1px solid #333; }
-    .fc-display .fc-text-wrapper { padding-left: 10px; }
-    .fc-diamond { background-color: #ab47bc; transform: rotate(45deg); border: 1px solid #333; width: 65px; height: 65px; }
-    .fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
-    .fc-circle { background-color: #f44336; border-radius: 50%; width: 50px !important; height: 50px !important; border: 1px solid #333; }
-    .fc-diamond .fc-text, .fc-circle .fc-text { color: white; }
-
-    /* ส่วนเครื่องมือเลือกเส้น */
-    .fc-sidebar-divider {
-        width: 80%;
-        margin: 15px 0 25px 0;
-        border-top: 2px dashed #ccc;
-    }
-    .fc-tool-line {
-        width: 150px;
-        padding: 12px;
-        margin-bottom: 12px; 
-        background-color: #ffffff;
-        border: 1px solid #888;
-        border-radius: 8px;
-        cursor: pointer;
-        text-align: center;
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
-        transition: all 0.2s;
-        user-select: none;
-        box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
-    }
-    .fc-tool-line:hover { background-color: #f1f1f1; border-color: #555; }
-    .fc-tool-line.active { background-color: #e8f0fe; color: #0d6efd; border: 2px solid #0d6efd; box-shadow: 0 0 8px rgba(13, 110, 253, 0.4); }
-
-    /* พื้นที่วาด Canvas */
-    .fc-canvas {
-        flex-grow: 1;
-        position: relative;
-        background-color: #ffffff;
-        overflow: hidden;
-    }
-
-    /* ปุ่ม Submit ขวาล่างสุด */
-    .fc-submit-area {
-        position: absolute;
-        bottom: 30px;
-        right: 30px;
-        z-index: 999;
-    }
-</style>
 
 <!-- เริ่มต้น Container สำหรับหน้าเว็บ -->
 <div class="container-fluid px-4 py-3">
@@ -129,7 +28,7 @@
     <!-- ============================================== -->
     <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
         <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-secondary btn-sm px-3 shadow-sm bg-white">← กลับ</button>
+            <a href="DesignAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
             <h3 class="mb-0 fw-bold" style="color: #1a3c7c;">สร้าง Flowchart</h3>
         </div>
     </div>

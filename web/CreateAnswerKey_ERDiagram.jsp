@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="6"/>
+<mytag:header menu="4"/>
 <mytag:check_login />  
 <html>
     <head>

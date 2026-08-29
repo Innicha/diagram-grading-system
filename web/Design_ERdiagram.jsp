@@ -25,7 +25,7 @@
 
 <div class="container-fluid p-4" style="min-height: 100vh; overflow-y: auto;">
     <div class="page-header d-flex align-items-center mb-4">
-        <a href="CreateAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
+        <a href="DesignAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
             <h3>สร้าง ER Diagram</h3>
             <button type="button" class="btn btn-success btn-save-page" onclick="submitFlow()">
                 <i class="bi bi-send-fill me-1"></i> Submit
