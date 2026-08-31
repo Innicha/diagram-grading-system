@@ -11,13 +11,16 @@
                     <a class="nav-link <%= "1".equals(menu) ? "active" : "" %>" href="index.jsp">INDEX</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "2".equals(menu) ? "active" : "" %>" href="main.jsp">MAIN</a>
+                    <a class="nav-link <%= "2".equals(menu) ? "active" : "" %>" href="AddSubjects.jsp">Assign Assignment</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "3".equals(menu) ? "active" : "" %>" href="DesignAnswerkeys.jsp">Design Answer Key</a>
+                    <a class="nav-link <%= "3".equals(menu) ? "active" : "" %>" href="AddSection.jsp">Add Section</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "4".equals(menu) ? "active" : "" %>" href="CreateAnswerkeys.jsp">Create Answer Keys</a>
+                    <a class="nav-link <%= "4".equals(menu) ? "active" : "" %>" href="DesignAnswerkeys.jsp">Design Answer Key</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= "5".equals(menu) ? "active" : "" %>" href="CreateAnswerkeys.jsp">Create Answer Keys</a>
                 </li>
             </ul>
         </div>
