@@ -76,6 +76,7 @@
                             <div>
                                 <h5 class="fw-bold mb-1">Section 1</h5>
                                 <div class="meta-info">
+                                    <p class="text-muted small mb-2">Computer Programing I</p>
                                     <span><i class="bi bi-person"></i> 12 ผู้ใช้</span>
                                 </div>
                             </div>
@@ -94,6 +95,7 @@
                             <div>
                                 <h5 class="fw-bold mb-1">Section 2</h5>
                                 <div class="meta-info">
+                                    <p class="text-muted small mb-2">Computer Programing I</p>
                                     <span><i class="bi bi-person"></i> 9 ผู้ใช้</span>
                                 </div>
                             </div>
@@ -112,6 +114,7 @@
                             <div>
                                 <h5 class="fw-bold mb-1">Section 3</h5>
                                 <div class="meta-info">
+                                    <p class="text-muted small mb-2">Database</p>
                                     <span><i class="bi bi-person"></i> 14 ผู้ใช้</span>
                                 </div>
                             </div>
