@@ -1,26 +1,26 @@
-
-    /* สีพื้นหลังหน้าเว็บ (ให้คล้ายหน้า ER) */
-    body { background-color: #f4f6f9; }
+body { 
+    background-color: #f4f6f9;
+}
 
     /* จัดการ Layout หลักของพื้นที่วาด */
-    .flowchart-wrapper {
-        display: flex;
-        height: 750px; 
-        position: relative;
+.flowchart-wrapper {
+    display: flex;
+    height: 750px; 
+    position: relative;
     }
 
     /* ตกแต่ง Sidebar */
-    .fc-sidebar {
-        width: 260px;
-        min-width: 260px;
-        height: 100%;
-        overflow-y: auto;
-        background-color: #f4f6f9;
-        padding: 30px 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border-right: 1px solid #dee2e6;
+.fc-sidebar {
+    width: 260px;
+    min-width: 260px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #f4f6f9;
+    padding: 30px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #dee2e6;
     }
 
     .fc-sidebar-item {

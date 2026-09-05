@@ -79,7 +79,7 @@
                     <div class="fc-tool-line" onclick="selectLineTool('normal')" id="tool-normal">➔ เส้นธรรมดา</div>
                     <div class="fc-tool-line" onclick="selectLineTool('yes')" id="tool-yes">➔ เส้น Yes</div>
                     <div class="fc-tool-line" onclick="selectLineTool('no')" id="tool-no">➔ เส้น No</div>
-                    <div class="fc-tool-line" onclick="selectLineTool('loop')" id="tool-loop">➔ เส้น Loop (โค้ง)</div>
+                    <div class="fc-tool-line" onclick="selectLineTool('loop')" id="tool-loop">➔ เส้น Loop </div>
                 </div>
 
                 <!-- พื้นที่ Canvas ด้านขวา -->
@@ -87,7 +87,7 @@
                     
                     <!-- คอนเทนเนอร์ปุ่ม Submit ขวาล่าง -->
                     <div class="fc-submit-area">
-                        <form action="processFlowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
+                        <form action="Design_Flowchart.jsp" method="POST" id="flowchartForm" class="d-flex gap-2">
                             <input type="hidden" name="flowchartData" id="flowchartData">
                             <button type="button" class="btn btn-success btn-lg px-4 shadow" id="fc-submitBtn" onclick="submitFlow()">
                                 <span class="me-1">📤</span> Submit
@@ -275,8 +275,13 @@
 
     function drawLines() {
         const svg = document.getElementById("fc-svg");
-        const defs = svg.querySelector('defs').outerHTML;
-        svg.innerHTML = defs; 
+        
+        // วิธีเคลียร์เส้นเก่าที่เสถียรกว่า (ไม่ทำให้ tag path บัค)
+        Array.from(svg.children).forEach(child => {
+            if (child.tagName.toLowerCase() !== 'defs') {
+                svg.removeChild(child);
+            }
+        });
 
         const canvasRect = document.getElementById("fc-canvas").getBoundingClientRect();
 
@@ -284,29 +289,34 @@
             const rect1 = conn.from.getBoundingClientRect();
             const rect2 = conn.to.getBoundingClientRect();
 
+            // คำนวณจุดกึ่งกลางของกล่องต้นทางและปลายทาง
             const x1 = rect1.left - canvasRect.left + (rect1.width / 2);
             const y1 = rect1.top - canvasRect.top + (rect1.height / 2);
             const x2 = rect2.left - canvasRect.left + (rect2.width / 2);
             const y2 = rect2.top - canvasRect.top + (rect2.height / 2);
 
-            let midX, midY;
+            let textX, textY;
 
             if (conn.type === 'loop') {
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                let cx = (x1 + x2) / 2 + 140; 
-                let cy = (y1 + y2) / 2;
                 
-                path.setAttribute('d', `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`);
+                // คำนวณให้เส้นหักมุมออกไปทางขวา 120px จากกล่องที่อยู่ขวาสุด
+                let offsetX = Math.max(x1, x2) + 120; 
+                
+                // ลากเส้นแบบหักมุม: ออกขวา (L) -> ขึ้น/ลง (L) -> กลับเข้าซ้าย (L)
+                path.setAttribute('d', `M ${x1},${y1} L ${offsetX},${y1} L ${offsetX},${y2} L ${x2},${y2}`);
                 path.setAttribute('stroke', '#333');
                 path.setAttribute('stroke-width', '2');
                 path.setAttribute('fill', 'none');
-                path.setAttribute('stroke-dasharray', '6,4');
+                path.setAttribute('stroke-dasharray', '5,5'); // ทำให้เป็นเส้นประ
                 path.setAttribute('marker-end', 'url(#arrowhead)');
                 svg.appendChild(path);
 
-                midX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-                midY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+                // ตำแหน่งตัวหนังสือให้อยู่ตรงกลางเส้นแนวตั้งขวาสุด
+                textX = offsetX;
+                textY = (y1 + y2) / 2;
             } else {
+                // วาดเส้นตรงสำหรับเส้นธรรมดา, Yes, No
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', x1);
                 line.setAttribute('y1', y1);
@@ -317,14 +327,15 @@
                 line.setAttribute('marker-end', 'url(#arrowhead)');
                 svg.appendChild(line);
 
-                midX = (x1 + x2) / 2;
-                midY = (y1 + y2) / 2;
+                textX = (x1 + x2) / 2;
+                textY = (y1 + y2) / 2;
             }
 
+            // จัดการตัวหนังสือบนเส้น
             if (conn.label) {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', midX);
-                text.setAttribute('y', midY - 10); 
+                text.setAttribute('x', textX);
+                text.setAttribute('y', textY - 10); 
                 text.setAttribute('text-anchor', 'middle');
                 
                 if (conn.type === 'yes') text.setAttribute('fill', '#2ecc71'); 
@@ -336,6 +347,7 @@
                 text.setAttribute('font-size', '14px');
                 text.textContent = conn.label;
                 
+                // ขอบขาวให้ตัวหนังสืออ่านง่าย
                 text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff";
                 
                 svg.appendChild(text);
