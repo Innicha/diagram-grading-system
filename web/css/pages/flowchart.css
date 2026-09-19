@@ -1,101 +1,104 @@
+/* ============================================== */
+/* CSS สำหรับหน้า สร้าง Flowchart (Design Flowchart) */
+/* ============================================== */
+
 body { 
-    background-color: #f4f6f9;
+    background-color: #f5f7fb !important;
+    font-family: 'Anuphan', sans-serif !important;
 }
 
-    /* จัดการ Layout หลักของพื้นที่วาด */
+/* Layout หลัก */
 .flowchart-wrapper {
-    display: flex;
-    height: 750px; 
-    position: relative;
-    }
+    display: flex !important;
+    height: 650px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #dbe4f3 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: relative !important;
+}
 
-    /* ตกแต่ง Sidebar */
+/* Sidebar แถบซ้าย */
 .fc-sidebar {
-    width: 260px;
-    min-width: 260px;
-    height: 100%;
-    overflow-y: auto;
-    background-color: #f4f6f9;
-    padding: 30px 15px;
+    width: 250px !important;
+    height: 100% !important;
+    background-color: #f8fafc !important;
+    border-right: 1px solid #e2e8f0 !important;
+    padding: 1.25rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow-y: auto !important;
+    z-index: 10 !important;
+    flex-shrink: 0 !important;
+}
+
+/* สัญลักษณ์พื้นฐาน */
+.fc-shape {
+    width: 140px;
+    height: 45px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    border-right: 1px solid #dee2e6;
-    }
+    cursor: grab;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    user-select: none;
+    margin-bottom: 15px;
+    transition: all 0.2s ease;
+    z-index: 2;
+    flex-shrink: 0; 
+}
+.fc-shape:active { cursor: grabbing; }
 
-    .fc-sidebar-item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        min-height: 80px; 
-        margin-bottom: 15px; 
-    }
+/* รูปทรงแต่ละแบบ */
+.fc-pill { background-color: #fce473; border-radius: 50px; border: 1px solid #333; }
+.fc-rect-green { background-color: #00e676; border: 1px solid #333; }
+.fc-parallelogram { background-color: #f8bbd0; transform: skew(-20deg); border: 1px solid #333; }
+.fc-parallelogram .fc-text-wrapper { transform: skew(20deg); }
+.fc-display { background-color: #29b6f6; border-radius: 0 25px 25px 0; clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); border: 1px solid #333; }
+.fc-display .fc-text-wrapper { padding-left: 10px; }
 
-    /* สัญลักษณ์พื้นฐาน */
-    .fc-shape {
-        width: 140px;
-        height: 45px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: grab;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
-        font-size: 14px;
-        color: #333;
-        user-select: none;
-    }
-    .fc-shape:active { cursor: grabbing; }
+.fc-diamond { background-color: #ab47bc; transform: rotate(45deg); border: 1px solid #333; width: 65px; height: 65px; margin: 15px 0 25px 0; }
+.fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
 
-    /* รูปทรงแต่ละแบบ */
-    .fc-pill { background-color: #fce473; border-radius: 50px; border: 1px solid #333; }
-    .fc-rect-green { background-color: #00e676; border: 1px solid #333; }
-    .fc-parallelogram { background-color: #f8bbd0; transform: skew(-20deg); border: 1px solid #333; }
-    .fc-parallelogram .fc-text-wrapper { transform: skew(20deg); }
-    .fc-display { background-color: #29b6f6; border-radius: 0 25px 25px 0; clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); border: 1px solid #333; }
-    .fc-display .fc-text-wrapper { padding-left: 10px; }
-    .fc-diamond { background-color: #ab47bc; transform: rotate(45deg); border: 1px solid #333; width: 65px; height: 65px; }
-    .fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
-    .fc-circle { background-color: #f44336; border-radius: 50%; width: 50px !important; height: 50px !important; border: 1px solid #333; }
-    .fc-diamond .fc-text, .fc-circle .fc-text { color: white; }
+.fc-circle { background-color: #f44336; border-radius: 50%; width: 50px !important; height: 50px !important; border: 1px solid #333; }
+.fc-diamond .fc-text, .fc-circle .fc-text { color: white; }
 
-    /* ส่วนเครื่องมือเลือกเส้น */
-    .fc-sidebar-divider {
-        width: 80%;
-        margin: 15px 0 25px 0;
-        border-top: 2px dashed #ccc;
-    }
-    .fc-tool-line {
-        width: 150px;
-        padding: 12px;
-        margin-bottom: 12px; 
-        background-color: #ffffff;
-        border: 1px solid #888;
-        border-radius: 8px;
-        cursor: pointer;
-        text-align: center;
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
-        transition: all 0.2s;
-        user-select: none;
-        box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
-    }
-    .fc-tool-line:hover { background-color: #f1f1f1; border-color: #555; }
-    .fc-tool-line.active { background-color: #e8f0fe; color: #0d6efd; border: 2px solid #0d6efd; box-shadow: 0 0 8px rgba(13, 110, 253, 0.4); }
+/* เครื่องมือเส้น */
+.fc-sidebar-divider { width: 80%; border-top: 2px dashed #ccc; margin: 10px 0 20px 0; }
+.fc-tool-line {
+    width: 150px; padding: 10px; margin-bottom: 10px;
+    background-color: #ffffff; border: 1px solid #888;
+    border-radius: 8px; cursor: pointer; text-align: center;
+    font-size: 13px; font-weight: bold; color: #333;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.05); transition: all 0.2s;
+}
+.fc-tool-line:hover { background-color: #f1f1f1; }
+.fc-tool-line.active {
+    background-color: #e8f0fe; color: #0d6efd;
+    border: 2px solid #0d6efd; box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+}
 
-    /* พื้นที่วาด Canvas */
-    .fc-canvas {
-        flex-grow: 1;
-        position: relative;
-        background-color: #ffffff;
-        overflow: hidden;
-    }
+/* พื้นที่ Canvas */
+.fc-canvas {
+    flex-grow: 1; height: 100% !important; position: relative !important;
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px) !important;
+    background-size: 20px 20px !important; overflow: hidden;
+}
+.fc-node { position: absolute; cursor: move; }
 
-    /* ปุ่ม Submit ขวาล่างสุด */
-    .fc-submit-area {
-        position: absolute;
-        bottom: 30px;
-        right: 30px;
-        z-index: 999;
-    }
+/* Toolbar และ ปุ่ม Submit */
+.fc-toolbar {
+    position: absolute; top: 16px; left: 16px; z-index: 10;
+    display: flex; align-items: center; gap: 12px;
+    background-color: rgba(255, 255, 255, 0.95); padding: 8px 16px;
+    border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.fc-submit-area {
+    position: absolute; bottom: 20px; right: 20px; z-index: 10;
+}

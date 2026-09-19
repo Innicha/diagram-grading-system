@@ -3,7 +3,7 @@
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
-<mytag:header menu="4" />
+<mytag:header menu="3"/>
 <link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/AnswerKeyPages/AnswerKey_Pseudocode.css">
 <!-- Check Login File -->
