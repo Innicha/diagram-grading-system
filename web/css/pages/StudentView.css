@@ -1,0 +1,880 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --blue: #3b82f6;
+    --blue-hover: #2563eb;
+    --blue-light: #eaf3ff;
+    --text: #18366c;
+    --muted: #7183a3;
+    --border: #dfe8f4;
+    --bg: #f5f8fd;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.teacher-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ==========================================
+   Header Section
+========================================== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-box-header {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 31px;
+}
+
+.header-title {
+    margin: 0;
+    color: #102b64;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.motto-text {
+    color: #82aef0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.8;
+    text-align: right;
+}
+
+.motto-text span {
+    display: block;
+}
+
+/* Base Card Style */
+.main-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e4ebf5;
+}
+
+/* ==========================================
+   Import / Add Section (ตรงตามภาพตัวอย่าง)
+========================================== */
+.excel-card {
+    padding: 28px 32px;
+    margin-bottom: 24px;
+}
+
+/* 1. Excel Import Zone */
+.import-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.excel-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.excel-badge-icon {
+    width: 68px;
+    height: 68px;
+    background-color: #eaf6ed;
+    color: #107c41;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.excel-info h5 {
+    margin: 0 0 2px 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1d2939;
+}
+
+.excel-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #667085;
+}
+
+.excel-info small {
+    font-size: 0.8rem;
+    color: #98a2b3;
+}
+
+.excel-form {
+    flex: 1.3;
+}
+
+.dropzone-area {
+    border: 1.5px dashed #b2ccff;
+    background-color: #f5f8ff;
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dropzone-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #475467;
+    font-size: 0.95rem;
+}
+
+.dropzone-text i {
+    font-size: 26px;
+    color: var(--blue);
+}
+
+.btn-choose-file {
+    background-color: #16a34a !important; /* ปรับเป็นสีเขียว */
+    color: #ffffff;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
+}
+
+.btn-choose-file:hover {
+    background-color: #15803d; /* สีเขียวเข้มขึ้นเมื่อ Hover */
+}
+
+/* 2. Divider */
+.import-divider {
+    position: relative;
+    text-align: center;
+    margin: 28px 0;
+}
+
+.import-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #eaecf0;
+    z-index: 1;
+}
+
+.import-divider span {
+    position: relative;
+    z-index: 2;
+    background-color: #e4e4e4 !important;
+    color: #a0a1a2 !important;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+/* 3. Manual Add Student Zone */
+.manual-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.manual-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 260px;
+}
+
+.manual-icon {
+    width: 56px;
+    height: 56px;
+    background-color: #eff4ff;
+    color: var(--blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.manual-info h5 {
+    margin: 0 0 2px 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1d2939;
+}
+
+.manual-info small {
+    font-size: 0.8rem;
+    color: #98a2b3;
+}
+
+.manual-form {
+    flex: 1;
+}
+
+.manual-fields {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.manual-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.manual-input label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #344054;
+}
+
+.manual-input input,
+.manual-input select {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    color: #1d2939;
+    background-color: #ffffff;
+    font-family: inherit;
+}
+
+.manual-input input::placeholder {
+    color: #98a2b3;
+}
+
+.manual-input input:focus,
+.manual-input select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-save-student {
+    background-color: var(--blue);
+    color: #ffffff;
+    border: none;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    height: 40px;
+    font-family: inherit;
+    transition: background-color 0.2s;
+}
+
+.btn-save-student:hover {
+    background-color: var(--blue-hover);
+}
+
+/* ==========================================
+   Student Table Section
+========================================== */
+.student-card {
+    padding: 20px;
+}
+
+.controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.controls-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-icon {
+    color: #1c3d78;
+    font-size: 17px;
+}
+
+.filter-label {
+    color: #284675;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.custom-select,
+.custom-input {
+    height: 40px;
+    border: 1px solid #cfdbea;
+    border-radius: 9px;
+    outline: none;
+    background: #fff;
+    color: #284675;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.custom-select {
+    width: 185px;
+    padding: 0 12px;
+}
+
+.custom-input {
+    padding: 0 12px;
+}
+
+.custom-select:focus,
+.custom-input:focus {
+    border-color: #91baf0;
+    box-shadow: 0 0 0 2px rgba(22,119,242,.08);
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding-left: 39px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #71819b;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.total-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 15px;
+    border-radius: 20px;
+    background: var(--blue-light);
+    color: #1769df;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.total-badge i {
+    font-size: 17px;
+}
+
+.custom-table-container {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 0 18px;
+    vertical-align: middle;
+}
+
+.custom-table th {
+    height: 48px;
+    background: #edf4fd;
+    border-bottom: 1px solid var(--border);
+    color: #17376f;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.custom-table td {
+    height: 45px;
+    border-bottom: 1px solid #e9eef5;
+    color: #294775;
+    font-size: 14px;
+}
+
+.custom-table tbody tr:hover {
+    background: #f9fbff;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.student-id {
+    color: #29477d !important;
+    font-family: monospace;
+}
+
+.student-name {
+    color: #294775 !important;
+    font-weight: 500;
+}
+
+.student-sec {
+    color: #52698e !important;
+}
+
+.action-form {
+    display: inline;
+}
+
+.btn-delete {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ffd9d9;
+    border-radius: 8px;
+    background: #fff1f1;
+    color: #ef4444;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: #ffe5e5;
+}
+
+.btn-reset-password {
+    height: 34px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid #c4dbfa;
+    border-radius: 8px;
+    background: var(--blue-light);
+    color: #1769df;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-reset-password:hover {
+    background: #dfedff;
+}
+
+.input-point {
+    width: 80px;
+    height: 34px;
+    text-align: center;
+}
+
+.table-footer {
+    margin-top: 13px;
+    color: #7183a3;
+    font-size: 13px;
+}
+
+.empty-state,
+.error-state {
+    height: 100px !important;
+    text-align: center !important;
+}
+
+.empty-state {
+    color: #94a3b8 !important;
+}
+
+.error-state {
+    color: #ef4444 !important;
+}
+
+
+
+/* ==========================================
+   Responsive Design
+========================================== */
+@media (max-width: 900px) {
+    .page-header,
+    .controls-bar,
+    .import-section,
+    .manual-section,
+    .manual-fields {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .excel-form,
+    .search-box {
+        width: 100%;
+        max-width: none;
+    }
+
+    .controls-left {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .total-badge {
+        align-self: flex-start;
+    }
+
+    .btn-save-student {
+        justify-content: center;
+    }
+}
+
+/* Status Toggle Styles */
+.status-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #334155;
+    user-select: none;
+}
+
+.status-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #94a3b8;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+    transition: all 0.15s ease-in-out;
+}
+
+/* สไตล์เมื่อถูกเลือก (Checked) */
+.status-option input[type="radio"]:checked {
+    border-color: #3b82f6;
+    background-color: #ffffff;
+}
+
+.status-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+}
+
+/* ==========================================
+   Import / Add Section (ตรงตามภาพ UI ตัวอย่าง)
+========================================== */
+.excel-card {
+    padding: 24px 32px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2ebd8;
+}
+
+/* Base Icon with sub badge (+ / upload) */
+.excel-badge-icon,
+.manual-icon {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+}
+
+.excel-badge-icon {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.manual-icon {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+.badge-sub-icon {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 22px;
+    height: 22px;
+    background-color: #3b82f6;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border: 2px solid #ffffff;
+}
+
+.excel-badge-icon .badge-sub-icon {
+    background-color: #16a34a;
+}
+
+/* 1. Excel Section */
+.import-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background-color: #f4fbf7;
+    padding: 20px 24px;
+    border-radius: 16px;
+}
+
+.excel-left, .manual-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.excel-info h5, .manual-info h5 {
+    margin: 0 0 2px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.excel-info p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #64748b;
+}
+
+.excel-info small, .manual-info small {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.file-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-choose-file {
+    background-color: #2563eb;
+    color: #ffffff;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-choose-file:hover {
+    background-color: #1d4ed8;
+}
+
+.file-name {
+    font-size: 0.88rem;
+    color: #64748b;
+}
+
+/* 2. Divider Line & Badge */
+.import-divider {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.import-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #e2e8f0;
+    z-index: 1;
+}
+
+.import-divider span {
+    position: relative;
+    z-index: 2;
+    background-color: #eff6ff;
+    color: #3b82f6;
+    padding: 4px 18px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+/* 3. Manual Add Section */
+.manual-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background-color: #f8fafc;
+    padding: 20px 24px;
+    border-radius: 16px;
+}
+
+.manual-fields {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.manual-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.manual-input label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 14px;
+    color: #64748b;
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.input-with-icon input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px 0 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    outline: none;
+    color: #0f172a;
+    background-color: #ffffff;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.input-with-icon input::placeholder {
+    color: #a0aec0;
+}
+
+.input-with-icon input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* 4. Save Button */
+.save-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.btn-save-student {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 10px 36px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-save-student:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}

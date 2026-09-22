@@ -66,19 +66,50 @@ public class DBConnection {
 
         try (Statement stmt = con.createStatement()) {
 
+            // Users Table
             String createUsersTable =
                     "CREATE TABLE IF NOT EXISTS users ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY, "
                     + "username VARCHAR(50) NOT NULL UNIQUE, "
                     + "password VARCHAR(255) NOT NULL, "
-                    + "role ENUM('student', 'admin') DEFAULT 'student', "
+                    + "full_name VARCHAR(255) NOT NULL, "
+                    + "role ENUM('student', 'teacher') NOT NULL, "
+                    + "sec INT NULL, "
+                    + "status ENUM('ON', 'OFF') NOT NULL DEFAULT 'ON', "
                     + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
                     + ");";
 
             stmt.executeUpdate(createUsersTable);
-
             System.out.println("Users table checked successfully.");
 
+            // Courses Table
+            String createCoursesTable =
+                    "CREATE TABLE IF NOT EXISTS courses ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "course_name VARCHAR(255) NOT NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                    + ");";
+
+            stmt.executeUpdate(createCoursesTable);
+            System.out.println("Courses table checked successfully.");
+
+            // Subjects Table
+            String createSubjectsTable =
+                    "CREATE TABLE IF NOT EXISTS subjects ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "name VARCHAR(100) NOT NULL, "
+                    + "point INT NOT NULL DEFAULT 0, "
+                    + "status ENUM('ON', 'OFF') NOT NULL DEFAULT 'ON', "
+                    + "sec VARCHAR(100) NOT NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                    + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP "
+                    + "ON UPDATE CURRENT_TIMESTAMP"
+                    + ");";
+
+            stmt.executeUpdate(createSubjectsTable);
+
+            System.out.println("Subjects table checked successfully.");
+                    
         } catch (Exception e) {
 
             System.err.println(

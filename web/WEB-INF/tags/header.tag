@@ -10,18 +10,28 @@
                 <li class="nav-item">
                     <a class="nav-link <%= "1".equals(menu) ? "active" : "" %>" href="index.jsp">INDEX</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link <%= "2".equals(menu) ? "active" : "" %>" href="DesignAnswerkeys.jsp">Design Answer Key</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link <%= "3".equals(menu) ? "active" : "" %>" href="CreateAnswerkeys.jsp">Create Answer Keys</a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link <%= "4".equals(menu) ? "active" : "" %>" href="TeacherView.jsp">Teacher View</a>
+                    <a class="nav-link <%= "4".equals(menu) ? "active" : "" %>" href="StudentView.jsp">STUDENT</a>
                 </li>
+
+
                 <li class="nav-item">
-                    <a class="nav-link <%= "5".equals(menu) ? "active" : "" %>" href="StudentView.jsp">Student View</a>
+                    <a class="nav-link <%= "5".equals(menu) ? "active" : "" %>" href="SubjectsView.jsp">SUBJECT</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link <%= "6".equals(menu) ? "active" : "" %>" href="StudentsPart.jsp">STUDENTSPART</a>
+                </li>
+
             </ul>
         </div>
     </div>

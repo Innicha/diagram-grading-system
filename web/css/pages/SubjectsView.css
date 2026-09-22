@@ -1,0 +1,817 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+
+/* ==========================================
+   ROOT
+========================================== */
+
+:root {
+    --blue: #3b82f6;
+    --blue-hover: #2563eb;
+    --blue-light: #eaf3ff;
+
+    --text: #18366c;
+    --muted: #7183a3;
+
+    --border: #dfe8f4;
+
+    --bg: #f5f8fd;
+}
+
+
+/* ==========================================
+   BASE
+========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.d-none {
+    display: none !important;
+}
+
+
+/* ==========================================
+   PAGE CONTAINER
+========================================== */
+
+.teacher-page {
+    width: calc(100% - 60px);
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 20px 0 40px;
+}
+
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-box-header {
+    width: 72px;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background: var(--blue-light);
+    color: var(--blue);
+
+    font-size: 31px;
+}
+
+.header-title {
+    margin: 0;
+
+    color: #102b64;
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    margin: 2px 0 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   MAIN CARD
+========================================== */
+
+.main-card {
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    border: 1px solid #e4ebf5;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+
+/* ==========================================
+   ADD SUBJECT CARD
+========================================== */
+
+.add-subject-card {
+    padding: 20px 22px;
+
+    margin-bottom: 20px;
+}
+
+.add-subject-header {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 16px;
+}
+
+.add-icon {
+    width: 54px;
+    height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: var(--blue-light);
+    color: var(--blue);
+
+    font-size: 27px;
+}
+
+.add-subject-header h4 {
+    margin: 0;
+
+    color: #102b64;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.add-subject-header p {
+    margin: 2px 0 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   SUBJECT FORM
+========================================== */
+
+.subject-form-row {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 22px;
+}
+
+.subject-form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    flex: 1;
+
+    min-width: 150px;
+}
+
+.subject-name-group {
+    flex: 2.5;
+}
+
+.subject-form-group label {
+    color: #102b64;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.subject-input {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 13px;
+
+    border: 1px solid #cfd8e6;
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #294775;
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.subject-input::placeholder {
+    color: #98a2b3;
+}
+
+.subject-input:focus {
+    border-color: var(--blue);
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.10);
+}
+
+
+/* ==========================================
+   STATUS
+   เหมือน StudentView
+========================================== */
+
+.status-toggle {
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 14px;
+}
+
+.status-option {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    color: #334155;
+
+    user-select: none;
+}
+
+.status-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 16px;
+    height: 16px;
+
+    margin: 0;
+
+    border: 1.5px solid #94a3b8;
+
+    border-radius: 50%;
+
+    outline: none;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition: all 0.15s ease-in-out;
+}
+
+
+/* Checked */
+
+.status-option input[type="radio"]:checked {
+    border-color: #3b82f6;
+
+    background-color: #ffffff;
+}
+
+
+/* จุดตรงกลาง */
+
+.status-option input[type="radio"]:checked::after {
+    content: '';
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 8px;
+    height: 8px;
+
+    background-color: #3b82f6;
+
+    border-radius: 50%;
+}
+
+
+/* ==========================================
+   ADD BUTTON
+========================================== */
+
+.subject-button-group {
+    display: flex;
+    align-items: flex-end;
+}
+
+.btn-add-subject {
+    height: 42px;
+
+    min-width: 155px;
+
+    padding: 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--blue);
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        transform 0.15s;
+}
+
+.btn-add-subject:hover {
+    background: var(--blue-hover);
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================
+   SUBJECT TABLE CARD
+========================================== */
+
+.subject-card {
+    padding: 20px;
+}
+
+
+/* ==========================================
+   CONTROLS
+========================================== */
+
+.controls-bar {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+.controls-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.filter-icon {
+    color: #1c3d78;
+
+    font-size: 17px;
+}
+
+.filter-label {
+    color: #284675;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   SELECT / INPUT
+========================================== */
+
+.custom-select,
+.custom-input {
+    height: 40px;
+
+    border: 1px solid #cfdbea;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #284675;
+
+    font-family: inherit;
+
+    font-size: 14px;
+}
+
+.custom-select {
+    width: 210px;
+
+    padding: 0 12px;
+}
+
+.custom-input {
+    padding: 0 12px;
+}
+
+.custom-select:focus,
+.custom-input:focus {
+    border-color: #91baf0;
+
+    box-shadow:
+        0 0 0 2px rgba(22,119,242,.08);
+}
+
+
+/* ==========================================
+   SEARCH
+========================================== */
+
+.search-box {
+    position: relative;
+
+    width: 360px;
+}
+
+.search-box input {
+    width: 100%;
+
+    padding-left: 39px;
+}
+
+.search-icon {
+    position: absolute;
+
+    left: 13px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #71819b;
+
+    font-size: 16px;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================
+   TOTAL BADGE
+========================================== */
+
+.total-badge {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 9px 15px;
+
+    border-radius: 20px;
+
+    background: var(--blue-light);
+
+    color: #1769df;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.total-badge i {
+    font-size: 17px;
+}
+
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.custom-table-container {
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+}
+
+.custom-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: #ffffff;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 0 14px;
+
+    vertical-align: middle;
+}
+
+.custom-table th {
+    height: 48px;
+
+    background: #edf4fd;
+
+    border-bottom: 1px solid var(--border);
+
+    color: #17376f;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.custom-table td {
+    height: 45px;
+
+    border-bottom: 1px solid #e9eef5;
+
+    color: #294775;
+
+    font-size: 14px;
+}
+
+.custom-table tbody tr:hover {
+    background: #f9fbff;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* ==========================================
+   TABLE INPUT
+========================================== */
+
+.subject-table-input {
+    width: 100%;
+
+    height: 34px;
+
+    padding: 0 10px;
+
+    border: 1px solid #d5dfed;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #294775;
+
+    font-family: inherit;
+
+    font-size: 14px;
+}
+
+.subject-table-input:focus {
+    border-color: var(--blue);
+
+    box-shadow:
+        0 0 0 2px rgba(59,130,246,.08);
+}
+
+.point-input {
+    max-width: 153px;
+}
+
+
+/* ==========================================
+   DELETE
+========================================== */
+
+.action-form {
+    display: inline;
+}
+
+.btn-delete {
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ffd9d9;
+
+    border-radius: 8px;
+
+    background: #fff1f1;
+
+    color: #ef4444;
+
+    cursor: pointer;
+
+    transition: background-color 0.15s;
+}
+
+.btn-delete:hover {
+    background: #ffe5e5;
+}
+
+
+/* ==========================================
+   TABLE FOOTER
+========================================== */
+
+.table-footer {
+    margin-top: 13px;
+
+    color: #7183a3;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1100px) {
+
+    .subject-form-row {
+        flex-wrap: wrap;
+    }
+
+    .subject-name-group {
+        flex: 1 1 100%;
+    }
+
+    .subject-form-group {
+        flex: 1 1 200px;
+    }
+
+    .subject-button-group {
+        flex: 1 1 100%;
+    }
+
+    .btn-add-subject {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 280px;
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    .teacher-page {
+        width: calc(100% - 30px);
+    }
+
+    .page-header {
+        align-items: flex-start;
+    }
+
+    .controls-bar {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 15px;
+    }
+
+    .controls-left {
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
+    .total-badge {
+        align-self: flex-start;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .custom-select {
+        width: 180px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .teacher-page {
+        width: calc(100% - 20px);
+
+        padding-top: 12px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    .header-subtitle {
+        font-size: 13px;
+    }
+
+    .icon-box-header {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 16px;
+
+        font-size: 25px;
+    }
+
+    .add-subject-card,
+    .subject-card {
+        padding: 15px;
+    }
+
+    .subject-form-row {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .subject-form-group,
+    .subject-name-group,
+    .subject-button-group {
+        width: 100%;
+
+        flex: none;
+    }
+
+    .btn-add-subject {
+        width: 100%;
+    }
+
+    .controls-left {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-wrap: wrap;
+    }
+
+    .custom-select {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .custom-table-container {
+        overflow-x: auto;
+    }
+
+    .custom-table {
+        min-width: 850px;
+    }
+}
