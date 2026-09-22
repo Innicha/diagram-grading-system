@@ -294,10 +294,6 @@
                 </button>
             </div>
         </form>
-
-        <div class="table-footer">
-            แสดงข้อมูลโจทย์จากฐานข้อมูล
-        </div>
     </div>
 </div>
 

@@ -226,7 +226,7 @@
                                 String sql = "SELECT u.id, u.username, u.full_name, u.status, u.sec "
                                         + "FROM users u "
                                         + "WHERE u.role = 'student' "
-                                        + "ORDER BY u.username ASC";
+                                        + "ORDER BY u.sec ASC, u.username ASC";
 
                                 ps = con.prepareStatement(sql);
                                 rs = ps.executeQuery();
