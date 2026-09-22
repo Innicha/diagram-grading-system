@@ -1,0 +1,790 @@
+/* =========================================================
+   STUDENT EXERCISE PAGE
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Anuphan', sans-serif;
+    background: #f6faff;
+    color: #153b78;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.student-page {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 30px 30px 50px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.page-title-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.page-icon {
+    width: 68px;
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: #e7f1ff;
+    color: #0878ed;
+
+    font-size: 32px;
+}
+
+.page-title-area h1 {
+    margin: 0 0 4px;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    color: #153b78;
+}
+
+.page-title-area p {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 400;
+
+    color: #6780a8;
+}
+
+
+/* =========================================================
+   SUMMARY AREA
+========================================================= */
+
+.summary-area {
+    display: flex;
+    gap: 18px;
+}
+
+
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
+
+.summary-card {
+    min-width: 190px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow: 0 3px 12px rgba(31, 87, 145, 0.04);
+}
+
+
+/* คะแนนรวม */
+
+.total-score {
+    background: linear-gradient(
+        135deg,
+        #f1fbf4,
+        #eaf8ef
+    );
+}
+
+
+/* =========================================================
+   SUMMARY ICON
+========================================================= */
+
+.summary-icon {
+    width: 55px;
+    height: 55px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 25px;
+}
+
+.total-score .summary-icon {
+    background: #e9f8ed;
+    color: #139b63;
+}
+
+.completed-card .summary-icon {
+    background: #e6f7f4;
+    color: #159d76;
+}
+
+.pending-card .summary-icon {
+    background: #eef3fb;
+    color: #47658f;
+}
+
+
+/* =========================================================
+   SUMMARY TEXT
+========================================================= */
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.summary-content span {
+    font-size: 14px;
+    color: #627ba3;
+}
+
+.summary-content strong {
+    font-size: 22px;
+    font-weight: 700;
+    color: #173b78;
+}
+
+
+/* =========================================================
+   MAIN EXERCISE CONTAINER
+========================================================= */
+
+.exercise-container {
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #dceaf8;
+
+    border-radius: 14px;
+
+    padding: 0 18px 20px;
+
+    box-shadow: 0 5px 20px rgba(40, 95, 150, 0.05);
+}
+
+
+/* =========================================================
+   FILTER BAR
+========================================================= */
+
+.filter-bar {
+    min-height: 85px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* LEFT */
+
+.filter-left {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+/* label */
+
+.filter-label {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #153b78;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.filter-label i {
+    color: #0878ed;
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+.select-wrapper {
+    position: relative;
+    width: 250px;
+}
+
+.select-wrapper select {
+    width: 100%;
+    height: 45px;
+
+    padding: 0 42px 0 18px;
+
+    appearance: none;
+
+    border: 1px solid #d3e2f3;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    font-family: 'Anuphan', sans-serif;
+    font-size: 16px;
+
+    color: #334f78;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+.select-wrapper select:focus {
+    border-color: #72aff2;
+
+    box-shadow: 0 0 0 3px rgba(8, 120, 237, 0.08);
+}
+
+.select-wrapper i {
+    position: absolute;
+
+    right: 17px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+
+    color: #123f79;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box {
+    width: 470px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 15px;
+
+    border: 1px solid #d3e2f3;
+    border-radius: 8px;
+
+    background: #ffffff;
+}
+
+.search-box i {
+    color: #6780a5;
+    font-size: 18px;
+}
+
+.search-box input {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    outline: none;
+
+    font-family: 'Anuphan', sans-serif;
+    font-size: 16px;
+
+    color: #274a7c;
+}
+
+.search-box input::placeholder {
+    color: #8195b2;
+}
+
+
+/* =========================================================
+   QUESTION COUNT
+========================================================= */
+
+.question-count {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 16px;
+
+    border-radius: 10px;
+
+    background: #f0f6ff;
+
+    color: #0878ed;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+.question-count i {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #e1ebf6;
+    border-radius: 10px;
+}
+
+.exercise-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1100px;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.exercise-table thead {
+    background: #eef6ff;
+}
+
+.exercise-table th {
+    height: 52px;
+
+    padding: 0 18px;
+
+    text-align: left;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #143a77;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   TABLE BODY
+========================================================= */
+
+.exercise-table td {
+    height: 52px;
+
+    padding: 0 18px;
+
+    border-top: 1px solid #e7eef7;
+
+    font-size: 15px;
+
+    color: #173d79;
+
+    white-space: nowrap;
+}
+
+.exercise-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.exercise-table tbody tr:hover {
+    background: #f9fcff;
+}
+
+
+/* =========================================================
+   COLUMN WIDTH
+========================================================= */
+
+.col-number {
+    width: 5%;
+}
+
+.col-name {
+    width: 33%;
+}
+
+.col-score {
+    width: 10%;
+    text-align: center !important;
+}
+
+.col-status {
+    width: 15%;
+    text-align: center !important;
+}
+
+.col-date {
+    width: 17%;
+    text-align: center !important;
+}
+
+.col-action {
+    width: 15%;
+    text-align: center !important;
+}
+
+
+/* =========================================================
+   QUESTION NAME
+========================================================= */
+
+.question-name {
+    font-size: 15px;
+    font-weight: 400;
+
+    color: #20457f;
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+.score-earned {
+    text-align: center;
+
+    font-weight: 500;
+
+    color: #173f7c;
+}
+
+.score-empty {
+    text-align: center;
+
+    color: #8192aa;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 108px;
+
+    padding: 8px 12px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status i {
+    font-size: 15px;
+}
+
+
+/* submitted */
+
+.status.submitted {
+    background: #eaf8f1;
+    color: #139866;
+}
+
+
+/* not started */
+
+.status.not-started {
+    background: #f0f3f7;
+    color: #71829b;
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+.btn-action {
+    width: 140px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border-radius: 8px;
+
+    font-family: 'Anuphan', sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+/* view */
+
+.btn-view {
+    background: #ffffff;
+
+    border: 1px solid #a9cdf7;
+
+    color: #0878ed;
+}
+
+.btn-view:hover {
+    background: #edf6ff;
+    border-color: #0878ed;
+}
+
+
+/* start */
+
+.btn-start {
+    background: #087cf0;
+
+    border: 1px solid #087cf0;
+
+    color: #ffffff;
+
+    box-shadow: 0 3px 8px rgba(8, 124, 240, 0.18);
+}
+
+.btn-start:hover {
+    background: #006dde;
+    border-color: #006dde;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   TABLE FOOTER
+========================================================= */
+
+.table-footer {
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* showing */
+
+.showing-text {
+    font-size: 15px;
+
+    color: #5e7599;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+.page-btn {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #dbe7f4;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #52739f;
+
+    font-family: 'Anuphan', sans-serif;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.page-btn.active {
+    background: #70aff1;
+
+    border-color: #70aff1;
+
+    color: #ffffff;
+}
+
+.page-btn.disabled {
+    color: #b4c3d6;
+
+    cursor: default;
+}
+
+.page-btn:not(.disabled):not(.active):hover {
+    background: #f1f7ff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .summary-area {
+        width: 100%;
+    }
+
+    .summary-card {
+        flex: 1;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+
+        padding: 18px 0;
+    }
+
+    .filter-left {
+        width: 100%;
+    }
+
+    .question-count {
+        align-self: flex-start;
+    }
+
+    .search-box {
+        flex: 1;
+        width: auto;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .student-page {
+        padding: 20px 15px 40px;
+    }
+
+    .page-title-area {
+        align-items: flex-start;
+    }
+
+    .page-title-area h1 {
+        font-size: 23px;
+    }
+
+    .page-title-area p {
+        font-size: 14px;
+    }
+
+    .page-icon {
+        width: 55px;
+        height: 55px;
+
+        font-size: 25px;
+    }
+
+    .summary-area {
+        flex-direction: column;
+    }
+
+    .summary-card {
+        width: 100%;
+    }
+
+    .filter-left {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .select-wrapper {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .table-footer {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+        padding: 15px 0;
+    }
+
+}
