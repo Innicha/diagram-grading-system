@@ -82,17 +82,6 @@ public class DBConnection {
             stmt.executeUpdate(createUsersTable);
             System.out.println("Users table checked successfully.");
 
-            // Courses Table
-            String createCoursesTable =
-                    "CREATE TABLE IF NOT EXISTS courses ("
-                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
-                    + "course_name VARCHAR(255) NOT NULL, "
-                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-                    + ");";
-
-            stmt.executeUpdate(createCoursesTable);
-            System.out.println("Courses table checked successfully.");
-
             // Subjects Table
             String createSubjectsTable =
                     "CREATE TABLE IF NOT EXISTS subjects ("
@@ -109,6 +98,27 @@ public class DBConnection {
             stmt.executeUpdate(createSubjectsTable);
 
             System.out.println("Subjects table checked successfully.");
+
+            // Student Submissions Table
+            String createStudentSubmissionsTable =
+                    "CREATE TABLE IF NOT EXISTS student_submissions ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "student_id INT NOT NULL, "
+                    + "subject_id INT NOT NULL, "
+                    + "score INT NULL, "
+                    + "status ENUM('NOT_STARTED', 'SUBMITTED', 'GRADED') NOT NULL DEFAULT 'NOT_STARTED', "
+                    + "submitted_at TIMESTAMP NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                    + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP "
+                    + "ON UPDATE CURRENT_TIMESTAMP, "
+                    + "UNIQUE KEY unique_student_subject (student_id, subject_id), "
+                    + "FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE, "
+                    + "FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE"
+                    + ");";
+
+            stmt.executeUpdate(createStudentSubmissionsTable);
+
+            System.out.println("Student submissions table checked successfully.");
                     
         } catch (Exception e) {
 

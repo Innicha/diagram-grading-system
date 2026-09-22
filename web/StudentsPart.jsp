@@ -1,29 +1,47 @@
 <%@page import="java.sql.*"%>
+<%@page import="db.DBConnection"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
+<%
+    Integer studentId = (Integer) session.getAttribute("UserId");
+    String role = (String) session.getAttribute("Role");
+    Integer sec = (Integer) session.getAttribute("Sec");
 
+    if (studentId == null || !"student".equals(role)) {
+        response.sendRedirect("index.jsp?error=1");
+        return;
+    }
+%>
 <mytag:ReadFile />
 <mytag:header menu="6"/>
 <mytag:check_login />
 
+<%
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    String currentUsername = (String) session.getAttribute("User");
+    int totalQuestions = 0;
+%>
+
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <title>แบบฝึกหัด / โจทย์</title>
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Bootstrap -->
+    <!-- Bootstrap & Stylesheets -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Global CSS -->
     <link rel="stylesheet" href="css/global.css">
-    <!-- Page CSS -->
     <link rel="stylesheet" href="css/pages/StudentsPart.css">
 </head>
 <body>
@@ -41,36 +59,6 @@
                 <p>เลือกโจทย์เพื่อทำแบบฝึกหัด และตรวจสอบคะแนนของคุณ</p>
             </div>
         </div>
-
-        <!-- SUMMARY CARDS -->
-        <div class="summary-area">
-            <!-- คะแนนรวม -->
-            <div class="summary-card total-score">
-                <div class="summary-icon"><i class="fa-solid fa-trophy"></i></div>
-                <div class="summary-content">
-                    <span>คะแนนรวมของคุณ</span>
-                    <strong>78 / 100</strong>
-                </div>
-            </div>
-
-            <!-- ทำแล้ว -->
-            <div class="summary-card completed-card">
-                <div class="summary-icon"><i class="fa-regular fa-file-lines"></i></div>
-                <div class="summary-content">
-                    <span>ทำแล้ว</span>
-                    <strong>6 / 10</strong>
-                </div>
-            </div>
-
-            <!-- รอทำ -->
-            <div class="summary-card pending-card">
-                <div class="summary-icon"><i class="fa-regular fa-clock"></i></div>
-                <div class="summary-content">
-                    <span>รอทำ</span>
-                    <strong>4 รายการ</strong>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- EXERCISE CONTAINER -->
@@ -79,33 +67,34 @@
         <!-- FILTER BAR -->
         <div class="filter-bar">
             <div class="filter-left">
-                <div class="filter-label">
-                    <i class="fa-solid fa-filter"></i>
-                    <span>เลือกเซตชัน</span>
-                </div>
+                <div class="question-count">
+                    <i class="fa-solid fa-list"></i>
+                    <span>
+                        <%
+                            try {
+                                con = DBConnection.getConnection();
+                                String countSql = "SELECT COUNT(*) FROM subjects s " +
+                                                  "INNER JOIN users u ON u.username = ? " +
+                                                  "WHERE s.status = 'ON' " +
+                                                  "AND FIND_IN_SET(CAST(u.sec AS CHAR), REPLACE(s.sec, ' ', '')) > 0";
+                                ps = con.prepareStatement(countSql);
+                                ps.setString(1, currentUsername);
+                                rs = ps.executeQuery();
 
-                <!-- Select -->
-                <div class="select-wrapper">
-                    <select>
-                        <option>ทั้งหมด</option>
-                        <option>ER Diagram</option>
-                        <option>Relationship</option>
-                        <option>Normalization</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down"></i>
+                                if (rs.next()) {
+                                    totalQuestions = rs.getInt(1);
+                                }
+                            } catch (Exception e) {
+                                totalQuestions = 0;
+                            } finally {
+                                if (rs != null) { try { rs.close(); } catch (Exception e) {} }
+                                if (ps != null) { try { ps.close(); } catch (Exception e) {} }
+                                if (con != null) { try { con.close(); } catch (Exception e) {} }
+                            }
+                        %>
+                        ทั้งหมด <%= totalQuestions %> รายการ
+                    </span>
                 </div>
-
-                <!-- Search -->
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="ค้นหาชื่อโจทย์...">
-                </div>
-            </div>
-
-            <!-- จำนวนโจทย์ -->
-            <div class="question-count">
-                <i class="fa-solid fa-list"></i>
-                <span>ทั้งหมด 10 รายการ</span>
             </div>
         </div>
 
@@ -114,221 +103,116 @@
             <table class="exercise-table">
                 <thead>
                     <tr>
-                        <th class="col-number">#</th>
                         <th class="col-name">ชื่อโจทย์</th>
                         <th class="col-score">คะแนนเต็ม</th>
                         <th class="col-score">คะแนนที่ได้</th>
                         <th class="col-status">สถานะ</th>
-                        <th class="col-date">กำหนดส่ง</th>
                         <th class="col-action">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- ROW 1 -->
-                    <tr>
-                        <td>1</td>
-                        <td><div class="question-name">ER_01 พื้นฐานการออกแบบ ER Diagram</div></td>
-                        <td>10</td>
-                        <td class="score-earned">10</td>
-                        <td>
-                            <span class="status submitted">
-                                <i class="fa-solid fa-check"></i> ส่งแล้ว
-                            </span>
-                        </td>
-                        <td>12 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-view">
-                                <i class="fa-solid fa-eye"></i> ดูคำตอบ
-                            </button>
-                        </td>
-                    </tr>
+                <%
+                    Connection tableCon = null;
+                    PreparedStatement tablePs = null;
+                    ResultSet tableRs = null;
 
-                    <!-- ROW 2 -->
-                    <tr>
-                        <td>2</td>
-                        <td><div class="question-name">ER_02 ความสัมพันธ์ระหว่าง Entity</div></td>
-                        <td>10</td>
-                        <td class="score-earned">8</td>
-                        <td>
-                            <span class="status submitted">
-                                <i class="fa-solid fa-check"></i> ส่งแล้ว
-                            </span>
-                        </td>
-                        <td>15 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-view">
-                                <i class="fa-solid fa-eye"></i> ดูคำตอบ
-                            </button>
-                        </td>
-                    </tr>
+                    try {
+                        tableCon = DBConnection.getConnection();
+                        String sql = "SELECT s.id AS subject_id, s.name AS subject_name, s.point AS max_point, " +
+                                     "ss.score AS earned_score, ss.status AS submission_status " +
+                                     "FROM subjects s " +
+                                     "INNER JOIN users u ON u.username = ? " +
+                                     "LEFT JOIN student_submissions ss ON ss.subject_id = s.id AND ss.student_id = u.id " +
+                                     "WHERE s.status = 'ON' " +
+                                     "AND FIND_IN_SET(CAST(u.sec AS CHAR), REPLACE(s.sec, ' ', '')) > 0 " +
+                                     "ORDER BY s.id ASC";
 
-                    <!-- ROW 3 -->
-                    <tr>
-                        <td>3</td>
-                        <td><div class="question-name">ER_03 Cardinality และ Participation</div></td>
-                        <td>15</td>
-                        <td class="score-empty">-</td>
-                        <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
-                        </td>
-                        <td>18 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
-                        </td>
-                    </tr>
+                        tablePs = tableCon.prepareStatement(sql);
+                        tablePs.setString(1, currentUsername);
+                        tableRs = tablePs.executeQuery();
 
-                    <!-- ROW 4 -->
-                    <tr>
-                        <td>4</td>
-                        <td><div class="question-name">ER_04 Weak Entity และ Identifying Relationship</div></td>
-                        <td>15</td>
-                        <td class="score-empty">-</td>
-                        <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
-                        </td>
-                        <td>20 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
-                        </td>
-                    </tr>
+                        while (tableRs.next()) {
+                            int subjectId = tableRs.getInt("subject_id");
+                            String subjectName = tableRs.getString("subject_name");
+                            int maxPoint = tableRs.getInt("max_point");
+                            Object earnedScoreObj = tableRs.getObject("earned_score");
+                            String submissionStatus = tableRs.getString("submission_status");
 
-                    <!-- ROW 5 -->
+                            boolean submitted = "SUBMITTED".equals(submissionStatus) || "GRADED".equals(submissionStatus);
+                %>
                     <tr>
-                        <td>5</td>
-                        <td><div class="question-name">ER_05 การแปลง ER เป็น Relational Schema</div></td>
-                        <td>20</td>
-                        <td class="score-earned">18</td>
+                        <!-- QUESTION NAME -->
                         <td>
-                            <span class="status submitted">
-                                <i class="fa-solid fa-check"></i> ส่งแล้ว
-                            </span>
+                            <div class="question-name"><%= subjectName %></div>
                         </td>
-                        <td>22 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-view">
-                                <i class="fa-solid fa-eye"></i> ดูคำตอบ
-                            </button>
-                        </td>
-                    </tr>
 
-                    <!-- ROW 6 -->
-                    <tr>
-                        <td>6</td>
-                        <td><div class="question-name">ER_06 การออกแบบฐานข้อมูลจากโจทย์จริง</div></td>
-                        <td>20</td>
-                        <td class="score-empty">-</td>
-                        <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
-                        </td>
-                        <td>25 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
-                        </td>
-                    </tr>
+                        <!-- MAX SCORE -->
+                        <td><%= maxPoint %></td>
 
-                    <!-- ROW 7 -->
-                    <tr>
-                        <td>7</td>
-                        <td><div class="question-name">ER_07 การปรับปรุงและ Normalization</div></td>
-                        <td>20</td>
-                        <td class="score-earned">15</td>
-                        <td>
-                            <span class="status submitted">
-                                <i class="fa-solid fa-check"></i> ส่งแล้ว
-                            </span>
+                        <!-- EARNED SCORE -->
+                        <td class="<%= earnedScoreObj != null ? "score-earned" : "score-empty" %>">
+                            <%= earnedScoreObj != null ? earnedScoreObj : "-" %>
                         </td>
-                        <td>28 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-view">
-                                <i class="fa-solid fa-eye"></i> ดูคำตอบ
-                            </button>
-                        </td>
-                    </tr>
 
-                    <!-- ROW 8 -->
-                    <tr>
-                        <td>8</td>
-                        <td><div class="question-name">ER_08 ข้อสอบย้อนหลัง</div></td>
-                        <td>25</td>
-                        <td class="score-empty">-</td>
+                        <!-- STATUS -->
                         <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
+                            <% if (submitted) { %>
+                                <span class="status submitted">
+                                    <i class="fa-solid fa-check"></i> ส่งแล้ว
+                                </span>
+                            <% } else { %>
+                                <span class="status not-started">
+                                    <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
+                                </span>
+                            <% } %>
                         </td>
-                        <td>30 ก.ย. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
-                        </td>
-                    </tr>
 
-                    <!-- ROW 9 -->
-                    <tr>
-                        <td>9</td>
-                        <td><div class="question-name">ER_09 แบบฝึกหัดเสริม</div></td>
-                        <td>25</td>
-                        <td class="score-empty">-</td>
+                        <!-- ACTION -->
                         <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
-                        </td>
-                        <td>5 ต.ค. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
+                            <% if (submitted) { %>
+                                <button type="button" class="btn-action btn-view" onclick="viewAnswer(<%= subjectId %>)">
+                                    <i class="fa-solid fa-eye"></i> ดูคำตอบ
+                                </button>
+                            <% } else { %>
+                                <button type="button" class="btn-action btn-start" onclick="startQuestion(<%= subjectId %>)">
+                                    <i class="fa-solid fa-pen"></i> เริ่มทำ
+                                </button>
+                            <% } %>
                         </td>
                     </tr>
-
-                    <!-- ROW 10 -->
+                <%
+                        }
+                    } catch (Exception e) {
+                %>
                     <tr>
-                        <td>10</td>
-                        <td><div class="question-name">ER_10 สรุปและทบทวน</div></td>
-                        <td>30</td>
-                        <td class="score-empty">-</td>
-                        <td>
-                            <span class="status not-started">
-                                <i class="fa-regular fa-clock"></i> ยังไม่ได้ทำ
-                            </span>
-                        </td>
-                        <td>10 ต.ค. 2569 23:59</td>
-                        <td>
-                            <button class="btn-action btn-start">
-                                <i class="fa-solid fa-pen"></i> เริ่มทำ
-                            </button>
+                        <td colspan="5" style="text-align:center; padding:30px; color:#dc3545;">
+                            เกิดข้อผิดพลาดในการโหลดข้อมูล: <%= e.getMessage() %>
                         </td>
                     </tr>
+                <%
+                    } finally {
+                        if (tableRs != null) { try { tableRs.close(); } catch (Exception e) {} }
+                        if (tablePs != null) { try { tablePs.close(); } catch (Exception e) {} }
+                        if (tableCon != null) { try { tableCon.close(); } catch (Exception e) {} }
+                    }
+                %>
                 </tbody>
             </table>
         </div>
 
-        <!-- PAGINATION -->
-        <div class="table-footer">
-            <div class="showing-text">แสดง 1 - 10 จาก 10 รายการ</div>
-            <div class="pagination">
-                <button class="page-btn disabled"><i class="fa-solid fa-chevron-left"></i></button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn disabled"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-        </div>
     </div>
 
 </div>
+
+<script>
+    function startQuestion(subjectId) {
+        window.location.href = "Question.jsp?subjectId=" + subjectId;
+    }
+
+    function viewAnswer(subjectId) {
+        window.location.href = "Question.jsp?subjectId=" + subjectId;
+    }
+</script>
 
 </body>
 </html>

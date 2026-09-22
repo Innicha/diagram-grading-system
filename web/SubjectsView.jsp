@@ -6,93 +6,25 @@
 <%
     String message = "";
     String messageType = "";
-    String action = request.getParameter("action");
 
-    Connection con = null;
-    PreparedStatement ps = null;
+    String subjectMessage = (String) session.getAttribute("subjectMessage");
+    String subjectMessageType = (String) session.getAttribute("subjectMessageType");
 
-    try {
-        con = DBConnection.getConnection();
-        if (con == null) {
-            throw new Exception("ไม่สามารถเชื่อมต่อ Database ได้");
-        }
+    if (subjectMessage != null) {
+        message = subjectMessage;
+        messageType = subjectMessageType;
 
-        /* ========================= ADD SUBJECT ========================= */
-        if ("add".equals(action)) {
-            String name = request.getParameter("name");
-            String pointText = request.getParameter("point");
-            String status = request.getParameter("status");
-            String sec = request.getParameter("sec");
-
-            if (name == null || name.trim().isEmpty()) throw new Exception("กรุณากรอกชื่อโจทย์");
-            if (pointText == null || pointText.trim().isEmpty()) throw new Exception("กรุณากรอกคะแนน");
-            if (sec == null || sec.trim().isEmpty()) throw new Exception("กรุณากรอกเซคชัน");
-
-            int point = Integer.parseInt(pointText);
-            String sql = "INSERT INTO subjects (name, point, status, sec) VALUES (?, ?, ?, ?)";
-
-            ps = con.prepareStatement(sql);
-            ps.setString(1, name.trim());
-            ps.setInt(2, point);
-            ps.setString(3, status);
-            ps.setString(4, sec.trim());
-            ps.executeUpdate();
-
-            ps.close();
-            ps = null;
-
-            response.sendRedirect(request.getRequestURI() + "?success=added");
-            return;
-        }
-
-        /* ========================= UPDATE STATUS ========================= */
-        if ("updateStatus".equals(action)) {
-            String id = request.getParameter("id");
-            String status = request.getParameter("status");
-
-            String sql = "UPDATE subjects SET status = ? WHERE id = ?";
-            ps = con.prepareStatement(sql);
-            ps.setString(1, status);
-            ps.setInt(2, Integer.parseInt(id));
-            ps.executeUpdate();
-
-            ps.close();
-            ps = null;
-
-            response.sendRedirect(request.getRequestURI() + "?success=updated");
-            return;
-        }
-
-        /* ========================= DELETE SUBJECT ========================= */
-        if ("delete".equals(action)) {
-            String id = request.getParameter("id");
-
-            String sql = "DELETE FROM subjects WHERE id = ?";
-            ps = con.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(id));
-            ps.executeUpdate();
-
-            ps.close();
-            ps = null;
-
-            response.sendRedirect(request.getRequestURI() + "?success=deleted");
-            return;
-        }
-
-    } catch (Exception e) {
-        message = e.getMessage();
-        messageType = "danger";
-    } finally {
-        if (ps != null) { try { ps.close(); } catch (Exception e) {} }
-        if (con != null) { try { con.close(); } catch (Exception e) {} }
+        session.removeAttribute("subjectMessage");
+        session.removeAttribute("subjectMessageType");
     }
 
     String success = request.getParameter("success");
+
     if ("added".equals(success)) {
         message = "เพิ่มโจทย์เรียบร้อยแล้ว";
         messageType = "success";
     } else if ("updated".equals(success)) {
-        message = "อัปเดตสถานะเรียบร้อยแล้ว";
+        message = "อัปเดตข้อมูลเรียบร้อยแล้ว";
         messageType = "success";
     } else if ("deleted".equals(success)) {
         message = "ลบโจทย์เรียบร้อยแล้ว";
@@ -118,14 +50,14 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/global.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/SubjectsView.css?v=2">
 </head>
+
 <body>
-
 <div class="container teacher-page py-4">
-
-    <!-- PAGE HEADER -->
     <div class="page-header">
         <div class="page-header-left">
-            <div class="icon-box-header"><i class="bi bi-file-earmark-text"></i></div>
+            <div class="icon-box-header">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
             <div>
                 <h3 class="header-title">จัดการโจทย์ (Subject)</h3>
                 <p class="header-subtitle">เพิ่ม ลบ และกำหนดการแสดงผลโจทย์สำหรับแต่ละเซคชัน</p>
@@ -133,7 +65,6 @@
         </div>
     </div>
 
-    <!-- MESSAGE -->
     <% if (!message.isEmpty()) { %>
         <div class="alert alert-<%= messageType %> alert-dismissible fade show" role="alert">
             <%= message %>
@@ -143,11 +74,13 @@
 
     <!-- ADD SUBJECT -->
     <div class="main-card add-subject-card">
-        <form method="post" action="<%= request.getRequestURI() %>">
+        <form method="post" action="SubjectAction.jsp">
             <input type="hidden" name="action" value="add">
 
             <div class="add-subject-header">
-                <div class="add-icon"><i class="bi bi-plus-lg"></i></div>
+                <div class="add-icon">
+                    <i class="bi bi-plus-lg"></i>
+                </div>
                 <div>
                     <h4>เพิ่มโจทย์ใหม่</h4>
                     <p>กรอกข้อมูลโจทย์และกำหนดการแสดงผล</p>
@@ -236,6 +169,7 @@
                             countCon = DBConnection.getConnection();
                             countPs = countCon.prepareStatement("SELECT COUNT(*) FROM subjects");
                             countRs = countPs.executeQuery();
+
                             if (countRs.next()) {
                                 totalSubjects = countRs.getInt(1);
                             }
@@ -252,20 +186,23 @@
             </div>
         </div>
 
-        <!-- TABLE -->
-        <div class="custom-table-container">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th style="width:7%;">#</th>
-                        <th style="width:28%;">Name (ชื่อโจทย์)</th>
-                        <th style="width:18%;">Point (คะแนน)</th>
-                        <th style="width:20%;">Status</th>
-                        <th style="width:19%;">Sec (เซคชัน)</th>
-                        <th style="width:8%; text-align:center;">Del</th>
-                    </tr>
-                </thead>
-                <tbody id="subjectTableBody">
+        <!-- TABLE FORM -->
+        <form method="post" action="SubjectAction.jsp" id="subjectUpdateForm">
+            <input type="hidden" name="action" value="updateAll">
+
+            <div class="custom-table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th style="width:7%;">#</th>
+                            <th style="width:28%;">Name (ชื่อโจทย์)</th>
+                            <th style="width:18%;">Point (คะแนน)</th>
+                            <th style="width:20%;">Status</th>
+                            <th style="width:19%;">Sec (เซคชัน)</th>
+                            <th style="width:8%; text-align:center;">Del</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectTableBody">
                     <%
                         Connection tableCon = null;
                         PreparedStatement tablePs = null;
@@ -278,6 +215,7 @@
                             rs = tablePs.executeQuery();
 
                             int rowNumber = 1;
+
                             while (rs.next()) {
                                 int id = rs.getInt("id");
                                 String name = rs.getString("name");
@@ -285,44 +223,58 @@
                                 String status = rs.getString("status");
                                 String sec = rs.getString("sec");
                     %>
-                    <tr>
-                        <td><%= rowNumber++ %></td>
-                        <td><input type="text" class="subject-table-input" value="<%= name %>" readonly></td>
-                        <td><input type="number" class="subject-table-input point-input" value="<%= point %>" readonly></td>
-                        <td>
-                            <form method="post" action="<%= request.getRequestURI() %>" class="status-form">
-                                <input type="hidden" name="action" value="updateStatus">
-                                <input type="hidden" name="id" value="<%= id %>">
+                        <tr>
+                            <!-- SUBJECT ID -->
+                            <input type="hidden" name="subjectIds" value="<%= id %>">
+
+                            <!-- NUMBER -->
+                            <td><%= rowNumber++ %></td>
+
+                            <!-- NAME -->
+                            <td>
+                                <input type="text" name="name_<%= id %>" class="subject-table-input" value="<%= name %>" required>
+                            </td>
+
+                            <!-- POINT -->
+                            <td>
+                                <input type="number" name="point_<%= id %>" class="subject-table-input point-input" value="<%= point %>" min="0" required>
+                            </td>
+
+                            <!-- STATUS -->
+                            <td>
                                 <div class="status-toggle">
                                     <label class="status-option">
-                                        <input type="radio" name="status" value="ON" <%= "ON".equals(status) ? "checked" : "" %> onchange="this.form.submit();">
+                                        <input type="radio" name="status_<%= id %>" value="ON" <%= "ON".equals(status) ? "checked" : "" %>>
                                         <span>On</span>
                                     </label>
                                     <label class="status-option">
-                                        <input type="radio" name="status" value="OFF" <%= "OFF".equals(status) ? "checked" : "" %> onchange="this.form.submit();">
+                                        <input type="radio" name="status_<%= id %>" value="OFF" <%= "OFF".equals(status) ? "checked" : "" %>>
                                         <span>Off</span>
                                     </label>
                                 </div>
-                            </form>
-                        </td>
-                        <td><input type="text" class="subject-table-input" value="<%= sec %>" readonly></td>
-                        <td class="text-center">
-                            <form method="post" action="<%= request.getRequestURI() %>" class="action-form" onsubmit="return confirm('คุณต้องการลบโจทย์นี้ใช่หรือไม่?');">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="<%= id %>">
-                                <button type="submit" class="btn-delete" title="ลบโจทย์">
+                            </td>
+
+                            <!-- SEC -->
+                            <td>
+                                <input type="text" name="sec_<%= id %>" class="subject-table-input" value="<%= sec %>" placeholder="เช่น 1,2,3" required>
+                            </td>
+
+                            <!-- DELETE -->
+                            <td class="text-center">
+                                <button type="button" class="btn-delete" title="ลบโจทย์" onclick="deleteSubject(<%= id %>)">
                                     <i class="bi bi-trash3"></i>
                                 </button>
-                            </form>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     <%
                             }
                         } catch (Exception e) {
                     %>
-                    <tr>
-                        <td colspan="6" class="error-state">เกิดข้อผิดพลาด: <%= e.getMessage() %></td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="error-state">
+                                เกิดข้อผิดพลาด: <%= e.getMessage() %>
+                            </td>
+                        </tr>
                     <%
                         } finally {
                             if (rs != null) { try { rs.close(); } catch (Exception e) {} }
@@ -330,19 +282,29 @@
                             if (tableCon != null) { try { tableCon.close(); } catch (Exception e) {} }
                         }
                     %>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SAVE BUTTON -->
+            <div class="text-center mt-4 mb-2">
+                <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-save me-2"></i>
+                    บันทึกการเปลี่ยนแปลง
+                </button>
+            </div>
+        </form>
+
+        <div class="table-footer">
+            แสดงข้อมูลโจทย์จากฐานข้อมูล
         </div>
-
-        <!-- FOOTER -->
-        <div class="table-footer">แสดงข้อมูลโจทย์จากฐานข้อมูล</div>
     </div>
-
 </div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+
 <script>
-    /* SEARCH */
+    /* ========================= SEARCH ========================= */
     document.getElementById("searchInput").addEventListener("input", function () {
         const keyword = this.value.toLowerCase();
         const rows = document.querySelectorAll("#subjectTableBody tr");
@@ -350,12 +312,13 @@
         rows.forEach(function (row) {
             const input = row.querySelector(".subject-table-input");
             if (!input) return;
+
             const name = input.value.toLowerCase();
             row.style.display = name.includes(keyword) ? "" : "none";
         });
     });
 
-    /* SECTION FILTER */
+    /* ========================= SECTION FILTER ========================= */
     document.getElementById("sectionFilter").addEventListener("change", function () {
         const section = this.value;
         const rows = document.querySelectorAll("#subjectTableBody tr");
@@ -363,16 +326,42 @@
         rows.forEach(function (row) {
             const inputs = row.querySelectorAll(".subject-table-input");
             if (inputs.length < 3) return;
-            const sec = inputs[2].value;
 
-            if (section === "" || sec.split(",").map(s => s.trim()).includes(section)) {
+            const sec = inputs[2].value;
+            if (section === "" || sec.split(",").map(function (s) { return s.trim(); }).includes(section)) {
                 row.style.display = "";
             } else {
                 row.style.display = "none";
             }
         });
     });
-</script>
 
+    /* ========================= DELETE ========================= */
+    function deleteSubject(id) {
+        if (!confirm("คุณต้องการลบโจทย์นี้ใช่หรือไม่?")) {
+            return;
+        }
+
+        const form = document.createElement("form");
+        form.method = "post";
+        form.action = "SubjectAction.jsp";
+
+        const actionInput = document.createElement("input");
+        actionInput.type = "hidden";
+        actionInput.name = "action";
+        actionInput.value = "delete";
+
+        const idInput = document.createElement("input");
+        idInput.type = "hidden";
+        idInput.name = "id";
+        idInput.value = id;
+
+        form.appendChild(actionInput);
+        form.appendChild(idInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </body>
 </html>
