@@ -20,86 +20,6 @@
     String Link = request.getAttribute("Loadfile5") != null ? request.getAttribute("Loadfile5").toString() : "";  
 %>
 
-<!-- ⭐ เพิ่ม CSS จัดการหน้าจอเต็มจอและการเลื่อน Scroll -->
-<style>
-    /* กำหนดพื้นที่กรอบวาดทั้งหมด */
-    #flowchart-wrapper {
-        display: flex !important;
-        height: 75vh !important; /* ความสูงเริ่มต้น */
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 12px !important;
-        background: #fff !important;
-        overflow: hidden !important;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    /* สไตล์เมื่ออยู่ในโหมดเต็มจอ */
-    #flowchart-wrapper:fullscreen {
-        height: 100vh !important;
-        border: none !important;
-        border-radius: 0 !important;
-    }
-
-    /* แถบเครื่องมือด้านซ้ายมือ */
-    .fc-sidebar {
-        width: 250px !important;
-        min-width: 250px !important;
-        border-right: 2px solid #cbd5e1 !important;
-        background-color: #f8fafc !important;
-        overflow-y: auto !important;
-        z-index: 10 !important;
-        padding: 15px;
-    }
-
-    /* พื้นที่ฝั่งขวา (กระดาน + Toolbar) */
-    .fc-canvas-container {
-        flex-grow: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-
-    /* แถบเครื่องมือด้านบน */
-    .fc-toolbar {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 12px 20px !important;
-        background: #ffffff !important;
-        border-bottom: 2px solid #cbd5e1 !important;
-        z-index: 10 !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;
-    }
-
-    /* พื้นที่ที่สามารถเลื่อน (Scroll) ได้แบบอิสระ */
-    .fc-scroll-area {
-        flex-grow: 1 !important;
-        overflow: auto !important; /* เปิดระบบ Scroll */
-        position: relative !important;
-        background-color: #f1f5f9 !important;
-        background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
-        background-size: 20px 20px !important;
-    }
-
-    /* กระดาน Canvas จริง (กำหนดให้ใหญ่ๆ 4000x4000 px) */
-    #fc-canvas {
-        width: 4000px !important;
-        height: 4000px !important;
-        position: relative !important;
-        background: transparent !important;
-    }
-
-    /* ปุ่ม Submit ลอยไว้ที่มุมขวาล่างเสมอ */
-    .fc-submit-area {
-        position: absolute !important;
-        bottom: 25px !important;
-        right: 25px !important;
-        z-index: 100 !important;
-    }
-</style>
-
 <div class="container-fluid p-4" style="min-height: 100vh; overflow-y: auto;">
     
     <div class="page-header d-flex align-items-center justify-content-between mb-4">
@@ -146,10 +66,6 @@
                     <i class="bi bi-hand-index-thumb me-1"></i> เลือกลากกล่องมาวาง หรือคลิกที่เส้นเพื่อลบ
                 </span>
                 <div>
-                    <!-- ⭐ ปุ่มเต็มจอ -->
-                    <button type="button" class="btn btn-outline-primary btn-sm me-2 shadow-sm" onclick="toggleFullscreen()">
-                        <i class="bi bi-arrows-fullscreen"></i> เต็มจอ
-                    </button>
                     <button type="button" class="btn btn-outline-danger btn-sm shadow-sm" onclick="clearCanvasData()">
                         <i class="bi bi-trash"></i> ล้างกระดานใหม่
                     </button>
@@ -186,28 +102,6 @@
     let selectedConnectionIndex = null; 
     let isConnectMode = false; 
     let currentLineType = null; 
-
-    // ⭐ ฟังก์ชันสำหรับสลับโหมด เต็มจอ (Fullscreen)
-    function toggleFullscreen() {
-        let elem = document.getElementById("flowchart-wrapper");
-        if (!document.fullscreenElement) {
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
-        }
-    }
 
     function fcAllowDrop(ev) { ev.preventDefault(); }
 

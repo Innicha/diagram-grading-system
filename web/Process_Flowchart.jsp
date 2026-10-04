@@ -21,24 +21,28 @@
     <style>
         body { font-family: 'Anuphan', sans-serif; background-color: #f4f6f9; padding: 40px 20px; }
         .result-card { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #dbe4f3; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .code-display { width: 100%; height: 350px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; padding: 15px; border-radius: 8px; border: 1px solid #ced4da; background-color: #1e1e1e; color: #dcdcaa; resize: vertical; white-space: pre; overflow-x: auto; }
+        .code-display { width: 100%; height: 250px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; padding: 15px; border-radius: 8px; border: 1px solid #ced4da; background-color: #1e1e1e; color: #dcdcaa; resize: vertical; white-space: pre; overflow-x: auto; }
         .js-display { color: #569cd6; } 
     </style>
 </head>
 <body>
 
     <div class="result-card text-center">
-        <div class="mb-4"><i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i></div>
+        <div class="mb-3"><i class="bi bi-check-circle-fill text-success" style="font-size: 3.5rem;"></i></div>
         <h2 class="fw-bold mb-4" style="color: #1e3a8a;">แปลง Flowchart สำเร็จ!</h2>
         
-        <div class="row text-start mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
+        <div class="row text-start mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="fw-bold text-dark mb-2"><i class="bi bi-code-square text-primary me-1"></i> 1. Generated Pseudocode:</label>
                 <textarea class="code-display" id="pseudocodeOutput" readonly>กำลังแปลงโค้ด...</textarea>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <label class="fw-bold text-dark mb-2"><i class="bi bi-filetype-js text-warning me-1"></i> 2. JavaScript Code:</label>
-                <textarea class="code-display js-display" id="jsOutput" readonly>// กดปุ่ม "แปลงเป็น JavaScript" ด้านล่างเพื่อดูผลลัพธ์</textarea>
+                <textarea class="code-display js-display" id="jsOutput" readonly>// กดปุ่ม "แปลงเป็น JavaScript" ด้านล่าง</textarea>
+            </div>
+            <div class="col-md-12">
+                <label class="fw-bold text-dark mb-2"><i class="bi bi-terminal-fill text-success me-1"></i> 3. ผลลัพธ์จากการรัน (Console Output):</label>
+                <textarea class="code-display" id="runOutput" style="height: 130px; color: #4ec9b0;" readonly>// ผลลัพธ์การรันจะแสดงที่นี่...</textarea>
             </div>
         </div>
         
@@ -46,13 +50,19 @@
             <button class="btn btn-outline-secondary px-4 py-2 fw-bold" onclick="window.history.back();">
                 <i class="bi bi-arrow-left me-1"></i> กลับไปวาดต่อ
             </button>
-            <button class="btn btn-warning px-4 py-2 fw-bold shadow-sm text-dark" onclick="convertToJS()">
+            <button class="btn btn-warning px-4 py-2 fw-bold shadow-sm text-dark" onclick="processConversion()">
                 <i class="bi bi-lightning-charge-fill me-1"></i> แปลงเป็น JavaScript
+            </button>
+            <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" onclick="processExecution()">
+                <i class="bi bi-play-fill me-1"></i> รันโค้ด (Run)
             </button>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // 1. ฟังก์ชันสร้าง Pseudocode จาก JSON ของ Flowchart
+        // ==========================================
         try {
             const rawData = '<%= safeJsonForJs %>';
             const flowchartData = JSON.parse(rawData);
@@ -145,36 +155,29 @@
         }
 
         // ==========================================
-        // ฟังก์ชันแปลงเป็น JavaScript โค้ดมาตรฐาน
+        // 2. ฟังก์ชันแปลง Pseudocode เป็น JavaScript
         // ==========================================
-        function convertToJS() {
-            let pseudo = document.getElementById("pseudocodeOutput").value;
-            let jsOutputBox = document.getElementById("jsOutput");
-
-            if (pseudo.includes("❌") || pseudo.trim() === "") {
-                jsOutputBox.value = "// ❌ ไม่สามารถแปลงได้"; return;
+        function convertPseudocodeToJS(pseudoText) {
+            if (!pseudoText || pseudoText.includes("❌") || pseudoText.trim() === "") {
+                return "// ❌ ไม่สามารถแปลงได้ กรุณาตรวจสอบข้อมูลอีกครั้ง";
             }
 
-            let lines = pseudo.split('\n');
+            let lines = pseudoText.split('\n');
             let jsLines = [];
-            
-            let declaredVars = new Set(); // เอาไว้จำว่าตัวแปรไหนประกาศ let ไปแล้วบ้าง
+            let declaredVars = new Set(); 
 
             lines.forEach(line => {
                 let trimmed = line.trim();
                 let indentMatch = line.match(/^\s*/);
-                // ดึงการย่อหน้า (Indent) มา แต่ตัดออกไป 4 เคาะแรกเพื่อให้โค้ด JS ชิดขอบซ้ายสวยงาม
                 let indent = indentMatch ? indentMatch[0] : ""; 
-                if (indent.length >= 4) indent = indent.substring(4);
+                if (indent.length >= 4) indent = indent.substring(4); 
 
                 if (trimmed === "Begin" || trimmed === "End") {
-                    return; // ข้าม Begin / End ไปเลย
+                    return; 
                 } 
                 else if (/^input/i.test(trimmed)) {
                     let varName = trimmed.replace(/^input\s+/i, '').trim();
-                    
                     if (!declaredVars.has(varName)) {
-                        // ใส่ let และใช้ 'Enter A:' (ไม่มีเว้นวรรคหลัง :)
                         jsLines.push(indent + "let " + varName + " = Number(prompt('Enter " + varName + ":'));");
                         declaredVars.add(varName);
                     } else {
@@ -183,7 +186,6 @@
                 } 
                 else if (/^(print|output)/i.test(trimmed)) {
                     let textToPrint = trimmed.replace(/^(print|output)\s+/i, '').trim();
-                    // เปลี่ยนเป็น console.log ตรงๆ
                     jsLines.push(indent + "console.log(" + textToPrint + ");");
                 } 
                 else if (/^if\s*\(/i.test(trimmed)) {
@@ -205,7 +207,6 @@
                     jsLines.push(indent + "}");
                 } 
                 else if (trimmed !== "") {
-                    // จัดการสมการคณิตศาสตร์ เช่น A = 2
                     let assignMatch = trimmed.match(/^([a-zA-Z_]\w*)\s*=/);
                     if (assignMatch && !trimmed.includes("==") && !trimmed.includes("+=") && !trimmed.includes("-=")) {
                         let vName = assignMatch[1];
@@ -221,7 +222,67 @@
                 }
             });
 
-            jsOutputBox.value = jsLines.join('\n').trim();
+            return jsLines.join('\n').trim();
+        }
+
+        // ==========================================
+        // 3. ฟังก์ชัน Compile และรันโค้ด
+        // ==========================================
+        function executeJavaScriptCode(jsCode) {
+            if (!jsCode || jsCode.includes("❌") || jsCode.startsWith("//")) {
+                return "⚠️ กรุณากดแปลงเป็น JavaScript ก่อนกดรันครับ!";
+            }
+
+            let logs = [];
+            let fakeConsole = {
+                log: function(...args) {
+                    logs.push(args.join(' '));
+                }
+            };
+
+            try {
+                let runFn = new Function('console', jsCode);
+                runFn(fakeConsole);
+
+                if (logs.length > 0) {
+                    return logs.join('\n');
+                } else {
+                    return "⚠️ โค้ดรันสำเร็จ แต่ไม่มีการแสดงผล (ไม่มีคำสั่ง console.log)";
+                }
+            } catch (error) {
+                return "❌ เกิดข้อผิดพลาดในการคอมไพล์ (Error):\n" + error.message;
+            }
+        }
+
+        // ==========================================
+        // 4. ปุ่มกดสั่งงานสำหรับหน้านี้
+        // ==========================================
+        function processConversion() {
+            let pseudoText = document.getElementById("pseudocodeOutput").value;
+            let jsCode = convertPseudocodeToJS(pseudoText);
+            document.getElementById("jsOutput").value = jsCode;
+        }
+
+        function processExecution() {
+            let jsCode = document.getElementById("jsOutput").value;
+            let runOutput = document.getElementById("runOutput");
+            
+            if (jsCode.includes("prompt")) {
+                runOutput.style.color = "#f39c12"; 
+                runOutput.value = "กำลังประมวลผล...\n(⏳ โปรดมองหาหน้าต่าง Popup ที่ด้านบนของจอเพื่อกรอกค่า!)";
+            } else {
+                runOutput.value = "กำลังประมวลผล...";
+            }
+
+            setTimeout(() => {
+                let result = executeJavaScriptCode(jsCode);
+                runOutput.value = result;
+                if (result.includes("❌")) {
+                    runOutput.style.color = "#ff6b6b"; 
+                } else {
+                    runOutput.style.color = "#4ec9b0"; 
+                }
+            }, 100);
         }
     </script>
 </body>
