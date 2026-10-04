@@ -32,6 +32,10 @@
                     <a class="nav-link <%= "6".equals(menu) ? "active" : "" %>" href="StudentsPart.jsp">STUDENTSPART</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link <%= "7".equals(menu) ? "active" : "" %>" href="ScoreView.jsp">SCORE</a>
+                </li>
+
             </ul>
         </div>
     </div>

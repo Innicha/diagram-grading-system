@@ -207,9 +207,8 @@
                             <th style="width:25%;">NAME (ชื่อ-นามสกุล)</th>
                             <th style="width:10%;">STATUS</th>
                             <th style="width:10%; text-align:center;">SEC</th>
-                            <th style="width:10%; text-align:center;">DELETE</th>
                             <th style="width:18%; text-align:center;">RESET PASSWORD</th>
-                            <th style="width:12%; text-align:center;">POINT</th>
+                            <th style="width:12%; text-align:center;">DELETE</th>
                         </tr>
                     </thead>
 
@@ -281,23 +280,6 @@
 
                             <td class="text-center student-sec"><%= secName %></td>
 
-                            <!-- DELETE -->
-                            <td class="text-center">
-                                <form method="post"
-                                      action="<%= request.getRequestURI() %>"
-                                      onsubmit="return confirm('คุณต้องการลบนักศึกษารายนี้ใช่หรือไม่?');"
-                                      class="action-form">
-
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="user_id" value="<%= userId %>">
-
-                                    <button type="submit" class="btn-delete" title="ลบข้อมูล">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
-
-                                </form>
-                            </td>
-
                             <!-- RESET PASSWORD -->
                             <td class="text-center">
                                 <form method="post"
@@ -315,9 +297,23 @@
                                 </form>
                             </td>
 
+                            <!-- DELETE -->
                             <td class="text-center">
-                                <input type="number" class="custom-input input-point" value="0">
+                                <form method="post"
+                                      action="<%= request.getRequestURI() %>"
+                                      onsubmit="return confirm('คุณต้องการลบนักศึกษารายนี้ใช่หรือไม่?');"
+                                      class="action-form">
+
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="user_id" value="<%= userId %>">
+
+                                    <button type="submit" class="btn-delete" title="ลบข้อมูล">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+
+                                </form>
                             </td>
+
                         </tr>
 
                         <%
