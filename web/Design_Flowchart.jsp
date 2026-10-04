@@ -102,11 +102,17 @@
 
 <div class="container-fluid p-4" style="min-height: 100vh; overflow-y: auto;">
     
-    <div class="page-header d-flex align-items-center mb-4">
-        <button type="button" class="btn btn-outline-primary btn-sm px-3 shadow-sm bg-white me-3" onclick="window.location.href='DesignAnswerkeys.jsp'">
-            <i class="bi bi-arrow-left me-1"></i>กลับ
+    <div class="page-header d-flex align-items-center justify-content-between mb-4">
+        <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">
+            สร้าง Flowchart
+        </h3>
+
+        <button type="button"
+                class="btn btn-outline-danger d-flex align-items-center gap-2"
+                onclick="downloadExercisePDF()">
+            <i class="fa-solid fa-file-pdf"></i>
+            ดาวน์โหลด PDF
         </button>
-        <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">สร้าง Flowchart </h3>
     </div>
 
     <!-- ⭐ กำหนด ID เพื่อให้กดเต็มจอได้ -->

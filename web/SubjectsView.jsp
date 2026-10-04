@@ -646,7 +646,7 @@ function goToCreateQuestion() {
         url = "CreateAnswerKey_Flowchart.jsp";
         questionType = "FLOWCHART";
     } else if (type === "Pseudocode") {
-        url = "CreateAnswerKey_Pseudocode.jsp";
+        url = "CreateAnswerKey_Flowchart.jsp";
         questionType = "PSEUDOCODE";
     } else {
         alert("ประเภทโจทย์ไม่ถูกต้อง");

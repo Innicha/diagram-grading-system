@@ -640,6 +640,68 @@ body {
 }
 
 
+/* บังคับขนาดตาราง */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.exercise-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse;
+}
+
+/* ป้องกัน CSS เดิมกำหนดความกว้างหัวตารางต่างจากข้อมูล */
+.exercise-table thead th,
+.exercise-table tbody td {
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+/* หัวตาราง */
+.exercise-table thead th {
+    padding: 18px 12px;
+    text-align: center !important;
+    background: #edf5ff;
+}
+
+/* ข้อมูลทุกคอลัมน์ */
+.exercise-table tbody td {
+    padding: 12px;
+    text-align: center !important;
+}
+
+/* ชื่อโจทย์ชิดซ้าย */
+.exercise-table .col-name {
+    text-align: left !important;
+    padding-left: 20px;
+}
+
+/* คะแนนเต็มและคะแนนที่ได้ */
+.exercise-table .col-score {
+    text-align: center !important;
+}
+
+/* สถานะ */
+.exercise-table .col-status {
+    text-align: center !important;
+}
+
+/* จัดการ */
+.exercise-table .col-action {
+    text-align: center !important;
+}
+
+/* ปุ่มอยู่ตรงกลางคอลัมน์ */
+.exercise-table .btn-action {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+
 /* =========================================================
    PAGINATION
 ========================================================= */

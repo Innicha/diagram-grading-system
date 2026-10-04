@@ -146,15 +146,23 @@
         <div class="table-wrapper">
             <table class="exercise-table">
 
-                <thead>
-                    <tr>
-                        <th class="col-name">ชื่อโจทย์</th>
-                        <th class="col-score">คะแนนเต็ม</th>
-                        <th class="col-score">คะแนนที่ได้</th>
-                        <th class="col-status">สถานะ</th>
-                        <th class="col-action">จัดการ</th>
-                    </tr>
-                </thead>
+    <colgroup>
+        <col style="width: 40%;">
+        <col style="width: 13%;">
+        <col style="width: 13%;">
+        <col style="width: 18%;">
+        <col style="width: 16%;">
+    </colgroup>
+
+    <thead>
+        <tr>
+            <th>ชื่อโจทย์</th>
+            <th>คะแนนเต็ม</th>
+            <th>คะแนนที่ได้</th>
+            <th>สถานะ</th>
+            <th>จัดการ</th>
+        </tr>
+    </thead>
 
                 <tbody>
                 <%
