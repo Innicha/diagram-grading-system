@@ -3,35 +3,36 @@
 /* ============================================== */
 
 body { 
-    background-color: #f5f7fb !important;
-    font-family: 'Anuphan', sans-serif !important;
+    background-color: #f5f7fb;
+    font-family: 'Anuphan', sans-serif;
 }
 
-/* Layout หลัก */
+/* Layout หลัก (ปรับให้รองรับการ Scroll) */
 .flowchart-wrapper {
-    display: flex !important;
-    height: 650px !important;
-    background-color: #ffffff !important;
-    border: 1px solid #dbe4f3 !important;
-    border-radius: 16px !important;
-    overflow: hidden !important;
+    display: flex;
+    height: 75vh;
+    background-color: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    position: relative !important;
+    position: relative;
 }
 
 /* Sidebar แถบซ้าย */
 .fc-sidebar {
-    width: 250px !important;
-    height: 100% !important;
-    background-color: #f8fafc !important;
-    border-right: 1px solid #e2e8f0 !important;
-    padding: 1.25rem 1rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    overflow-y: auto !important;
-    z-index: 10 !important;
-    flex-shrink: 0 !important;
+    width: 250px;
+    min-width: 250px;
+    height: 100%;
+    background-color: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    z-index: 10;
+    flex-shrink: 0;
 }
 
 /* สัญลักษณ์พื้นฐาน */
@@ -59,13 +60,13 @@ body {
 .fc-rect-green { background-color: #00e676; border: 1px solid #333; }
 .fc-parallelogram { background-color: #f8bbd0; transform: skew(-20deg); border: 1px solid #333; }
 .fc-parallelogram .fc-text-wrapper { transform: skew(20deg); }
-.fc-display { background-color: #29b6f6; border-radius: 0 25px 25px 0; clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); border: 1px solid #333; }
-.fc-display .fc-text-wrapper { padding-left: 10px; }
+.fc-display { background-color: #29b6f6; transform: skew(-20deg); border: 1px solid #333; }
+.fc-display .fc-text-wrapper { transform: skew(20deg);}
 
 .fc-diamond { background-color: #ab47bc; transform: rotate(45deg); border: 1px solid #333; width: 65px; height: 65px; margin: 15px 0 25px 0; }
 .fc-diamond .fc-text-wrapper { transform: rotate(-45deg); }
 
-.fc-circle { background-color: #f44336; border-radius: 50%; width: 50px !important; height: 50px !important; border: 1px solid #333; }
+.fc-circle { background-color: #f44336; border-radius: 50%; width: 50px; height: 50px; border: 1px solid #333; }
 .fc-diamond .fc-text, .fc-circle .fc-text { color: white; }
 
 /* เครื่องมือเส้น */
@@ -83,22 +84,56 @@ body {
     border: 2px solid #0d6efd; box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
 }
 
-/* พื้นที่ Canvas */
-.fc-canvas {
-    flex-grow: 1; height: 100% !important; position: relative !important;
-    background-color: #ffffff !important;
-    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px) !important;
-    background-size: 20px 20px !important; overflow: hidden;
+/* ============================================== */
+/* โครงสร้างพื้นที่ Canvas แบบ Scrollable 4000px */
+/* ============================================== */
+
+/* พื้นที่ฝั่งขวา (รวม Toolbar + Scroll Area) */
+.fc-canvas-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
 }
+
+/* แถบเครื่องมือด้านบน */
+.fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #ffffff;
+    border-bottom: 2px solid #cbd5e1;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+/* โซน Scrollable เลื่อนซ้าย-ขวา-ขึ้น-ลง */
+.fc-scroll-area {
+    flex-grow: 1;
+    overflow: auto; 
+    position: relative;
+    background-color: #f1f5f9;
+    background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+}
+
+/* กระดาน Canvas จริง */
+.fc-canvas {
+    width: 4000px;
+    height: 4000px;
+    position: relative;
+    background: transparent;
+}
+
+/* กล่องที่ลากมาวางในกระดาน */
 .fc-node { position: absolute; cursor: move; }
 
-/* Toolbar และ ปุ่ม Submit */
-.fc-toolbar {
-    position: absolute; top: 16px; left: 16px; z-index: 10;
-    display: flex; align-items: center; gap: 12px;
-    background-color: rgba(255, 255, 255, 0.95); padding: 8px 16px;
-    border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
+/* ปุ่ม Submit ลอยอยู่มุมขวาล่างเสมอ */
 .fc-submit-area {
-    position: absolute; bottom: 20px; right: 20px; z-index: 10;
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    z-index: 100;
 }
