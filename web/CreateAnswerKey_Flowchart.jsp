@@ -369,14 +369,6 @@
                            class="subject-input"
                            accept=".pdf,application/pdf"
                            <%= isEdit ? "" : "required" %>>
-
-                    <% if (isEdit && pdfFile != null && !pdfFile.isEmpty()) { %>
-                        <small class="text-muted">
-                            ไฟล์ PDF ปัจจุบัน:
-                            <%= html(pdfFile) %>
-                            — หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม
-                        </small>
-                    <% } %>
                 </div>
 
             </div>

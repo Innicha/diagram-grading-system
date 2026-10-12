@@ -459,54 +459,83 @@
         }
     }
 
+
     function submitFlowchart() {
         const canvas = document.getElementById("fc-canvas");
         const nodeElements = canvas.querySelectorAll(".fc-node");
-        
+
         if (nodeElements.length === 0) {
-            alert("กรุณาวาด Flowchart ก่อนกดส่งครับ");
+            alert("กรุณาวาด Flowchart ก่อนกดส่ง");
             return;
         }
 
-        let nodes = [];
-        let nodeMap = new Map(); 
+        // รับรหัสโจทย์จาก URL เช่น Design_Flowchart.jsp?questionId=12&mode=student
+        const params = new URLSearchParams(window.location.search);
+        const questionId = params.get("questionId");
+        const mode = params.get("mode");
 
-        nodeElements.forEach((elmnt, index) => {
-            let nodeId = "node_" + index; 
-            nodeMap.set(elmnt, nodeId);   
+        if (mode === "student" &&
+            (!questionId || !/^\d+$/.test(questionId))) {
+            alert("ไม่พบรหัสโจทย์ กรุณากลับไปเลือกโจทย์ใหม่");
+            return;
+        }
+
+        const nodes = [];
+        const nodeMap = new Map();
+
+        nodeElements.forEach((element, index) => {
+            const nodeId = "node_" + index;
+            nodeMap.set(element, nodeId);
+
+            const textElement = element.querySelector(".fc-text");
+
             nodes.push({
                 id: nodeId,
-                type: elmnt.getAttribute("data-type"),
-                text: elmnt.querySelector(".fc-text").innerText.trim()
+                type: element.getAttribute("data-type"),
+                text: textElement ? textElement.innerText.trim() : ""
             });
         });
 
-        let edges = [];
+        const edges = [];
+
         connections.forEach(conn => {
             if (nodeMap.has(conn.from) && nodeMap.has(conn.to)) {
                 edges.push({
                     from: nodeMap.get(conn.from),
-                    to: nodeMap.get(conn.to),    
+                    to: nodeMap.get(conn.to),
                     label: conn.label || "",
                     type: conn.type || "normal"
                 });
             }
         });
 
-        let flowchartPayload = JSON.stringify({ nodes: nodes, edges: edges });
-
-        let form = document.createElement("form");
+        const form = document.createElement("form");
         form.method = "POST";
-        form.action = "Process_Flowchart.jsp"; 
-        
-        let input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "flowchartData";
-        input.value = flowchartPayload;
-        
-        form.appendChild(input);
+        form.action = "Process_Flowchart.jsp";
+
+        function addHiddenInput(name, value) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        addHiddenInput("flowchartData", JSON.stringify({
+            nodes: nodes,
+            edges: edges
+        }));
+
+        if (questionId) {
+            addHiddenInput("questionId", questionId);
+        }
+
+        if (mode) {
+            addHiddenInput("mode", mode);
+        }
+
         document.body.appendChild(form);
-        
-        form.submit(); 
+        form.submit();
     }
+
 </script>

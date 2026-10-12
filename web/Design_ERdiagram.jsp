@@ -27,21 +27,7 @@
     
     <!-- ส่วน Header (ปุ่มกลับ และ ชื่อหน้า) -->
     <div class="page-header d-flex align-items-center mb-4">
-        <!-- เปลี่ยนไฟล์ใน window.location.href ให้ตรงกับที่คุณต้องการกลับไป -->
-        <button type="button" class="btn btn-outline-primary btn-sm px-3 shadow-sm bg-white me-3" onclick="window.location.href='DesignAnswerkeys.jsp'">
-            <i class="bi bi-arrow-left me-1"></i>กลับ
-        </button>
         <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">สร้าง ER Diagram</h3>
-    </div>
-
-    <!-- กล่องโจทย์ปัญหา (ใช้คลาส er-task-header จาก CSS ของคุณ) -->
-    <div class="er-task-header">
-        <h5><i class="bi bi-file-earmark-text-fill"></i> โจทย์ปัญหา / คำถาม (Question)</h5>
-        <p>
-            <strong>โจทย์: การออกแบบ ER Diagram สำหรับระบบจัดการข้อมูล</strong><br>
-            ให้นักเรียนลากรูปทรงจากแถบด้านซ้ายมาวางบนพื้นที่ทำงาน จากนั้นใช้ <b>"โหมดเชื่อมเส้น"</b> 
-            เพื่อเชื่อมต่อความสัมพันธ์ระหว่าง Entity, Attribute และ Relationship ให้ถูกต้อง (ดับเบิ้ลคลิกที่กล่องเพื่อแก้ไขข้อความ)
-        </p>
     </div>
 
     <!-- ระบบสร้าง ER Diagram Container (ดึงจากคลาส flowchart-wrapper ของคุณ) -->

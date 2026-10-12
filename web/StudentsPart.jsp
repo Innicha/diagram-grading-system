@@ -43,6 +43,39 @@
     int totalQuestions = 0;
     String errorMessage = "";
 
+    // ข้อมูลนักศึกษา
+    String studentName = "";
+    String studentUsername = "";
+    Integer studentSec = null;
+
+    // ดึงชื่อ รหัสนักศึกษา และ Section จากตาราง users
+    String userSql =
+        "SELECT full_name, username, sec " +
+        "FROM users " +
+        "WHERE id = ? AND role = 'student'";
+
+    try (Connection con = DBConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(userSql)) {
+
+        ps.setInt(1, studentId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                studentName = rs.getString("full_name");
+                studentUsername = rs.getString("username");
+
+                int secValue = rs.getInt("sec");
+                if (!rs.wasNull()) {
+                    studentSec = secValue;
+                }
+            }
+        }
+
+    } catch (Exception e) {
+        application.log("StudentsPart user query error", e);
+        errorMessage = "ไม่สามารถโหลดข้อมูลนักศึกษาได้";
+    }
+
     // นับจำนวนโจทย์จาก Section ของนักศึกษา
     String countSql =
         "SELECT COUNT(*) " +
@@ -124,15 +157,39 @@
     <!-- EXERCISE CONTAINER -->
     <div class="exercise-container">
 
-        <!-- FILTER BAR -->
         <div class="filter-bar">
-            <div class="filter-left">
+            <div class="filter-left d-flex justify-content-end align-items-center flex-wrap gap-3 w-100">
+
+                <!-- ชื่อนักศึกษา -->
+                <div class="question-count">
+                    <i class="fa-solid fa-user"></i>
+                    <span><%= escapeHtml(studentName) %></span>
+                </div>
+
+                <!-- รหัสนักศึกษา -->
+                <div class="question-count">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>
+                        รหัสนักศึกษา: <%= escapeHtml(studentUsername) %>
+                    </span>
+                </div>
+
+                <!-- Section -->
+                <div class="question-count">
+                    <i class="fa-solid fa-users"></i>
+                    <span>
+                        Sec: <%= studentSec != null ? studentSec.toString() : "-" %>
+                    </span>
+                </div>
+
+                <!-- จำนวนโจทย์ -->
                 <div class="question-count">
                     <i class="fa-solid fa-list"></i>
                     <span>
                         ทั้งหมด <%= totalQuestions %> รายการ
                     </span>
                 </div>
+
             </div>
         </div>
 
@@ -146,23 +203,25 @@
         <div class="table-wrapper">
             <table class="exercise-table">
 
-    <colgroup>
-        <col style="width: 40%;">
-        <col style="width: 13%;">
-        <col style="width: 13%;">
-        <col style="width: 18%;">
-        <col style="width: 16%;">
-    </colgroup>
+            <colgroup>
+            <col style="width:35%">
+            <col style="width:13%">
+            <col style="width:13%">
+            <col style="width:13%">
+            <col style="width:13%">
+            <col style="width:13%">
+            </colgroup>
 
-    <thead>
-        <tr>
-            <th>ชื่อโจทย์</th>
-            <th>คะแนนเต็ม</th>
-            <th>คะแนนที่ได้</th>
-            <th>สถานะ</th>
-            <th>จัดการ</th>
-        </tr>
-    </thead>
+            <thead>
+            <tr>
+                <th>ชื่อโจทย์</th>
+                <th>โจทย์</th>
+                <th>คะแนนเต็ม</th>
+                <th>คะแนนที่ได้</th>
+                <th>สถานะ</th>
+                <th>จัดการ</th>
+            </tr>
+            </thead>
 
                 <tbody>
                 <%
@@ -174,6 +233,7 @@
                         "q.name AS question_name, " +
                         "q.point AS max_point, " +
                         "q.sec, " +
+                        "q.pdf_file AS pdf_file, " + 
                         "COALESCE(alg.score, er.score) AS earned_score, " +
                         "COALESCE(alg.status, er.status) AS sub_status " +
                         "FROM questions q " +
@@ -212,6 +272,8 @@
 
                                 String questionName =
                                     rs.getString("question_name");
+
+                                String pdfFile = rs.getString("pdf_file");
 
                                 int maxPoint =
                                     rs.getInt("max_point");
@@ -267,6 +329,31 @@
                             <small class="text-muted">
                                 <%= escapeHtml(typeLabel) %>
                             </small>
+                        </td>
+
+                        <!-- Q -->
+                        <td class="text-center">
+                            <div class="pdf-actions"
+                                style="display:flex; align-items:center; justify-content:center; gap:8px;">
+
+                                <% if (pdfFile != null && !pdfFile.trim().isEmpty()) { %>
+
+                                    <a href="<%= request.getContextPath() %>/<%= escapeHtml(pdfFile.replaceFirst("^/+", "")) %>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="ดูไฟล์ PDF"
+                                    style="color:#dc3545; font-size:1.3rem;">
+
+                                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                                    </a>
+
+                                <% } else { %>
+
+                                    <span class="text-muted">ไม่มีไฟล์</span>
+
+                                <% } %>
+
+                            </div>
                         </td>
 
                         <!-- MAX SCORE -->

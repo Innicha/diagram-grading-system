@@ -31,37 +31,11 @@
 
             <!-- Header -->
             <div class="page-header d-flex align-items-center mb-4">
-                <a href="CreateAnswerkeys.jsp" class="btn btn-outline-primary btn-back"><i class="bi bi-arrow-left me-1"></i>กลับ</a>
                 <h3>สร้างเฉลย ER Diagram</h3>
                 <button type="button" class="btn btn-primary btn-save-page">
                     <i class="bi bi-floppy me-1"></i>
                     บันทึกเฉลย
                 </button>
-            </div>
-
-            <!-- Question Box -->
-            <div class="card question-box-card shadow-sm border-0 mb-4">
-                <!-- Header -->
-                <div class="card-header bg-transparent d-flex align-items-center justify-content-between py-3 px-4 border-bottom-0">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
-                        <h5 class="m-0 fw-bold text-dark">โจทย์ปัญหา / คำถาม (Question)</h5>
-                    </div>
-                    <!-- ปุ่มพับ/กาง สำหรับกล่องโจทย์ -->
-                    <button type="button" class="btn btn-icon text-muted toggle-question-btn" title="พับ/กาง โจทย์">
-                        <i class="bi bi-chevron-down question-toggle-icon"></i>
-                    </button>
-                </div>
-
-                <!-- Body (กำหนดพื้นที่พิมพ์ข้อความพร้อม Scrollbar) -->
-                <div class="card-body px-4 pb-4 pt-0 question-collapse-body">
-                    <div class="question-input-wrapper">
-                        <textarea 
-                            class="form-control question-textarea" 
-                            rows="5" 
-                            placeholder="ระบุโจทย์หรือรายละเอียดคำถามที่นี่..."></textarea>
-                    </div>
-                </div>
             </div>
 
             <!-- Main Grid Layout (Left 8 Cols / Right 4 Cols) -->
