@@ -1,451 +1,492 @@
 <%@page import="java.sql.*"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
 
 <mytag:ReadFile />
 <mytag:header menu="3"/>
-<mytag:check_login />  
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Create Answer Key ER Diagram</title>
+<mytag:check_login />
 
-        <!-- Google Fonts & FontAwesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<%
+    request.setCharacterEncoding("UTF-8");
+    String questionId = request.getParameter("questionId");
+    if (questionId == null) questionId = "";
+%>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Answer Key ER Diagram</title>
 
-        <!-- Bootstrap & Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <!-- Global CSS -->
-        <link rel="stylesheet" href="css/global.css">
-        <!-- Custom CSS -->
-        <link rel="stylesheet" href="css/AnswerKeyPages/AnswerKey_ERDiagram.css">
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/AnswerKeyPages/AnswerKey_ERDiagram.css">
+</head>
+<body>
+<div class="container-fluid answer-key-page">
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap">
+        <div>
+            <h3><i class="bi bi-file-earmark-code-fill text-primary me-2"></i>สร้างเฉลย ER Diagram</h3>
+            <p class="page-subtitle mb-0">กรอกชื่อตารางและแอตทริบิวต์ในรูปแบบตารางเฉลย พร้อมกำหนดความสัมพันธ์ได้อย่างแม่นยำ</p>
+        </div>
+        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+            <span class="question-chip"><i class="bi bi-journal-text me-1"></i> Question ID: <strong id="questionIdLabel"><%= questionId.isEmpty() ? "-" : questionId.replaceAll("[^0-9]", "") %></strong></span>
+            <button type="button" class="btn btn-primary btn-save-page" id="saveAnswerBtn">
+                <i class="bi bi-floppy me-1"></i> บันทึกเฉลย
+            </button>
+        </div>
+    </div>
 
-    <body>
-
-        <div class="container-fluid p-4">
-
-            <!-- Header -->
-            <div class="page-header d-flex align-items-center mb-4">
-                <h3>สร้างเฉลย ER Diagram</h3>
-                <button type="button" class="btn btn-primary btn-save-page">
-                    <i class="bi bi-floppy me-1"></i>
-                    บันทึกเฉลย
-                </button>
-            </div>
-
-            <!-- Main Grid Layout (Left 8 Cols / Right 4 Cols) -->
-            <div class="row g-4">
-                <!-- Left Column (Entity & Attribute Section) -->
-                <div class="col-lg-8">
-                    <div class="card card-er shadow-sm border-0 er-main-card">
-                        <div class="card-body p-4 d-flex flex-column">
-                            
-                            <!-- Section Title -->
-                            <div class="d-flex align-items-center mb-4 flex-shrink-0">
-                                <i class="bi bi-database-fill text-primary fs-3 me-2"></i>
-                                <h4 class="m-0 fw-bold text-dark">กำหนด Entity และ Attribute</h4>
-                            </div>
-
-                            <!-- Entities Grid Container ( Scrollbar เมื่อข้อมูลเกิน ) -->
-                            <div class="row g-4 er-scroll-container" id="entityContainer">
-                                <!-- JS จะ render entity cards 4 กล่องตรงนี้ -->
-                            </div>
-
-                            <!-- Add Entity Button -->
-                            <div class="mt-auto pt-3 flex-shrink-0">
-                                <button type="button" class="btn btn-add-entity w-100 py-3 fw-bold" id="addEntityBtn">
-                                    <i class="bi bi-plus-circle-fill me-1"></i> เพิ่ม Entity
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column (Relationship Section) -->
-                <div class="col-lg-4">
-                    <div class="card card-er shadow-sm border-0 er-main-card">
-                        <div class="card-body p-4 relationship-box d-flex flex-column">
-                            
-                            <!-- Header -->
-                            <div class="d-flex align-items-center mb-4 flex-shrink-0">
-                                <i class="bi bi-diagram-3-fill text-primary fs-3 me-2"></i>
-                                <h4 class="m-0 fw-bold text-dark">กำหนด Relationship</h4>
-                            </div>
-
-                            <!-- Container สำหรับรายการ Relationship Cards -->
-                            <div class="er-scroll-container" id="relationshipContainer">
-                                <!-- JS จะ render รายการความสัมพันธ์ตรงนี้ -->
-                            </div>
-
-                            <!-- ปุ่มเพิ่ม Relationship -->
-                            <div class="mt-auto pt-3 flex-shrink-0">
-                                <button type="button" class="btn btn-add-rel w-100 py-2.5 fw-bold" id="addRelBtn">
-                                    <i class="bi bi-plus-circle-fill me-1"></i> เพิ่ม Relationship
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-                <!-- Template สำหรับ Relationship Item -->
-                <template id="relTemplate">
-                    <div class="card rel-card mb-3">
-                        <div class="card-body p-3">
-                            <!-- Rel Header -->
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <!-- ฝั่งซ้าย: Badge ความสัมพันธ์ -->
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1.5 fs-7">
-                                    <i class="bi bi-link-45deg me-1"></i> ความสัมพันธ์
-                                </span>
-
-                                <!-- ฝั่งขวา: เครื่องมือ -->
-                                <div class="d-flex align-items-center">
-                                    
-                                    <!-- 1. ก้อนคะแนน -->
-                                    <div class="d-flex align-items-center bg-light border rounded px-2 py-0.5">
-                                        <span class="text-muted small me-1 fw-semibold" style="font-size: 0.75rem;">คะแนน:</span>
-                                        <input type="text" 
-                                            inputmode="numeric" 
-                                            pattern="[0-9]*" 
-                                            class="form-control form-control-sm border-0 p-0 text-center fw-bold text-success entity-score-input" 
-                                            name="relScore[]" 
-                                            placeholder="0" 
-                                            value="10" 
-                                            style="width: 28px; font-size: 0.8rem; background: transparent;">
-                                    </div>
-
-                                    <!-- 2. ไอคอนลบ -->
-                                    <button type="button" class="btn btn-icon-sm text-danger p-0 delete-rel-btn" title="ลบ" style="margin-left: 15px;">
-                                        <i class="bi bi-trash fs-6"></i>
-                                    </button>
-
-                                    <!-- 3. ไอคอนพับ/กาง -->
-                                    <button type="button" class="btn btn-icon-sm text-muted p-0 toggle-collapse-btn" data-bs-toggle="collapse" style="margin-left: 15px;">
-                                        <i class="bi bi-chevron-down toggle-icon fs-6"></i>
-                                    </button>
-
-                                </div>
-                            </div>
-
-                            <!-- Source Entity & Column -->
-                            <div class="row g-2 mb-2">
-                                <div class="col-6">
-                                    <label class="form-label fs-7 text-muted mb-1">ตารางต้นทาง</label>
-                                    <select class="form-select form-select-sm rel-source-entity" name="relSourceEntity[]">
-                                        <option value="">-- เลือกตาราง --</option>
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label fs-7 text-muted mb-1">คอลัมน์ (FK/PK)</label>
-                                    <select class="form-select form-select-sm rel-source-attr" name="relSourceAttr[]">
-                                        <option value="">-- เลือกคอลัมน์ --</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Cardinality / Relationship Type -->
-                            <div class="my-2 py-1">
-                                <label class="form-label fs-7 text-muted mb-1 d-block">ประเภทความสัมพันธ์</label>
-                                <select class="form-select form-select-sm rel-type-select w-100" name="relType[]">
-                                    <option value="1:1">One-to-One (1 : 1)</option>
-                                    <option value="1:N" selected>One-to-Many (1 : N)</option>
-                                    <option value="N:M">Many-to-Many (N : M)</option>
-                                </select>
-                            </div>
-
-                            <!-- Target Entity & Column -->
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="form-label fs-7 text-muted mb-1">ตารางปลายทาง</label>
-                                    <select class="form-select form-select-sm rel-target-entity" name="relTargetEntity[]">
-                                        <option value="">-- เลือกตาราง --</option>
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label fs-7 text-muted mb-1">คอลัมน์อ้างอิง</label>
-                                    <select class="form-select form-select-sm rel-target-attr" name="relTargetAttr[]">
-                                        <option value="">-- เลือกคอลัมน์ --</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </template>
-
+    <div class="answer-card">
+        <div class="answer-card-heading">
+            <div class="heading-icon"><i class="bi bi-table"></i></div>
+            <div>
+                <h4>ตารางเฉลย</h4>
+                <p>คลิกช่องที่ต้องการแล้วพิมพ์ได้ทันที รองรับการระบุ PK และ FK ในช่องแอตทริบิวต์</p>
             </div>
         </div>
 
-        <!-- HTML Templates for Dynamic JS rendering -->
-        <template id="entityTemplate">
-            <div class="col-md-6 mb-4 entity-card-wrapper">
-                <div class="card entity-card h-100">
-                    <!-- header -->
-                    <div class="card-header entity-header d-flex align-items-center justify-content-between bg-transparent">
-                        <!-- ฝั่งซ้าย: ไอคอน + ชื่อ Entity -->
-                        <div class="d-flex align-items-center gap-2 flex-grow-1 me-2">
-                            <i class="bi bi-table text-primary fs-5"></i>
-                            <input type="text" class="form-control form-control-plaintext fw-bold text-primary fs-5 entity-title-input" 
-                                name="entityName[]" placeholder="ระบุชื่อ Entity..." value="EntityName">
-                        </div>
-
-                        <!-- ฝั่งขวา: ช่องกำหนดคะแนน + ปุ่มเครื่องมือต่าง ๆ -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- ช่องกำหนดคะแนน (Score Input) -->
-                            <div class="d-flex align-items-center bg-light border rounded px-2 py-1">
-                                <span class="text-muted small me-1 fw-semibold">คะแนน:</span>
-                                <input type="text" inputmode="numeric" pattern="[0-9]*" 
-                                    class="form-control form-control-sm border-0 p-0 text-center fw-bold text-success entity-score-input" 
-                                    name="entityScore[]" placeholder="0" value="10" style="width: 30px; background: transparent;">
-                            </div>
-                            <button type="button" class="btn btn-icon text-muted edit-entity-btn" title="แก้ไขชื่อ">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button type="button" class="btn btn-icon text-danger delete-entity-btn" title="ลบ Entity">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            <!-- ปุ่มพับ/กาง (ใส่ data-bs-toggle="collapse" ไว้) -->
-                            <button type="button" class="btn btn-icon text-muted toggle-collapse-btn" data-bs-toggle="collapse">
-                                <i class="bi bi-chevron-down toggle-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- fig Attribute (เพิ่ม collapse show และ class entity-collapse-body) -->
-                    <div class="card-body p-3 collapse show entity-collapse-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2 px-1 text-muted small fw-semibold">
-                            <span style="width: 45%;">Attribute</span>
-                            <span style="width: 40%;">ประเภท</span>
-                            <span class="text-end">
-                            <button type="button" class="btn btn-add-attr-sq add-attribute-btn" title="เพิ่ม Attribute">
-                                <i class="bi bi-plus-lg"></i>
-                            </button>
-                            </span>
-                        </div>
-
-                        <div class="attribute-list">
-                            <!-- JS จะใส่ attribute rows ตรงนี้ -->
-                        </div>
-                    </div>
-                </div>
+        <div class="answer-toolbar">
+            <div class="toolbar-left">
+                <button type="button" class="btn btn-light border" id="addRowBtn"><i class="bi bi-plus-lg me-1"></i>เพิ่มแถว</button>
+                <button type="button" class="btn btn-light border" id="addFiveRowsBtn"><i class="bi bi-plus-square me-1"></i>เพิ่ม 5 แถว</button>
+                <button type="button" class="btn btn-light border" id="markPkBtn"><i class="bi bi-key me-1"></i>ใส่ PK</button>
+                <button type="button" class="btn btn-light border" id="markFkBtn"><i class="bi bi-link-45deg me-1"></i>ใส่ FK</button>
+                <button type="button" class="btn btn-outline-danger" id="clearGridBtn"><i class="bi bi-eraser me-1"></i>ล้างตาราง</button>
             </div>
-        </template>
+            <span class="toolbar-note"><i class="bi bi-info-circle me-1 text-primary"></i>เลือกช่องก่อนกดปุ่ม PK/FK</span>
+        </div>
 
-        <template id="attributeTemplate">
-            <div class="attribute-row d-flex align-items-center mb-2 gap-2">
-                <i class="bi bi-three-dots-vertical text-muted drag-handle"></i>
-                <div class="flex-grow-1">
-                    <input type="text" class="form-control form-control-sm attr-name-input" name="attributeName[]" placeholder="ชื่อ Attribute">
+        <div class="answer-table-wrap">
+            <table class="answer-grid" id="answerGrid">
+                <thead>
+                    <tr>
+                        <th class="table-name-heading">ชื่อตาราง</th>
+                        <% for (int i = 1; i <= 10; i++) { %>
+                            <th>C<%= i %></th>
+                        <% } %>
+                        <th class="delete-heading"><i class="bi bi-trash"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="answerGridBody"></tbody>
+            </table>
+        </div>
+
+        <div class="relationship-card">
+            <div class="relationship-heading">
+                <div>
+                    <h4><i class="bi bi-diagram-3 me-1 text-primary"></i> กำหนดความสัมพันธ์ระหว่างตาราง</h4>
+                    <p>เลือกตารางที่เชื่อมโยงกัน พร้อมระบุชนิดและ Cardinality</p>
                 </div>
-                <div class="d-flex align-items-center flex-shrink-0" style="width: 50%; gap: 5px;">
-                    <select class="form-select form-select-sm attr-type-select" name="attributeType[]">
-                        <option value="NORMAL">Normal</option>
-                        <option value="PK">Primary Key</option>
-                        <option value="FK">Foreign Key</option>
-                        <option value="PK_FK">Primary + Foreign Key</option>
-                    </select>
-                    <span class="badge badge-type-tag"></span>
-                </div>
-                <button type="button" class="btn btn-icon-sm text-danger remove-attribute-btn" title="ลบ">
-                    <i class="bi bi-trash"></i>
+                <button type="button" class="btn btn-primary" id="addRelationshipBtn">
+                    <i class="bi bi-plus-lg me-1"></i> เพิ่มความสัมพันธ์
                 </button>
             </div>
-        </template>
 
-        <!-- Script -->
-        <script>
-        let entityCounter = 0;
+            <div class="relationship-table-wrap">
+                <table class="relationship-table">
+                    <thead>
+                        <tr>
+                            <th>ชื่อตารางต้นทาง</th>
+                            <th>ความสัมพันธ์</th>
+                            <th>ชื่อตารางปลายทาง</th>
+                            <th>Cardinality</th>
+                            <th style="width: 70px; text-align: center;"><i class="bi bi-trash"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="relationshipBody"></tbody>
+                </table>
+            </div>
+            <p class="relationship-hint">
+                <i class="bi bi-lightbulb me-1 text-warning"></i> <strong>ตัวอย่าง:</strong> Student → Enrollment แบบ 1:N หมายถึงนักศึกษาหนึ่งคนมีรายการลงทะเบียนได้หลายรายการ
+            </p>
+        </div>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const entityContainer = document.getElementById('entityContainer');
-            const addEntityBtn = document.getElementById('addEntityBtn');
-            const attributeTemplate = document.getElementById('attributeTemplate');
+        <div class="answer-footer">
+            <div class="answer-notes">
+                <label for="answerNotes"><i class="bi bi-chat-square-text me-1"></i>หมายเหตุ / คำอธิบายเฉลย</label>
+                <textarea id="answerNotes" rows="2" placeholder="พิมพ์คำอธิบายเพิ่มเติม (ถ้ามี)"></textarea>
+            </div>
+            <div class="max-score-box">
+                <label for="maxScore"><i class="bi bi-award me-1"></i>คะแนนเต็ม</label>
+                <div class="score-input-wrap">
+                    <input type="number" id="maxScore" min="0" step="0.5" value="10">
+                    <span>คะแนน</span>
+                </div>
+            </div>
+        </div>
 
-            function createAttributeRow(name = '', type = 'NORMAL') {
-                const clone = attributeTemplate.content.cloneNode(true);
-                const row = clone.querySelector('.attribute-row');
-                const nameInput = clone.querySelector('.attr-name-input');
-                const typeSelect = clone.querySelector('.attr-type-select');
-                const badge = clone.querySelector('.badge-type-tag');
-                const removeBtn = clone.querySelector('.remove-attribute-btn');
+        <div class="save-status" id="saveStatus" role="status" aria-live="polite"></div>
+        
+        <div class="bottom-actions">
+            <span class="bottom-hint"><i class="bi bi-shield-check me-1 text-success"></i>ข้อมูลที่กรอกจะถูกรวบรวมเป็น JSON เพื่อส่งไปบันทึกเฉลยอัตโนมัติ</span>
+            <button type="button" class="btn btn-primary btn-save-bottom" id="saveAnswerBtnBottom">
+                <i class="bi bi-check2-circle me-1"></i>บันทึกเฉลย
+            </button>
+        </div>
+    </div>
+</div>
 
-                nameInput.value = name;
-                typeSelect.value = type;
+<script>
+(() => {
+    const body = document.getElementById('answerGridBody');
+    const relationshipBody = document.getElementById('relationshipBody');
+    const questionId = '<%= questionId.replaceAll("[^0-9]", "") %>';
+    const selected = { input: null };
+    const STORAGE_KEY = 'er-answer-draft-' + (questionId || 'new');
+    let rowCounter = 0;
 
-                function updateBadge() {
-                    const val = typeSelect.value;
-                    badge.className = 'badge badge-type-tag'; 
-                    badge.style.display = ''; 
+    function makeCell(value, label, extraClass) {
+        const td = document.createElement('td');
+        if (extraClass) td.className = extraClass;
 
-                    if (val === 'PK') {
-                        badge.textContent = 'PK';
-                        badge.classList.add('badge-pk');
-                        badge.style.display = 'inline-block';
-                    } else if (val === 'FK') {
-                        badge.textContent = 'FK';
-                        badge.classList.add('badge-fk');
-                        badge.style.display = 'inline-block';
-                    } else if (val === 'PK_FK') {
-                        badge.textContent = 'PK/FK';
-                        badge.classList.add('badge-pk');
-                        badge.style.display = 'inline-block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-
-                typeSelect.addEventListener('change', updateBadge);
-                removeBtn.addEventListener('click', () => row.remove());
-
-                updateBadge();
-                return clone;
-            }
-
-            function createEntityCard(entityName = 'NewEntity', attributes = []) {
-                const clone = document.getElementById('entityTemplate').content.cloneNode(true);
-                const cardWrapper = clone.querySelector('.entity-card-wrapper');
-                const nameInput = clone.querySelector('.entity-title-input');
-                const attrList = clone.querySelector('.attribute-list');
-                const addAttrBtn = clone.querySelector('.add-attribute-btn');
-                const deleteEntityBtn = clone.querySelector('.delete-entity-btn');
-                const editEntityBtn = clone.querySelector('.edit-entity-btn');
-                
-                const collapseBtn = clone.querySelector('.toggle-collapse-btn');
-                const collapseBody = clone.querySelector('.entity-collapse-body');
-                const toggleIcon = clone.querySelector('.toggle-icon');
-                const entityCard = clone.querySelector('.entity-card');
-
-                collapseBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const isCollapsed = collapseBody.classList.contains('d-none');
-                    
-                    if (isCollapsed) {
-                        collapseBody.classList.remove('d-none');
-                        entityCard.classList.add('h-100');
-                        toggleIcon.classList.remove('bi-chevron-up');
-                        toggleIcon.classList.add('bi-chevron-down');
-                    } else {
-                        collapseBody.classList.add('d-none');
-                        entityCard.classList.remove('h-100');
-                        toggleIcon.classList.remove('bi-chevron-down');
-                        toggleIcon.classList.add('bi-chevron-up');
-                    }
-                });
-
-                nameInput.value = entityName;
-
-                editEntityBtn.addEventListener('click', () => nameInput.focus());
-
-                addAttrBtn.addEventListener('click', () => {
-                    attrList.appendChild(createAttributeRow());
-                });
-
-                deleteEntityBtn.addEventListener('click', () => {
-                    if (confirm(`คุณต้องการลบ Entity "${nameInput.value}" ใช่หรือไม่?`)) {
-                        cardWrapper.remove();
-                    }
-                });
-
-                if (attributes.length > 0) {
-                    attributes.forEach(attr => {
-                        attrList.appendChild(createAttributeRow(attr.name, attr.type));
-                    });
-                } else {
-                    attrList.appendChild(createAttributeRow());
-                }
-
-                return clone;
-            }
-
-            addEntityBtn.addEventListener('click', () => {
-                entityContainer.appendChild(createEntityCard('NewEntity'));
-            });
-
-            for (let i = 0; i < 4; i++) {
-                entityContainer.appendChild(createEntityCard('NewEntity'));
-            }
-
-            const relCard = createRelationshipCard(true); // ส่ง true เพื่อสั่งพับตั้งแต่เริ่ม
-            document.getElementById('relationshipContainer').appendChild(relCard);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = value || '';
+        input.autocomplete = 'off';
+        input.setAttribute('aria-label', label);
+        input.addEventListener('focus', () => selected.input = input);
+        input.addEventListener('input', () => {
+            decorateInput(input);
+            refreshRelationshipTables();
         });
 
-        // ฟังก์ชันสร้าง Relationship Card
-        function createRelationshipCard(startCollapsed = false) {
-            const relTemplate = document.getElementById('relTemplate');
-            const clone = relTemplate.content.cloneNode(true);
-            const card = clone.querySelector('.rel-card');
-            const deleteBtn = clone.querySelector('.delete-rel-btn');
+        decorateInput(input);
+        td.appendChild(input);
+        return td;
+    }
 
-            const sourceEntitySelect = clone.querySelector('.rel-source-entity');
-            const targetEntitySelect = clone.querySelector('.rel-target-entity');
+    function decorateInput(input) {
+        input.classList.toggle('is-pk', /\bPK\b/i.test(input.value));
+        input.classList.toggle('is-fk', /\bFK\b/i.test(input.value));
+    }
 
-            const collapseBtn = clone.querySelector('.toggle-collapse-btn');
-            const toggleIcon = clone.querySelector('.toggle-icon');
-            
-            const cardBody = clone.querySelector('.card-body');
-            const contentElements = Array.from(cardBody.children).slice(1);
+    function addRow(values = []) {
+        rowCounter++;
+        const tr = document.createElement('tr');
+        tr.dataset.rowId = String(rowCounter);
 
-            // ฟังก์ชันสั่งพับ / กาง
-            function toggleCollapse(collapse) {
-                if (collapse) {
-                    contentElements.forEach(el => el.classList.add('d-none'));
-                    toggleIcon.classList.remove('bi-chevron-down');
-                    toggleIcon.classList.add('bi-chevron-up');
-                } else {
-                    contentElements.forEach(el => el.classList.remove('d-none'));
-                    toggleIcon.classList.remove('bi-chevron-up');
-                    toggleIcon.classList.add('bi-chevron-down');
-                }
-            }
+        tr.appendChild(makeCell(values[0] || '', 'ชื่อตาราง', 'table-name-cell'));
 
-            collapseBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const isCollapsed = contentElements[0].classList.contains('d-none');
-                toggleCollapse(!isCollapsed);
-            });
-
-            // ถ้าสั่งให้พับตั้งแต่แรก (startCollapsed === true)
-            if (startCollapsed) {
-                toggleCollapse(true);
-            }
-
-            function populateEntitySelects() {
-                const entityInputs = document.querySelectorAll('.entity-title-input');
-                const currentSource = sourceEntitySelect.value;
-                const currentTarget = targetEntitySelect.value;
-
-                sourceEntitySelect.innerHTML = '<option value="">-- เลือกตาราง --</option>';
-                targetEntitySelect.innerHTML = '<option value="">-- เลือกตาราง --</option>';
-
-                entityInputs.forEach(input => {
-                    const name = input.value.trim() || 'Untitled';
-                    const opt1 = new Option(name, name);
-                    const opt2 = new Option(name, name);
-                    
-                    sourceEntitySelect.add(opt1);
-                    targetEntitySelect.add(opt2);
-                });
-
-                sourceEntitySelect.value = currentSource;
-                targetEntitySelect.value = currentTarget;
-            }
-
-            deleteBtn.addEventListener('click', () => card.remove());
-            populateEntitySelects();
-
-            return clone;
+        for (let i = 1; i <= 10; i++) {
+            tr.appendChild(makeCell(values[i] || '', 'C' + i, ''));
         }
 
-        document.getElementById('addRelBtn').addEventListener('click', () => {
-            document.getElementById('relationshipContainer').appendChild(createRelationshipCard(false));
+        const action = document.createElement('td');
+        action.className = 'delete-cell';
+
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'delete-row-btn';
+        del.title = 'ลบแถว';
+        del.setAttribute('aria-label', 'ลบแถว');
+        del.innerHTML = '<i class="bi bi-x-lg"></i>';
+
+        del.addEventListener('click', () => {
+            tr.remove();
+            refreshRelationshipTables();
         });
-        </script>
-    </body>
+
+        action.appendChild(del);
+        tr.appendChild(action);
+        body.appendChild(tr);
+    }
+
+    function addRows(count) {
+        for (let i = 0; i < count; i++) addRow();
+    }
+
+    function markSelected(type) {
+        if (!selected.input) {
+            showStatus('กรุณาคลิกช่องแอตทริบิวต์ที่ต้องการก่อน', false);
+            return;
+        }
+
+        const input = selected.input;
+        const value = input.value.trim();
+        const regex = new RegExp('(^|\\s)' + type + '(\\s|$)', 'i');
+
+        if (!regex.test(value)) {
+            input.value = value ? value + ' ' + type : type;
+        }
+
+        decorateInput(input);
+        input.focus();
+    }
+
+    // อ่านรายชื่อตารางจากคอลัมน์แรก
+    function getTableNames() {
+        return [...body.querySelectorAll('tr')]
+            .map(tr => tr.querySelector('.table-name-cell input')?.value.trim())
+            .filter(Boolean)
+            .filter((name, index, all) => all.indexOf(name) === index);
+    }
+
+    // สร้าง dropdown
+    function makeSelect(options, selectedValue = '') {
+        const select = document.createElement('select');
+
+        options.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.value;
+            option.textContent = item.label;
+            select.appendChild(option);
+        });
+
+        select.value = selectedValue;
+        return select;
+    }
+
+    // อัปเดต dropdown โดยพยายามรักษาค่าที่เลือกไว้
+    function refreshRelationshipTables() {
+        if (!relationshipBody) return;
+
+        const names = getTableNames();
+
+        relationshipBody.querySelectorAll('.table-source, .table-target')
+            .forEach(select => {
+                const oldValue = select.value;
+                select.innerHTML = '';
+
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = '-- เลือกตาราง --';
+                select.appendChild(placeholder);
+
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+
+                select.value = names.includes(oldValue) ? oldValue : '';
+            });
+    }
+
+    function addRelationship(data = {}) {
+        const tr = document.createElement('tr');
+
+        const sourceCell = document.createElement('td');
+        const source = makeSelect(
+            [{ value: '', label: '-- เลือกตาราง --' }],
+            data.source || ''
+        );
+        source.className = 'table-source';
+        sourceCell.appendChild(source);
+
+        const typeCell = document.createElement('td');
+        const type = makeSelect([
+            { value: 'HAS', label: 'มี / ประกอบด้วย' },
+            { value: 'ENROLLS', label: 'ลงทะเบียน' },
+            { value: 'BELONGS_TO', label: 'สังกัด' },
+            { value: 'ASSOCIATED_WITH', label: 'เชื่อมโยงกับ' },
+            { value: 'IDENTIFYING', label: 'ความสัมพันธ์ระบุเอกลักษณ์' }
+        ], data.type || 'ASSOCIATED_WITH');
+        typeCell.appendChild(type);
+
+        const targetCell = document.createElement('td');
+        const target = makeSelect(
+            [{ value: '', label: '-- เลือกตาราง --' }],
+            data.target || ''
+        );
+        target.className = 'table-target';
+        targetCell.appendChild(target);
+
+        const cardinalityCell = document.createElement('td');
+        const cardinality = makeSelect([
+            { value: '1:1', label: '1 : 1' },
+            { value: '1:N', label: '1 : N' },
+            { value: 'N:1', label: 'N : 1' },
+            { value: 'M:N', label: 'M : N' }
+        ], data.cardinality || '1:N');
+        cardinalityCell.appendChild(cardinality);
+
+        const deleteCell = document.createElement('td');
+        deleteCell.style.textAlign = 'center';
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-row-btn';
+        deleteBtn.title = 'ลบความสัมพันธ์';
+        deleteBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+        deleteBtn.addEventListener('click', () => tr.remove());
+        deleteCell.appendChild(deleteBtn);
+
+        tr.append(sourceCell, typeCell, targetCell, cardinalityCell, deleteCell);
+        relationshipBody.appendChild(tr);
+
+        refreshRelationshipTables();
+
+        // กำหนดค่าหลังสร้าง options ของ dropdown แล้ว
+        source.value = data.source || '';
+        target.value = data.target || '';
+    }
+
+    // รวบรวมความสัมพันธ์ทั้งหมด
+    function collectRelationships() {
+        return [...relationshipBody.querySelectorAll('tr')]
+            .map(tr => ({
+                source: tr.querySelector('.table-source').value,
+                type: tr.querySelectorAll('select')[1].value,
+                target: tr.querySelector('.table-target').value,
+                cardinality: tr.querySelectorAll('select')[2].value
+            }))
+            .filter(r => r.source && r.target);
+    }
+
+    function collectData() {
+        const rows = [];
+
+        [...body.querySelectorAll('tr')].forEach((tr, index) => {
+            const values = [...tr.querySelectorAll('input')]
+                .map(input => input.value.trim());
+
+            if (values.some(value => value !== '')) {
+                rows.push({
+                    row: index + 1,
+                    tableName: values[0],
+                    columns: values.slice(1).map((value, i) => ({
+                        column: 'C' + (i + 1),
+                        value: value,
+                        keyType:
+                            /\bPK\b/i.test(value) && /\bFK\b/i.test(value)
+                                ? 'PK_FK'
+                                : /\bPK\b/i.test(value)
+                                    ? 'PK'
+                                    : /\bFK\b/i.test(value)
+                                        ? 'FK'
+                                        : 'NORMAL'
+                    })).filter(col => col.value !== '')
+                });
+            }
+        });
+
+        return {
+            version: 1,
+            format: 'ER_ANSWER_TABLE',
+            questionId: questionId,
+            columnCount: 10,
+            rows: rows,
+            relationships: collectRelationships(),
+            answerText: document.getElementById('answerNotes').value.trim(),
+            maxScore: document.getElementById('maxScore').value
+        };
+    }
+
+    function showStatus(message, success) {
+        const status = document.getElementById('saveStatus');
+        status.textContent = message;
+        status.className = 'save-status ' + (success ? 'success' : 'error');
+        status.style.display = 'block';
+    }
+
+    function saveDraft() {
+        const data = collectData();
+
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showStatus(
+                'บันทึกฉบับร่างไว้ในเบราว์เซอร์เรียบร้อยแล้ว',
+                true
+            );
+        } catch (e) {
+            showStatus('ไม่สามารถบันทึกฉบับร่างในเบราว์เซอร์ได้', false);
+        }
+    }
+
+    function loadDraft() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
+
+            const data = JSON.parse(raw);
+            if (!data || !Array.isArray(data.rows)) return false;
+
+            body.innerHTML = '';
+
+            data.rows.forEach(row => {
+                const values = Array(11).fill('');
+                values[0] = row.tableName || '';
+
+                (row.columns || []).forEach(col => {
+                    const idx = parseInt(
+                        String(col.column || '').replace('C', ''),
+                        10
+                    );
+
+                    if (idx >= 1 && idx <= 10) {
+                        values[idx] = col.value || '';
+                    }
+                });
+
+                addRow(values);
+            });
+
+            if (!body.children.length) addRows(4);
+
+            document.getElementById('answerNotes').value = data.answerText || '';
+            document.getElementById('maxScore').value = data.maxScore || '10';
+
+            // กู้คืนข้อมูลความสัมพันธ์หลังโหลดรายชื่อตารางแล้ว
+            relationshipBody.innerHTML = '';
+
+            if (Array.isArray(data.relationships)) {
+                data.relationships.forEach(rel => addRelationship(rel));
+            }
+
+            refreshRelationshipTables();
+
+            showStatus('กู้คืนฉบับร่างที่บันทึกไว้ในเบราว์เซอร์แล้ว', true);
+            return true;
+        } catch (e) {
+            console.error('โหลดฉบับร่างไม่สำเร็จ:', e);
+            return false;
+        }
+    }
+
+    document.getElementById('addRowBtn')
+        .addEventListener('click', () => addRow());
+
+    document.getElementById('addFiveRowsBtn')
+        .addEventListener('click', () => addRows(5));
+
+    document.getElementById('markPkBtn')
+        .addEventListener('click', () => markSelected('PK'));
+
+    document.getElementById('markFkBtn')
+        .addEventListener('click', () => markSelected('FK'));
+
+    document.getElementById('clearGridBtn').addEventListener('click', () => {
+        if (confirm('ต้องการล้างข้อมูลในตารางทั้งหมดหรือไม่?')) {
+            body.innerHTML = '';
+            addRows(4);
+            refreshRelationshipTables();
+        }
+    });
+
+    document.getElementById('saveAnswerBtn')
+        .addEventListener('click', saveDraft);
+
+    document.getElementById('saveAnswerBtnBottom')
+        .addEventListener('click', saveDraft);
+
+    document.getElementById('addRelationshipBtn')
+        .addEventListener('click', () => addRelationship());
+
+    // เมื่อเพิ่มหรือลบชื่อ table ให้อัปเดต dropdown
+    body.addEventListener('input', refreshRelationshipTables);
+
+    if (!loadDraft()) {
+        addRows(4);
+        refreshRelationshipTables();
+    }
+})();
+</script>
+
+</body>
 </html>

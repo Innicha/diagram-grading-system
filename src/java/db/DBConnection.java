@@ -141,11 +141,18 @@ public class DBConnection {
             System.out.println("Algorithm submissions table checked successfully.");
 
             // 5. ER Diagram Answers Table
+            // เก็บข้อมูลเฉลยต้นฉบับ โครงสร้างตาราง ความสัมพันธ์ และเกณฑ์คะแนน
             String createERDiagramAnswersTable =
                     "CREATE TABLE IF NOT EXISTS er_diagram_answers ("
                     + "question_id INT PRIMARY KEY, "
                     + "answer_data LONGTEXT NOT NULL, "
                     + "answer_text TEXT NULL, "
+                    + "expected_schema LONGTEXT NULL, "
+                    + "expected_relationships LONGTEXT NULL, "
+                    + "rubric_data LONGTEXT NULL, "
+                    + "answer_version INT NOT NULL DEFAULT 1, "
+                    + "max_score DECIMAL(7,2) NOT NULL DEFAULT 0, "
+                    + "created_by INT NULL, "
                     + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                     + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP "
                     + "ON UPDATE CURRENT_TIMESTAMP, "
@@ -156,18 +163,30 @@ public class DBConnection {
                     + ") ENGINE=InnoDB;";
 
             stmt.executeUpdate(createERDiagramAnswersTable);
-            System.out.println("ER diagram answers table checked successfully.");
+            System.out.println("ER diagram answers table created successfully.");
+
 
             // 6. ER Diagram Submissions Table
+            // เก็บคำตอบนักศึกษา คะแนน และสถานะการตรวจ
             String createERDiagramSubmissionsTable =
                     "CREATE TABLE IF NOT EXISTS er_diagram_submissions ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY, "
                     + "question_id INT NOT NULL, "
                     + "student_id INT NOT NULL, "
                     + "answer_data LONGTEXT NOT NULL, "
-                    + "score INT NULL, "
-                    + "status ENUM('SUBMITTED', 'GRADED') "
+                    + "parsed_data LONGTEXT NULL, "
+                    + "answer_version INT NULL, "
+                    + "score DECIMAL(7,2) NULL, "
+                    + "table_score DECIMAL(7,2) NULL, "
+                    + "relationship_score DECIMAL(7,2) NULL, "
+                    + "max_score DECIMAL(7,2) NULL, "
+                    + "grading_details LONGTEXT NULL, "
+                    + "feedback TEXT NULL, "
+                    + "attempt_no INT NOT NULL DEFAULT 1, "
+                    + "status ENUM('SUBMITTED','GRADING','GRADED','ERROR') "
                     + "NOT NULL DEFAULT 'SUBMITTED', "
+                    + "graded_at DATETIME NULL, "
+                    + "graded_by INT NULL, "
                     + "submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                     + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP "
                     + "ON UPDATE CURRENT_TIMESTAMP, "
@@ -179,12 +198,77 @@ public class DBConnection {
                     + "FOREIGN KEY (student_id) "
                     + "REFERENCES users(id) "
                     + "ON DELETE CASCADE ON UPDATE CASCADE, "
-                    + "UNIQUE KEY unique_er_submission "
-                    + "(question_id, student_id)"
+                    + "UNIQUE KEY unique_er_submission_attempt "
+                    + "(question_id, student_id, attempt_no), "
+                    + "INDEX idx_er_submission_student_question "
+                    + "(student_id, question_id)"
                     + ") ENGINE=InnoDB;";
 
             stmt.executeUpdate(createERDiagramSubmissionsTable);
-            System.out.println("ER diagram submissions table checked successfully.");
+            System.out.println("ER diagram submissions table created successfully.");
+
+
+            // 7. ER Grading Criteria Table
+            // เก็บเกณฑ์ตรวจและคะแนนเต็มของแต่ละองค์ประกอบ
+            String createERGradingCriteriaTable =
+                    "CREATE TABLE IF NOT EXISTS er_grading_criteria ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "question_id INT NOT NULL, "
+                    + "criterion_key VARCHAR(100) NOT NULL, "
+                    + "criterion_type ENUM("
+                    + "'ENTITY','ATTRIBUTE','PRIMARY_KEY',"
+                    + "'FOREIGN_KEY','RELATIONSHIP','CARDINALITY'"
+                    + ") NOT NULL, "
+                    + "description VARCHAR(500) NULL, "
+                    + "reference_key VARCHAR(100) NULL, "
+                    + "max_score DECIMAL(7,2) NOT NULL DEFAULT 0, "
+                    + "is_required TINYINT(1) NOT NULL DEFAULT 1, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                    + "UNIQUE KEY uq_er_criterion "
+                    + "(question_id, criterion_key), "
+                    + "CONSTRAINT fk_er_criteria_question "
+                    + "FOREIGN KEY (question_id) "
+                    + "REFERENCES questions(id) "
+                    + "ON DELETE CASCADE ON UPDATE CASCADE"
+                    + ") ENGINE=InnoDB;";
+
+            stmt.executeUpdate(createERGradingCriteriaTable);
+            System.out.println("ER grading criteria table created successfully.");
+
+
+            // 8. ER Grading Results Table
+            // เก็บผลตรวจรายองค์ประกอบของคำตอบนักศึกษา
+            String createERGradingResultsTable =
+                    "CREATE TABLE IF NOT EXISTS er_grading_results ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "submission_id INT NOT NULL, "
+                    + "criterion_id INT NULL, "
+                    + "component_type VARCHAR(30) NOT NULL, "
+                    + "student_component_key VARCHAR(100) NULL, "
+                    + "expected_value TEXT NULL, "
+                    + "actual_value TEXT NULL, "
+                    + "result_status ENUM("
+                    + "'CORRECT','INCORRECT','MISSING','EXTRA'"
+                    + ") NOT NULL, "
+                    + "earned_score DECIMAL(7,2) NOT NULL DEFAULT 0, "
+                    + "max_score DECIMAL(7,2) NOT NULL DEFAULT 0, "
+                    + "feedback TEXT NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                    + "CONSTRAINT fk_er_result_submission "
+                    + "FOREIGN KEY (submission_id) "
+                    + "REFERENCES er_diagram_submissions(id) "
+                    + "ON DELETE CASCADE ON UPDATE CASCADE, "
+                    + "CONSTRAINT fk_er_result_criterion "
+                    + "FOREIGN KEY (criterion_id) "
+                    + "REFERENCES er_grading_criteria(id) "
+                    + "ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + "INDEX idx_er_result_submission (submission_id), "
+                    + "INDEX idx_er_result_criterion (criterion_id)"
+                    + ") ENGINE=InnoDB;";
+
+            stmt.executeUpdate(createERGradingResultsTable);
+            System.out.println("ER grading results table created successfully.");
+
 
             
             // 7. Student Questions Table

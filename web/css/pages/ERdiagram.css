@@ -2,7 +2,6 @@ html {
     height: auto !important;
     min-height: 100%;
 }
-
 body {
     background-color: #f5f7fb !important;
     font-family: 'Anuphan', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
@@ -12,8 +11,6 @@ body {
     overflow-x: hidden !important;
     position: static !important;
 }
-
-/* Custom Scrollbar */
 body::-webkit-scrollbar {
     width: 8px;
 }
@@ -28,7 +25,7 @@ body::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
 
-/* 2. TASK HEADER SECTION (ส่วนโจทย์) */
+/* 2. TASK HEADER SECTION */
 .er-task-header {
     background-color: #ffffff;
     border: 1px solid #dbe4f3;
@@ -38,7 +35,6 @@ body::-webkit-scrollbar-thumb:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     margin-bottom: 1.5rem;
 }
-
 .er-task-header h5 {
     color: #1e3a8a;
     font-weight: 700;
@@ -48,7 +44,6 @@ body::-webkit-scrollbar-thumb:hover {
     align-items: center;
     gap: 0.5rem;
 }
-
 .er-task-header p {
     color: #475569;
     font-size: 0.9rem;
@@ -59,21 +54,35 @@ body::-webkit-scrollbar-thumb:hover {
 /* 3. FLOWCHART CONTAINER & WRAPPER */
 .flowchart-wrapper {
     display: flex !important;
+    width: 100%;
     height: 620px !important;
     min-height: 620px !important;
     max-height: 620px !important;
-    background-color: #ffffff !important;
-    border: 1px solid #dbe4f3 !important;
+    border: 2px solid #cbd5e1;
     border-radius: 16px !important;
+    background: #ffffff !important;
     overflow: hidden !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     position: relative !important;
 }
+#flowchart-wrapper:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff;
+}
 
-/* 4. SIDEBAR (แถบเครื่องมือซ้าย) */
+/* 4. SIDEBAR */
 .fc-sidebar {
     width: 220px !important;
+    min-width: 220px;
     height: 100% !important;
+    min-height: 0;
+    box-sizing: border-box;
     background-color: #f8fafc !important;
     border-right: 1px solid #e2e8f0 !important;
     padding: 1.25rem 1rem !important;
@@ -82,10 +91,18 @@ body::-webkit-scrollbar-thumb:hover {
     align-items: center !important;
     gap: 1.25rem !important;
     overflow-y: auto !important;
-    z-index: 10 !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
     flex-shrink: 0 !important;
+    z-index: 10 !important;
 }
-
+.fc-sidebar > .fc-shape {
+    flex-shrink: 0 !important;
+    margin: 0;
+}
+.fc-sidebar > .text-muted {
+    flex-shrink: 0;
+}
 .fc-sidebar::-webkit-scrollbar {
     width: 6px;
 }
@@ -94,10 +111,13 @@ body::-webkit-scrollbar-thumb:hover {
 }
 .fc-sidebar::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 4px;
+    border-radius: 6px;
+}
+.fc-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
-/* 5. BASE SHAPES (รูปทรง ER Diagram) */
+/* 5. BASE SHAPES */
 .fc-shape {
     width: 110px;
     height: 48px;
@@ -116,46 +136,40 @@ body::-webkit-scrollbar-thumb:hover {
     transition: all 0.2s ease-in-out;
     z-index: 2;
 }
-
 .fc-shape:hover {
     border-color: #3b82f6;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
     transform: translateY(-2px);
 }
-
 .fc-shape:active {
     cursor: grabbing;
 }
-
-/* Specific Shape Types */
 .fc-shape[data-type="entity"] {
     border-radius: 8px;
 }
-
-.fc-shape[data-type="attribute"] {
+.fc-shape[data-type="attribute"],
+.fc-shape[data-type="primaryKey"],
+.fc-shape[data-type="foreignKey"] {
     border-radius: 50px;
     width: 100px;
     height: 46px;
 }
-
 .fc-shape[data-type="relationship"] {
     width: 58px !important;
     height: 58px !important;
     transform: rotate(45deg);
     margin: 10px 0;
 }
-
-.fc-shape[data-type="relationship"] .fc-text-wrapper {
+.fc-shape[data-type="relationship"] .fc-text-wrapper,
+.fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper {
     transform: rotate(-45deg);
 }
-
 .fc-shape[data-type="weakEntity"] {
     border-radius: 8px;
     position: relative;
     width: 110px;
     height: 48px;
 }
-
 .fc-shape[data-type="weakEntity"]::after {
     content: "";
     position: absolute;
@@ -164,7 +178,6 @@ body::-webkit-scrollbar-thumb:hover {
     border-radius: 5px;
     pointer-events: none;
 }
-
 .fc-shape[data-type="identifyingRelationship"] {
     width: 62px !important;
     height: 62px !important;
@@ -172,7 +185,6 @@ body::-webkit-scrollbar-thumb:hover {
     transform: rotate(45deg);
     margin: 12px 0;
 }
-
 .fc-shape[data-type="identifyingRelationship"]::after {
     content: "";
     position: absolute;
@@ -180,11 +192,6 @@ body::-webkit-scrollbar-thumb:hover {
     border: 1.5px solid #1e3a8a;
     pointer-events: none;
 }
-
-.fc-shape[data-type="identifyingRelationship"] .fc-text-wrapper {
-    transform: rotate(-45deg);
-}
-
 .fc-text-wrapper {
     display: flex;
     justify-content: center;
@@ -192,25 +199,70 @@ body::-webkit-scrollbar-thumb:hover {
     width: 100%;
     height: 100%;
 }
-
 .fc-text {
     width: 90%;
     outline: none;
     word-break: break-word;
     font-family: 'Anuphan', sans-serif;
 }
+.fc-shape[data-type="multiValuedAttribute"] {
+    border-radius: 50px;
+    width: 100px;
+    height: 46px;
+    position: relative;
+}
+.fc-shape[data-type="multiValuedAttribute"]::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1.5px solid #1e3a8a;
+    border-radius: 50px;
+    pointer-events: none;
+}
+.fc-shape[data-type="derivedAttribute"] {
+    border-radius: 50px;
+    width: 100px;
+    height: 46px;
+    border: 2px dashed #1e3a8a !important;
+    background-color: #ffffff;
+}
+.fc-shape[data-type="derivedAttribute"]:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+.fc-shape[data-type="primaryKey"] .fc-text {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 700;
+}
+.fc-shape[data-type="foreignKey"] .fc-text {
+    font-weight: 600;
+}
 
 /* 6. CANVAS PANEL */
-.fc-canvas {
+.fc-canvas,
+#flowchart-wrapper > .fc-canvas {
+    flex: 1;
     flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
     height: 100% !important;
     position: relative !important;
     background-color: #ffffff !important;
     background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px) !important;
     background-size: 20px 20px !important;
-    overflow: hidden;
+    overflow: auto;
 }
-
+#flowchart-wrapper:fullscreen > .fc-canvas {
+    height: 100%;
+}
+#flowchart-wrapper > .fc-canvas > svg {
+    width: 2400px;
+    height: 1600px;
+    min-width: 2400px;
+    min-height: 1600px;
+}
 .fc-node {
     position: absolute;
     cursor: move;
@@ -232,12 +284,10 @@ body::-webkit-scrollbar-thumb:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     backdrop-filter: blur(4px);
 }
-
 .fc-toolbar span {
     color: #475569;
     font-size: 0.85rem;
 }
-
 #connectModeBtn {
     border-radius: 8px;
     font-weight: 600;
@@ -245,7 +295,6 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 6px 14px;
     transition: all 0.2s ease;
 }
-
 #fc-svg {
     position: absolute;
     inset: 0;
@@ -254,24 +303,37 @@ body::-webkit-scrollbar-thumb:hover {
     pointer-events: none;
     z-index: 1;
 }
-
 #fc-submitBtn {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
+    position: static;
+    margin-left: auto;
     z-index: 10;
     background-color: #1e3a8a;
-    border-color: #1e3a8a;
+    border: 1px solid #1e3a8a;
     color: #ffffff;
     font-weight: 600;
     padding: 8px 22px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
-
 #fc-submitBtn:hover {
     background-color: #1d4ed8;
     border-color: #1d4ed8;
     box-shadow: 0 6px 14px rgba(29, 78, 216, 0.35);
+}
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+}
+.page-header h3 {
+    margin-right: auto;
+}
+.page-header #erDiagramForm {
+    margin: 0;
+    margin-left: auto;
+    flex-shrink: 0;
 }

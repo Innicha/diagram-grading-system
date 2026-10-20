@@ -107,12 +107,6 @@
             สร้าง Flowchart
         </h3>
 
-        <button type="button"
-                class="btn btn-outline-danger d-flex align-items-center gap-2"
-                onclick="downloadExercisePDF()">
-            <i class="fa-solid fa-file-pdf"></i>
-            ดาวน์โหลด PDF
-        </button>
     </div>
 
     <!-- ⭐ กำหนด ID เพื่อให้กดเต็มจอได้ -->
@@ -123,8 +117,8 @@
 
             <div class="fc-shape fc-pill" data-type="start" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Start/End</span></div></div>
             <div class="fc-shape fc-rect-green" data-type="process" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Process</span></div></div>
-            <div class="fc-shape fc-parallelogram" data-type="input" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Input/Output</span></div></div>
-            <div class="fc-shape fc-display" data-type="display" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Display</span></div></div>
+            <div class="fc-shape fc-parallelogram" data-type="input" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Input</span></div></div>
+            <div class="fc-shape fc-display" data-type="display" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Output</span></div></div>
             <div class="fc-shape fc-diamond" data-type="decision" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Decision</span></div></div>
             <div class="fc-shape fc-circle" data-type="connector" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">A</span></div></div>
             

@@ -29,9 +29,6 @@
         <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">
             สร้าง Pseudocode
         </h3>
-        <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-2" onclick="downloadExercisePDF()">
-            <i class="fa-solid fa-file-pdf"></i> ดาวน์โหลด PDF
-        </button>
     </div>
 
     <div class="card shadow-sm border-0 rounded-4 p-4 bg-white">
