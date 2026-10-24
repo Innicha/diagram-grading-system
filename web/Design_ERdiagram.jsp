@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <!-- Stylesheets -->
+<link rel="stylesheet" href="css/pages/CenterLayout.css">
 <link rel="stylesheet" href="css/pages/ERdiagram.css">
 
 <mytag:check_login /> 
@@ -21,24 +22,127 @@
     String Link = request.getAttribute("Loadfile5") != null ? request.getAttribute("Loadfile5").toString() : ""; 
 %>
 
-<div class="container-fluid p-4" style="min-height: 100vh; overflow-y: auto;">
-    <!-- Header: ชื่อหน้าอยู่ซ้าย ปุ่ม Submit อยู่ขวา -->
-    <div class="page-header d-flex align-items-center justify-content-between mb-4">
+<style>
+    /* ปรับ Layout ให้เต็มหน้าจออัตโนมัติ */
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden; 
+    }
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 20px;
+    }
+
+    #flowchart-wrapper {
+        display: flex !important;
+        flex-grow: 1 !important; 
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 12px !important;
+        background: #fff !important;
+        overflow: hidden !important;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    #flowchart-wrapper:fullscreen {
+        height: 100vh !important;
+        border: none !important;
+        border-radius: 0 !important;
+    }
+
+    .fc-sidebar {
+        width: 250px !important;
+        min-width: 250px !important;
+        border-right: 2px solid #cbd5e1 !important;
+        background-color: #f8fafc !important;
+        overflow-y: auto !important;
+        z-index: 10 !important;
+        padding: 15px;
+    }
+
+    .fc-canvas-container {
+        flex-grow: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .fc-toolbar {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 12px 20px !important;
+        background: #ffffff !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+        z-index: 10 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;
+    }
+
+    .fc-scroll-area {
+        flex-grow: 1 !important;
+        overflow: auto !important;
+        position: relative !important;
+        background-color: #f1f5f9 !important;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
+        background-size: 20px 20px !important;
+    }
+
+    #fc-canvas {
+        width: 4000px !important;
+        height: 4000px !important;
+        position: relative !important;
+        background: transparent !important;
+    }
+
+    .fc-submit-area {
+        position: absolute !important;
+        bottom: 25px !important;
+        right: 25px !important;
+        z-index: 100 !important;
+    }
+
+    .fc-tool-line {
+        padding: 8px 15px;
+        margin-bottom: 5px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #334155;
+        font-size: 14px;
+        text-align: left;
+    }
+    .fc-tool-line:hover { background: #f1f5f9; }
+    .fc-tool-line.active {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+        font-weight: 600;
+    }
+</style>
+
+<div class="main-container">
+    
+    <div class="page-header d-flex align-items-center justify-content-between mb-3">
         <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">สร้าง ER Diagram</h3>
-        <form action="Process_ERdiagram.jsp" method="POST" id="erDiagramForm" class="mb-0">
-            <input type="hidden" name="questionId" id="questionId" value="<%= request.getParameter("questionId") == null ? "" : request.getParameter("questionId").replaceAll("[^0-9]", "") %>">
-            <input type="hidden" name="erDiagramData" id="erDiagramData">
-            <button type="button" id="fc-submitBtn" onclick="submitERDiagram()">
-                <i class="bi bi-send-fill me-1"></i> Submit
-            </button>
-        </form>
     </div>
 
-    <!-- ระบบสร้าง ER Diagram Container -->
+    <!-- ฟอร์มซ่อนไว้สำหรับส่งข้อมูล -->
+    <form action="Process_ERdiagram.jsp" method="POST" id="erDiagramForm" style="display: none;">
+        <input type="hidden" name="questionId" id="questionId" value="<%= request.getParameter("questionId") == null ? "" : request.getParameter("questionId").replaceAll("[^0-9]", "") %>">
+        <input type="hidden" name="erDiagramData" id="erDiagramData">
+    </form>
+
     <div class="flowchart-wrapper" id="flowchart-wrapper">
-        <!-- แถบด้านซ้าย (Sidebar Shapes) -->
+        
+        <!-- แถบด้านซ้าย -->
         <div class="fc-sidebar">
-            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-1">องค์ประกอบ</div>
+            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-2">องค์ประกอบตาราง</div>
             <div class="fc-shape" data-type="entity" draggable="true" ondragstart="fcDrag(event)">
                 <div class="fc-text-wrapper"><span class="fc-text">Entity</span></div>
             </div>
@@ -55,7 +159,9 @@
                 <div class="fc-text-wrapper"><span class="fc-text">Derived</span></div>
             </div>
 
-            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-1">คีย์หลักและคีย์นอก</div>
+            <hr class="text-muted my-3">
+
+            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-2">คีย์หลักและคีย์นอก</div>
             <div class="fc-shape" data-type="primaryKey" draggable="true" ondragstart="fcDrag(event)">
                 <div class="fc-text-wrapper"><span class="fc-text"><u>PK_Attribute</u></span></div>
             </div>
@@ -63,7 +169,9 @@
                 <div class="fc-text-wrapper"><span class="fc-text">FK_Attribute</span></div>
             </div>
 
-            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-1">ความสัมพันธ์</div>
+            <hr class="text-muted my-3">
+
+            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-2">ความสัมพันธ์</div>
             <div class="fc-shape" data-type="relationship" draggable="true" ondragstart="fcDrag(event)">
                 <div class="fc-text-wrapper"><span class="fc-text">Relation</span></div>
             </div>
@@ -71,14 +179,17 @@
                 <div class="fc-text-wrapper"><span class="fc-text">Identifying</span></div>
             </div>
 
-            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-1">เส้นเชื่อม</div>
-            <button type="button" class="btn btn-outline-primary btn-sm ms-2" id="connectModeBtn" onclick="toggleConnectMode()">
-                <i class="bi bi-link-45deg me-1"></i> เปิดโหมดเชื่อมเส้น
-            </button>
+            <hr class="text-muted my-3">
+
+            <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-2">เครื่องมือเชื่อมเส้น</div>
+            <div class="fc-tool-line" onclick="selectLineTool('normal')" id="tool-normal">➔ เส้นธรรมดา</div>
+            <div class="fc-tool-line" onclick="selectLineTool('1')" id="tool-1">➔ เส้นความสัมพันธ์ "1"</div>
+            <div class="fc-tool-line" onclick="selectLineTool('M')" id="tool-M">➔ เส้นความสัมพันธ์ "M"</div>
+            <div class="fc-tool-line" onclick="selectLineTool('N')" id="tool-N">➔ เส้นความสัมพันธ์ "N"</div>
         </div>
 
         <!-- พื้นที่ Canvas ด้านขวา -->
-        <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
+        <div class="fc-canvas-container">
             <div class="fc-toolbar">
                 <span class="fw-semibold text-secondary">
                     <i class="bi bi-hand-index-thumb me-1"></i> เลือกลากกล่องมาวาง หรือคลิกที่เส้นเพื่อลบ
@@ -92,45 +203,75 @@
                     </button>
                 </div>
             </div>
-            <svg id="fc-svg"></svg>
+
+            <div class="fc-scroll-area" id="fc-scroll-area">
+                <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
+                    <svg id="fc-svg" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none; z-index:1;"></svg>
+                </div>
+            </div>
+
+            <div class="fc-submit-area">
+                <button type="button" class="btn btn-success btn-lg px-4 shadow" id="fc-submitBtn" onclick="submitERDiagram()">
+                    <i class="bi bi-send-fill me-1"></i> Submit
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Script สำหรับ ER Diagram -->
 <script>
     let connections = []; 
     let nodeSequence = 0;
     let selectedNode = null; 
+    let selectedConnectionIndex = null; // เพิ่มตัวแปรจำว่าเลือกเส้นไหนอยู่
     let isConnectMode = false; 
+    let currentLineType = null; 
 
+    // เพิ่มดักกดปุ่ม Delete ลบเส้น
     document.addEventListener('keydown', function(e) {
-        if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode) {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
             if (document.activeElement.isContentEditable) return; 
-            e.preventDefault(); 
-            connections = connections.filter(conn => conn.from !== selectedNode && conn.to !== selectedNode);
-            selectedNode.remove();
-            selectedNode = null;
-            drawLines(); 
+            
+            if (selectedNode) {
+                e.preventDefault(); 
+                connections = connections.filter(conn => conn.from !== selectedNode && conn.to !== selectedNode);
+                selectedNode.remove();
+                selectedNode = null;
+                drawLines(); 
+            } else if (selectedConnectionIndex !== null) {
+                // ส่วนลบเส้นที่ถูกคลิก
+                e.preventDefault();
+                connections.splice(selectedConnectionIndex, 1);
+                selectedConnectionIndex = null;
+                drawLines();
+            }
         }
     });
 
-    document.getElementById("fc-canvas").addEventListener('click', function(e) {
-        if (e.target.id === 'fc-canvas' || e.target.id === 'fc-svg') {
+    document.getElementById("fc-scroll-area").addEventListener('click', function(e) {
+        if (e.target.id === 'fc-canvas' || e.target.id === 'fc-svg' || e.target.id === 'fc-scroll-area') {
             deselectNode();
+            deselectConnection(); // ยกเลิกการเลือกเส้นเมื่อกดพื้นที่ว่าง
         }
     });
 
-    function toggleConnectMode() {
-        isConnectMode = !isConnectMode;
-        const btn = document.getElementById("connectModeBtn");
-        deselectNode(); 
-        if (isConnectMode) {
-            btn.className = "btn btn-danger btn-sm ms-2";
-            btn.innerHTML = '<i class="bi bi-x-circle me-1"></i> ปิดโหมดเชื่อมเส้น';
+    function selectLineTool(type) {
+        deselectNode();
+        deselectConnection();
+        if (currentLineType === type) {
+            currentLineType = null;
+            isConnectMode = false;
         } else {
-            btn.className = "btn btn-outline-primary btn-sm ms-2";
-            btn.innerHTML = '<i class="bi bi-link-45deg me-1"></i> เปิดโหมดเชื่อมเส้น';
+            currentLineType = type;
+            isConnectMode = true;
+        }
+        
+        document.querySelectorAll('.fc-tool-line').forEach(el => el.classList.remove('active'));
+        if (currentLineType) {
+            document.getElementById('tool-' + currentLineType).classList.add('active');
+            document.getElementById('fc-canvas').style.cursor = 'crosshair';
+        } else {
+            document.getElementById('fc-canvas').style.cursor = 'default';
         }
     }
 
@@ -140,6 +281,19 @@
             selectedNode.style.borderColor = ""; 
             selectedNode = null;
         }
+    }
+
+    function deselectConnection() {
+        if (selectedConnectionIndex !== null) {
+            selectedConnectionIndex = null;
+            drawLines();
+        }
+    }
+
+    function selectConnection(index) {
+        deselectNode();
+        selectedConnectionIndex = index;
+        drawLines();
     }
 
     function fcAllowDrop(ev) { ev.preventDefault(); }
@@ -172,8 +326,9 @@
             offsetY = 30;
         }
 
-        newNode.style.left = (ev.clientX - rect.left + canvas.scrollLeft - offsetX) + "px";
-        newNode.style.top = (ev.clientY - rect.top + canvas.scrollTop - offsetY) + "px";
+        newNode.style.left = (ev.clientX - rect.left - offsetX) + "px";
+        newNode.style.top = (ev.clientY - rect.top - offsetY) + "px";
+        
         makeFcInteractive(newNode);
         canvas.appendChild(newNode);
     }
@@ -196,6 +351,7 @@
             textSpan.focus();
             elmnt.style.cursor = "text";
             deselectNode();
+            deselectConnection();
         };
 
         textSpan.onblur = function() {
@@ -258,17 +414,8 @@
                     elmnt.style.boxShadow = "0 0 0 4px rgba(225, 29, 72, 0.15)";
                 } else if (selectedNode !== elmnt) {
                     let lineLabel = "";
-                    const fromType = selectedNode.getAttribute("data-type");
-                    const toType = elmnt.getAttribute("data-type");
-                    const relationshipTypes = ["relationship", "identifyingRelationship"];
-
-                    if (relationshipTypes.includes(fromType) || relationshipTypes.includes(toType)) {
-                        const userInput = prompt("ระบุอัตราส่วนความสัมพันธ์ (เช่น 1, M, N):", "1");
-                        if (userInput === null) {
-                            deselectNode();
-                            return;
-                        }
-                        lineLabel = userInput;
+                    if (currentLineType && currentLineType !== 'normal') {
+                        lineLabel = currentLineType;
                     }
 
                     connections.push({ from: selectedNode, to: elmnt, label: lineLabel });
@@ -279,6 +426,7 @@
                 }
             } else {
                 deselectNode();
+                deselectConnection();
                 selectedNode = elmnt;
                 elmnt.style.borderColor = "#3b82f6";
                 elmnt.style.boxShadow = "0 0 0 4px rgba(59, 130, 246, 0.2)";
@@ -296,21 +444,29 @@
 
         const canvasRect = document.getElementById("fc-canvas").getBoundingClientRect();
 
-        connections.forEach(conn => {
+        connections.forEach((conn, index) => {
             const rect1 = conn.from.getBoundingClientRect();
             const rect2 = conn.to.getBoundingClientRect();
+            
             const x1 = rect1.left - canvasRect.left + (rect1.width / 2);
             const y1 = rect1.top - canvasRect.top + (rect1.height / 2);
             const x2 = rect2.left - canvasRect.left + (rect2.width / 2);
             const y2 = rect2.top - canvasRect.top + (rect2.height / 2);
+
+            const isSelected = (index === selectedConnectionIndex);
+            const strokeColor = isSelected ? '#ff0000' : '#1e3a8a';
+            const strokeWidth = isSelected ? '3' : '2';
 
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             line.setAttribute('x1', x1);
             line.setAttribute('y1', y1);
             line.setAttribute('x2', x2);
             line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#1e3a8a');
-            line.setAttribute('stroke-width', '2');
+            line.setAttribute('stroke', strokeColor);
+            line.setAttribute('stroke-width', strokeWidth);
+            line.style.pointerEvents = "stroke"; 
+            line.style.cursor = "pointer";
+            line.onclick = (e) => { e.stopPropagation(); selectConnection(index); };
             svg.appendChild(line);
 
             if (conn.label) {
@@ -321,11 +477,14 @@
                 text.setAttribute('x', midX);
                 text.setAttribute('y', midY - 8);
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#0284c7');
+                text.setAttribute('fill', isSelected ? '#ff0000' : '#0284c7');
                 text.setAttribute('font-weight', 'bold');
-                text.setAttribute('font-size', '14px');
+                text.setAttribute('font-size', '16px'); 
                 text.textContent = conn.label;
                 text.style.textShadow = "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff";
+                text.style.pointerEvents = "auto"; 
+                text.style.cursor = "pointer";
+                text.onclick = (e) => { e.stopPropagation(); selectConnection(index); };
                 svg.appendChild(text);
             }
         });
@@ -389,23 +548,14 @@
 
     async function toggleFullscreen() {
         const elem = document.getElementById("flowchart-wrapper");
-        if (!elem) {
-            console.error("ไม่พบ flowchart-wrapper");
-            return;
-        }
+        if (!elem) return;
         try {
             if (!document.fullscreenElement) {
-                if (elem.requestFullscreen) {
-                    await elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) {
-                    elem.webkitRequestFullscreen();
-                }
+                if (elem.requestFullscreen) await elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    await document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
+                if (document.exitFullscreen) await document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
         } catch (error) {
             console.error("ไม่สามารถเปลี่ยนโหมดเต็มจอได้:", error);

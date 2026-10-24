@@ -1,7 +1,9 @@
-<%@page import="java.sql.*" %>
-<%@page import="java.util.*" %>
-<%@page import="db.DBConnection" %>
+<%@page import="java.sql.*"%>
+<%@page import="java.util.*"%>
+<%@page import="db.DBConnection"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
+
 <%!
     private static class JsonReader {
         private final String s;
@@ -509,13 +511,6 @@
 
     boolean isJsonInput = flowchartData.trim().startsWith("{");
 
-    String safeJsonForJs = flowchartData
-            .replace("\\", "\\\\")
-            .replace("'", "\\'")
-            .replace("\r", "\\r")
-            .replace("\n", "\\n")
-            .replace("</", "<\\/");
-
     Object userIdObj = session.getAttribute("UserId");
     Object roleObj = session.getAttribute("Role");
 
@@ -644,15 +639,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผลลัพธ์ Pseudocode และ JavaScript</title>
+    <title>ผลการตรวจคำตอบ</title>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Anuphan', sans-serif; background-color: #f4f6f9; padding: 40px 20px; }
         .result-card { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #dbe4f3; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .code-display { width: 100%; height: 350px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; padding: 15px; border-radius: 8px; border: 1px solid #ced4da; background-color: #1e1e1e; color: #dcdcaa; resize: vertical; white-space: pre; overflow-x: auto; }
-        .js-display { color: #569cd6; } 
     </style>
 </head>
 <body>
@@ -692,15 +685,28 @@
             </table>
         </div>
 
-        <div class="row text-start mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-                <label class="fw-bold text-dark mb-2"><i class="bi bi-code-square text-primary me-1"></i> 1. Generated Pseudocode:</label>
-                <textarea class="code-display" id="pseudocodeOutput" readonly>กำลังโหลด...</textarea>
-            </div>
-            <div class="col-md-6">
-                <label class="fw-bold text-dark mb-2"><i class="bi bi-filetype-js text-warning me-1"></i> 2. JavaScript Code:</label>
-                <textarea class="code-display js-display" id="jsOutput" readonly>กำลังโหลด...</textarea>
-            </div>
+        <!-- ปุ่มย้อนกลับ -->
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <% 
+                // รับค่า mode เพื่อส่งกลับไปให้ถูกต้อง (ถ้าไม่มีค่าให้เป็น student)
+                String modeParam = request.getParameter("mode") != null ? request.getParameter("mode") : "student";
+                
+                if (isJsonInput) { 
+            %>
+                <!-- กรณีมาจากหน้า Flowchart -->
+                <a href="Design_Flowchart.jsp?questionId=<%= questionId %>&mode=<%= modeParam %>" class="btn btn-outline-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-diagram-3 me-2"></i>Return
+                </a>
+            <% } else { %>
+                <!-- กรณีมาจากหน้า Pseudocode (สมมติว่าชื่อไฟล์ Design_Pseudocode.jsp) -->
+                <a href="Design_Pseudocode.jsp?questionId=<%= questionId %>&mode=<%= modeParam %>" class="btn btn-outline-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-code-square me-2"></i>Return
+                </a>
+            <% } %>
+            
+            <a href="StudentsPart.jsp?id=<%= questionId %>" class="btn btn-primary px-4 py-2 shadow-sm">
+                <i class="bi bi-list-task me-2"></i>View Question
+            </a>
         </div>
     </div>
 </body>

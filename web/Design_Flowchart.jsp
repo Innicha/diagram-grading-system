@@ -1,6 +1,47 @@
-<%@page import="java.sql.*"%>
+<%@page import="java.sql.*" %>
+<%@page import="java.util.*" %>
+<%@page import="db.DBConnection" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
+
+<%
+    // ⭐ ส่วนที่ 1: ดึงข้อมูล Flowchart เก่าจาก Database (ถ้ามี)
+    Object userIdObj = session.getAttribute("UserId");
+    String questionIdParam = request.getParameter("questionId");
+    String savedFlowchartData = null;
+
+    if (userIdObj != null && questionIdParam != null) {
+        try (Connection con = DBConnection.getConnection()) {
+            if (con != null) {
+                String sql = "SELECT answer_text FROM algorithm_submissions WHERE question_id = ? AND student_id = ?";
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                    ps.setInt(1, Integer.parseInt(questionIdParam));
+                    ps.setInt(2, Integer.parseInt(userIdObj.toString()));
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            savedFlowchartData = rs.getString("answer_text");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // แปลง JSON ให้ปลอดภัยสำหรับใส่ในตัวแปร JavaScript
+    String safeSavedData = "null";
+    if (savedFlowchartData != null && !savedFlowchartData.trim().isEmpty()) {
+        safeSavedData = savedFlowchartData
+            .replace("\\", "\\\\")
+            .replace("'", "\\'")
+            .replace("\"", "\\\"")
+            .replace("\r", "\\r")
+            .replace("\n", "\\n")
+            .replace("</", "<\\/");
+        safeSavedData = "\"" + safeSavedData + "\"";
+    }
+%>
 
 <mytag:ReadFile />
 <mytag:header menu="3" />
@@ -16,16 +57,11 @@
 
 <mytag:check_login />  
 
-<%
-    String Link = request.getAttribute("Loadfile5") != null ? request.getAttribute("Loadfile5").toString() : "";  
-%>
-
 <!-- ⭐ เพิ่ม CSS จัดการหน้าจอเต็มจอและการเลื่อน Scroll -->
 <style>
-    /* กำหนดพื้นที่กรอบวาดทั้งหมด */
     #flowchart-wrapper {
         display: flex !important;
-        height: 75vh !important; /* ความสูงเริ่มต้น */
+        height: 75vh !important; 
         border: 2px solid #cbd5e1 !important;
         border-radius: 12px !important;
         background: #fff !important;
@@ -33,15 +69,11 @@
         position: relative;
         transition: all 0.3s ease;
     }
-    
-    /* สไตล์เมื่ออยู่ในโหมดเต็มจอ */
     #flowchart-wrapper:fullscreen {
         height: 100vh !important;
         border: none !important;
         border-radius: 0 !important;
     }
-
-    /* แถบเครื่องมือด้านซ้ายมือ */
     .fc-sidebar {
         width: 250px !important;
         min-width: 250px !important;
@@ -51,8 +83,6 @@
         z-index: 10 !important;
         padding: 15px;
     }
-
-    /* พื้นที่ฝั่งขวา (กระดาน + Toolbar) */
     .fc-canvas-container {
         flex-grow: 1 !important;
         display: flex !important;
@@ -60,8 +90,6 @@
         position: relative !important;
         overflow: hidden !important;
     }
-
-    /* แถบเครื่องมือด้านบน */
     .fc-toolbar {
         display: flex !important;
         justify-content: space-between !important;
@@ -72,26 +100,20 @@
         z-index: 10 !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;
     }
-
-    /* พื้นที่ที่สามารถเลื่อน (Scroll) ได้แบบอิสระ */
     .fc-scroll-area {
         flex-grow: 1 !important;
-        overflow: auto !important; /* เปิดระบบ Scroll */
+        overflow: auto !important; 
         position: relative !important;
         background-color: #f1f5f9 !important;
         background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
         background-size: 20px 20px !important;
     }
-
-    /* กระดาน Canvas จริง (กำหนดให้ใหญ่ๆ 4000x4000 px) */
     #fc-canvas {
         width: 4000px !important;
         height: 4000px !important;
         position: relative !important;
         background: transparent !important;
     }
-
-    /* ปุ่ม Submit ลอยไว้ที่มุมขวาล่างเสมอ */
     .fc-submit-area {
         position: absolute !important;
         bottom: 25px !important;
@@ -106,15 +128,11 @@
         <h3 class="mb-0 fw-bold" style="color: #1e3a8a;">
             สร้าง Flowchart
         </h3>
-
     </div>
 
-    <!-- ⭐ กำหนด ID เพื่อให้กดเต็มจอได้ -->
     <div class="flowchart-wrapper" id="flowchart-wrapper">
-        
         <div class="fc-sidebar">
             <div class="text-muted fw-bold small text-uppercase w-100 text-center mb-3">องค์ประกอบ</div>
-
             <div class="fc-shape fc-pill" data-type="start" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Start/End</span></div></div>
             <div class="fc-shape fc-rect-green" data-type="process" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Process</span></div></div>
             <div class="fc-shape fc-parallelogram" data-type="input" draggable="true" ondragstart="fcDrag(event)"><div class="fc-text-wrapper"><span class="fc-text">Input</span></div></div>
@@ -131,16 +149,12 @@
             <div class="fc-tool-line" onclick="selectLineTool('loop')" id="tool-loop">➔ เส้น Loop (เลี้ยวกลับ)</div>
         </div>
 
-        <!-- ฝั่งขวา กระดานวาด + ปุ่มต่าง ๆ -->
         <div class="fc-canvas-container">
-            
-            <!-- แถบเครื่องมือ -->
             <div class="fc-toolbar">
                 <span class="fw-semibold text-secondary">
                     <i class="bi bi-hand-index-thumb me-1"></i> เลือกลากกล่องมาวาง หรือคลิกที่เส้นเพื่อลบ
                 </span>
                 <div>
-                    <!-- ⭐ ปุ่มเต็มจอ -->
                     <button type="button" class="btn btn-outline-primary btn-sm me-2 shadow-sm" onclick="toggleFullscreen()">
                         <i class="bi bi-arrows-fullscreen"></i> เต็มจอ
                     </button>
@@ -150,7 +164,6 @@
                 </div>
             </div>
             
-            <!-- ⭐ โซน Scrollable เลื่อนขึ้นลงซ้ายขวาได้ -->
             <div class="fc-scroll-area" id="fc-scroll-area">
                 <div class="fc-canvas" id="fc-canvas" ondrop="fcDrop(event)" ondragover="fcAllowDrop(event)">
                     <svg id="fc-svg" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none; z-index:1;">
@@ -158,18 +171,22 @@
                             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                                 <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
                             </marker>
+                            <marker id="arrowhead-selected" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#ff0000" />
+                            </marker>
+                            <marker id="arrowhead-loop" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#f39c12" />
+                            </marker>
                         </defs>
                     </svg>
                 </div>
             </div>
 
-            <!-- ปุ่ม Submit มุมขวาล่าง -->
             <div class="fc-submit-area">
                 <button type="button" class="btn btn-success btn-lg px-4 shadow" onclick="submitFlowchart()">
                     <i class="bi bi-send-fill me-1"></i> Submit & Convert
                 </button>
             </div>
-
         </div>
     </div>
 </div>
@@ -181,25 +198,86 @@
     let isConnectMode = false; 
     let currentLineType = null; 
 
-    // ⭐ ฟังก์ชันสำหรับสลับโหมด เต็มจอ (Fullscreen)
+    // ⭐ ส่วนที่ 2: ฟังก์ชันโหลดข้อมูลเก่ามาระบายบนกระดานเมื่อเปิดเว็บ
+    window.onload = function() {
+        const savedDataStr = <%= safeSavedData %>;
+        if (savedDataStr) {
+            try {
+                const data = JSON.parse(savedDataStr);
+                restoreFlowchart(data);
+            } catch(e) {
+                console.error("โหลดข้อมูล Flowchart เก่าไม่สำเร็จ:", e);
+            }
+        }
+    };
+
+    function restoreFlowchart(data) {
+        if (!data || !data.nodes || !data.edges) return;
+        
+        const canvas = document.getElementById("fc-canvas");
+        const nodeMap = {}; 
+        
+        // 2.1 วาดกล่องทั้งหมด
+        data.nodes.forEach(savedNode => {
+            const newNode = document.createElement("div");
+            let shapeClass = "fc-shape fc-node ";
+            
+            if (savedNode.type === 'start') shapeClass += "fc-pill";
+            else if (savedNode.type === 'process') shapeClass += "fc-rect-green";
+            else if (savedNode.type === 'input') shapeClass += "fc-parallelogram";
+            else if (savedNode.type === 'display') shapeClass += "fc-display";
+            else if (savedNode.type === 'decision') shapeClass += "fc-diamond";
+            else if (savedNode.type === 'connector') shapeClass += "fc-circle";
+
+            newNode.className = shapeClass;
+            newNode.setAttribute("data-type", savedNode.type);
+            newNode.style.position = "absolute";
+            newNode.style.zIndex = "5"; 
+            newNode.style.margin = "0";
+            
+            // ใส่ข้อความเก่า
+            newNode.innerHTML = '<div class="fc-text-wrapper"><span class="fc-text">' + (savedNode.text || '') + '</span></div>';
+
+            // ใส่ตำแหน่ง X, Y เก่า
+            newNode.style.left = savedNode.x || "100px"; 
+            newNode.style.top = savedNode.y || "100px";
+
+            makeFcInteractive(newNode);
+            canvas.appendChild(newNode);
+            
+            nodeMap[savedNode.id] = newNode;
+        });
+
+        // 2.2 เชื่อมเส้นทั้งหมด
+        data.edges.forEach(savedEdge => {
+            const fromNode = nodeMap[savedEdge.from];
+            const toNode = nodeMap[savedEdge.to];
+            if (fromNode && toNode) {
+                connections.push({
+                    from: fromNode,
+                    to: toNode,
+                    label: savedEdge.label || "",
+                    type: savedEdge.type || "normal"
+                });
+            }
+        });
+
+        // รอให้กล่องแสดงผลเสร็จค่อยวาดเส้น
+        setTimeout(() => {
+            drawLines();
+        }, 150);
+    }
+
     function toggleFullscreen() {
         let elem = document.getElementById("flowchart-wrapper");
         if (!document.fullscreenElement) {
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
         }
     }
 
@@ -231,7 +309,6 @@
         newNode.style.position = "absolute";
         newNode.style.zIndex = "5"; 
         newNode.style.margin = "0";
-        // ข้อความว่างเปล่าตอนลากมาวาง
         newNode.innerHTML = '<div class="fc-text-wrapper"><span class="fc-text"></span></div>';
 
         const rect = canvas.getBoundingClientRect();
@@ -378,28 +455,45 @@
         connections.forEach((conn, index) => {
             const rect1 = conn.from.getBoundingClientRect();
             const rect2 = conn.to.getBoundingClientRect();
-            const x1 = rect1.left - canvasRect.left + (rect1.width / 2);
-            const y1 = rect1.top - canvasRect.top + (rect1.height / 2);
-            const x2 = rect2.left - canvasRect.left + (rect2.width / 2);
-            const y2 = rect2.top - canvasRect.top + (rect2.height / 2);
+            
+            const cx1 = rect1.left - canvasRect.left + (rect1.width / 2);
+            const cy1 = rect1.top - canvasRect.top + (rect1.height / 2);
+            const cx2 = rect2.left - canvasRect.left + (rect2.width / 2);
+            const cy2 = rect2.top - canvasRect.top + (rect2.height / 2);
+
+            const angle = Math.atan2(cy2 - cy1, cx2 - cx1);
+            const r1 = Math.min(rect1.width, rect1.height) / 2; 
+            const r2 = (Math.min(rect2.width, rect2.height) / 2) + 8; 
+
+            const x1 = cx1 + (r1 * Math.cos(angle));
+            const y1 = cy1 + (r1 * Math.sin(angle));
+            const x2 = cx2 - (r2 * Math.cos(angle));
+            const y2 = cy2 - (r2 * Math.sin(angle));
 
             let textX, textY;
             const isSelected = (index === selectedConnectionIndex);
+            
             const strokeColor = isSelected ? '#ff0000' : (conn.type === 'loop' ? '#f39c12' : '#333');
             const strokeWidth = isSelected ? '3' : '2';
+            const markerEnd = isSelected ? 'url(#arrowhead-selected)' : (conn.type === 'loop' ? 'url(#arrowhead-loop)' : 'url(#arrowhead)');
 
             if (conn.type === 'loop') {
-                const rightEdge = Math.max(x1, x2) + 80; 
+                const rightEdge = Math.max(cx1, cx2) + 80; 
                 const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
                 
-                const points = x1 + "," + y1 + " " + rightEdge + "," + y1 + " " + rightEdge + "," + y2 + " " + x2 + "," + y2;
+                const startX = cx1 + (rect1.width / 2);
+                const startY = cy1;
+                const endX = cx2 + (rect2.width / 2) + 8;
+                const endY = cy2;
+                
+                const points = startX + "," + startY + " " + rightEdge + "," + startY + " " + rightEdge + "," + endY + " " + endX + "," + endY;
                 
                 polyline.setAttribute('points', points);
                 polyline.setAttribute('stroke', strokeColor); 
                 polyline.setAttribute('stroke-width', strokeWidth);
                 polyline.setAttribute('fill', 'none'); 
+                polyline.setAttribute('marker-end', markerEnd);
                 
-                if (!isSelected) polyline.setAttribute('marker-end', 'url(#arrowhead)');
                 polyline.style.pointerEvents = "stroke"; 
                 polyline.style.cursor = "pointer";
                 polyline.onclick = (e) => { e.stopPropagation(); selectConnection(index); };
@@ -407,14 +501,17 @@
                 svg.appendChild(polyline);
                 
                 textX = rightEdge; 
-                textY = (y1 + y2) / 2;
+                textY = (startY + endY) / 2;
             } else {
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('stroke', strokeColor); line.setAttribute('stroke-width', strokeWidth);
-                if (!isSelected) line.setAttribute('marker-end', 'url(#arrowhead)');
-                line.style.pointerEvents = "stroke"; line.style.cursor = "pointer";
+                line.setAttribute('stroke', strokeColor); 
+                line.setAttribute('stroke-width', strokeWidth);
+                line.setAttribute('marker-end', markerEnd);
+                
+                line.style.pointerEvents = "stroke"; 
+                line.style.cursor = "pointer";
                 line.onclick = (e) => { e.stopPropagation(); selectConnection(index); };
                 svg.appendChild(line);
                 textX = (x1 + x2) / 2; textY = (y1 + y2) / 2;
@@ -436,6 +533,7 @@
                 else if (conn.type === 'no') text.setAttribute('fill', '#e74c3c'); 
                 else if (conn.type === 'loop') text.setAttribute('fill', '#f39c12'); 
                 else text.setAttribute('fill', '#333'); 
+                
                 text.setAttribute('font-weight', 'bold');
                 text.setAttribute('font-size', '14px');
                 text.textContent = conn.label;
@@ -449,10 +547,11 @@
 
     function clearCanvasData() {
         if (confirm("ต้องการล้างกระดานและเริ่มวาดใหม่ทั้งหมดใช่หรือไม่?")) {
-            location.reload();
+            // ล้างข้อมูลหน้าจอและลบ query string ออกให้เริ่มใหม่หมด
+            const url = new URL(window.location.href);
+            window.location.href = url.pathname + "?questionId=" + url.searchParams.get("questionId") + "&mode=student";
         }
     }
-
 
     function submitFlowchart() {
         const canvas = document.getElementById("fc-canvas");
@@ -463,13 +562,11 @@
             return;
         }
 
-        // รับรหัสโจทย์จาก URL เช่น Design_Flowchart.jsp?questionId=12&mode=student
         const params = new URLSearchParams(window.location.search);
         const questionId = params.get("questionId");
         const mode = params.get("mode");
 
-        if (mode === "student" &&
-            (!questionId || !/^\d+$/.test(questionId))) {
+        if (mode === "student" && (!questionId || !/^\d+$/.test(questionId))) {
             alert("ไม่พบรหัสโจทย์ กรุณากลับไปเลือกโจทย์ใหม่");
             return;
         }
@@ -477,6 +574,7 @@
         const nodes = [];
         const nodeMap = new Map();
 
+        // ⭐ ส่วนที่ 3: แก้ไขตอนบันทึกให้จำตำแหน่ง X, Y แกนด้วย
         nodeElements.forEach((element, index) => {
             const nodeId = "node_" + index;
             nodeMap.set(element, nodeId);
@@ -486,7 +584,9 @@
             nodes.push({
                 id: nodeId,
                 type: element.getAttribute("data-type"),
-                text: textElement ? textElement.innerText.trim() : ""
+                text: textElement ? textElement.innerText.trim() : "",
+                x: element.style.left, // จำพิกัดแกน X 
+                y: element.style.top   // จำพิกัดแกน Y
             });
         });
 
