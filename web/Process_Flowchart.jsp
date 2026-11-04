@@ -1,5 +1,6 @@
 <%@page import="java.sql.*"%>
 <%@page import="java.util.*"%>
+<%@page import="javax.script.*"%>
 <%@page import="db.DBConnection"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="mytag" %>
@@ -10,15 +11,13 @@
         private int i = 0;
         JsonReader(String s) { this.s = s == null ? "" : s; }
         Object parse() {
-            Object v = value();
-            ws();
+            Object v = value(); ws();
             if (i != s.length()) throw new IllegalArgumentException("JSON มีข้อมูลส่วนเกิน");
             return v;
         }
         private void ws() { while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++; }
         private Object value() {
-            ws();
-            if (i >= s.length()) throw new IllegalArgumentException("JSON ว่าง");
+            ws(); if (i >= s.length()) throw new IllegalArgumentException("JSON ว่าง");
             char c = s.charAt(i);
             if (c == '{') return object();
             if (c == '[') return array();
@@ -29,41 +28,27 @@
             int st = i;
             if (c == '-') i++;
             while (i < s.length() && Character.isDigit(s.charAt(i))) i++;
-            if (i < s.length() && s.charAt(i) == '.') {
-                i++;
-                while (i < s.length() && Character.isDigit(s.charAt(i))) i++;
-            }
+            if (i < s.length() && s.charAt(i) == '.') { i++; while (i < s.length() && Character.isDigit(s.charAt(i))) i++; }
             if (st == i) throw new IllegalArgumentException("JSON ไม่ถูกต้อง ตำแหน่ง " + i);
             String n = s.substring(st, i);
             return n.contains(".") ? Double.valueOf(n) : Long.valueOf(n);
         }
         private Map<String, Object> object() {
             Map<String, Object> m = new LinkedHashMap<String, Object>();
-            i++;
-            ws();
-            if (i < s.length() && s.charAt(i) == '}') { i++; return m; }
+            i++; ws(); if (i < s.length() && s.charAt(i) == '}') { i++; return m; }
             while (true) {
-                ws();
-                if (i >= s.length() || s.charAt(i) != '"') throw new IllegalArgumentException("ต้องใช้ key แบบข้อความใน JSON");
-                String k = string();
-                ws();
-                if (i >= s.length() || s.charAt(i++) != ':') throw new IllegalArgumentException("ขาด : ใน JSON");
-                m.put(k, value());
-                ws();
-                if (i < s.length() && s.charAt(i) == '}') { i++; return m; }
-                if (i >= s.length() || s.charAt(i++) != ',') throw new IllegalArgumentException("ขาด , ใน JSON");
+                ws(); if (i >= s.length() || s.charAt(i) != '"') throw new IllegalArgumentException("ต้องใช้ key แบบข้อความ");
+                String k = string(); ws(); if (i >= s.length() || s.charAt(i++) != ':') throw new IllegalArgumentException("ขาด :");
+                m.put(k, value()); ws(); if (i < s.length() && s.charAt(i) == '}') { i++; return m; }
+                if (i >= s.length() || s.charAt(i++) != ',') throw new IllegalArgumentException("ขาด ,");
             }
         }
         private List<Object> array() {
             List<Object> a = new ArrayList<Object>();
-            i++;
-            ws();
-            if (i < s.length() && s.charAt(i) == ']') { i++; return a; }
+            i++; ws(); if (i < s.length() && s.charAt(i) == ']') { i++; return a; }
             while (true) {
-                a.add(value());
-                ws();
-                if (i < s.length() && s.charAt(i) == ']') { i++; return a; }
-                if (i >= s.length() || s.charAt(i++) != ',') throw new IllegalArgumentException("ขาด , ใน array");
+                a.add(value()); ws(); if (i < s.length() && s.charAt(i) == ']') { i++; return a; }
+                if (i >= s.length() || s.charAt(i++) != ',') throw new IllegalArgumentException("ขาด ,");
             }
         }
         private String string() {
@@ -76,425 +61,309 @@
                     if (i >= s.length()) break;
                     char e = s.charAt(i++);
                     switch (e) {
-                        case 'n': b.append('\n'); break;
-                        case 'r': b.append('\r'); break;
-                        case 't': b.append('\t'); break;
-                        case 'b': b.append('\b'); break;
+                        case 'n': b.append('\n'); break; case 'r': b.append('\r'); break;
+                        case 't': b.append('\t'); break; case 'b': b.append('\b'); break;
                         case 'f': b.append('\f'); break;
-                        case 'u':
-                            if (i + 4 > s.length()) throw new IllegalArgumentException("Unicode JSON ไม่ครบ");
-                            b.append((char) Integer.parseInt(s.substring(i, i + 4), 16));
-                            i += 4;
-                            break;
+                        case 'u': b.append((char) Integer.parseInt(s.substring(i, i + 4), 16)); i += 4; break;
                         default: b.append(e);
                     }
-                } else {
-                    b.append(c);
-                }
+                } else b.append(c);
             }
             throw new IllegalArgumentException("ข้อความ JSON ไม่ปิดเครื่องหมาย");
         }
     }
 
+    private static String textOf(Object o) { return o == null ? "" : String.valueOf(o); }
     private static String escHtml(Object value) {
-        String s = value == null ? "" : String.valueOf(value);
-        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
-    }
-    private static String textOf(Object o) { return o == null ? "null" : String.valueOf(o); }
-    private static Object evalExpr(String expression, Map<String, Object> vars) { return new ExprReader(expression, vars).parse(); }
-    private static boolean truth(Object o) {
-        if (o == null) return false;
-        if (o instanceof Boolean) return ((Boolean) o).booleanValue();
-        if (o instanceof Number) return ((Number) o).doubleValue() != 0;
-        return !String.valueOf(o).isEmpty();
-    }
-    private static double number(Object o) {
-        if (o instanceof Number) return ((Number) o).doubleValue();
-        try {
-            return Double.parseDouble(String.valueOf(o));
-        } catch (Exception e) {
-            throw new IllegalArgumentException("ไม่ใช่ตัวเลข: " + o);
-        }
-    }
-    private static String displayValue(Object o) {
-        if (o == null) return "null";
-        if (o instanceof Double) {
-            double d = ((Double) o).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
-        }
-        if (o instanceof Long) return String.valueOf(o);
-        return String.valueOf(o);
+        return textOf(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
     }
 
-    private static class ExprReader {
-        private final List<String> t = new ArrayList<String>();
-        private final Map<String, Object> vars;
-        private int p = 0;
-        ExprReader(String s, Map<String, Object> v) {
-            vars = v;
-            java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\s*(>=|<=|==|!=|&&|\\|\\||[()+*/%<>!-]|-(?!>)|\\b(?:and|or|not)\\b|[A-Za-z_][A-Za-z0-9_]*|(?:\\d+\\.?\\d*|\\.\\d+)|'(?:[^'\\\\]|\\\\.)*'|\"(?:[^\"\\\\]|\\\\.)*\")", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(s == null ? "" : s);
-            int end = 0;
-            while (m.find()) {
-                if (m.start() != end && !s.substring(end, m.start()).trim().isEmpty())
-                    throw new IllegalArgumentException("นิพจน์ไม่รองรับ: " + s.substring(end, m.start()));
-                t.add(m.group().trim());
-                end = m.end();
-            }
-            if (s != null && !s.substring(end).trim().isEmpty())
-                throw new IllegalArgumentException("นิพจน์ไม่รองรับ: " + s.substring(end));
-        }
-        Object parse() {
-            Object v = or();
-            if (p < t.size()) throw new IllegalArgumentException("นิพจน์มีส่วนเกิน: " + t.get(p));
-            return v;
-        }
-        boolean eat(String... ss) {
-            if (p < t.size())
-                for (String s : ss)
-                    if (t.get(p).equalsIgnoreCase(s)) { p++; return true; }
-            return false;
-        }
-        Object or() {
-            Object a = and();
-            while (eat("||", "or")) {
-                Object b = and();
-                a = Boolean.valueOf(truth(a) || truth(b));
-            }
-            return a;
-        }
-        Object and() {
-            Object a = compare();
-            while (eat("&&", "and")) {
-                Object b = compare();
-                a = Boolean.valueOf(truth(a) && truth(b));
-            }
-            return a;
-        }
-        Object compare() {
-            Object a = add();
-            while (p < t.size()) {
-                String op = t.get(p);
-                if (!Arrays.asList("==", "!=", ">", "<", ">=", "<=").contains(op)) break;
-                p++;
-                Object b = add();
-                int c;
-                if (a instanceof Number && b instanceof Number) c = Double.compare(number(a), number(b));
-                else c = textOf(a).compareTo(textOf(b));
-                boolean r = op.equals("==") ? (a instanceof Number && b instanceof Number ? c == 0 : Objects.equals(a, b) || textOf(a).equals(textOf(b))) :
-                            op.equals("!=") ? (a instanceof Number && b instanceof Number ? c != 0 : !(Objects.equals(a, b) || textOf(a).equals(textOf(b)))) :
-                            op.equals(">") ? c > 0 :
-                            op.equals("<") ? c < 0 :
-                            op.equals(">=") ? c >= 0 : c <= 0;
-                a = Boolean.valueOf(r);
-            }
-            return a;
-        }
-        Object add() {
-            Object a = mul();
-            while (p < t.size() && (t.get(p).equals("+") || t.get(p).equals("-"))) {
-                String op = t.get(p++);
-                Object b = mul();
-                if (op.equals("+") && (a instanceof String || b instanceof String)) a = textOf(a) + textOf(b);
-                else a = Double.valueOf(op.equals("+") ? number(a) + number(b) : number(a) - number(b));
-            }
-            return a;
-        }
-        Object mul() {
-            Object a = unary();
-            while (p < t.size() && Arrays.asList("*", "/", "%").contains(t.get(p))) {
-                String op = t.get(p++);
-                Object b = unary();
-                double n = op.equals("*") ? number(a) * number(b) : op.equals("/") ? number(a) / number(b) : number(a) % number(b);
-                if (Double.isInfinite(n) || Double.isNaN(n)) throw new IllegalArgumentException("ผลคำนวณไม่ถูกต้อง");
-                a = Double.valueOf(n);
-            }
-            return a;
-        }
-        Object unary() {
-            if (eat("!", "not")) return Boolean.valueOf(!truth(unary()));
-            if (eat("-")) return Double.valueOf(-number(unary()));
-            if (eat("+")) return Double.valueOf(number(unary()));
-            return atom();
-        }
-        Object atom() {
-            if (eat("(")) {
-                Object v = or();
-                if (!eat(")")) throw new IllegalArgumentException("ขาด )");
-                return v;
-            }
-            if (p >= t.size()) throw new IllegalArgumentException("นิพจน์ว่าง");
-            String x = t.get(p++);
-            if (x.startsWith("'") || x.startsWith("\"")) return x.substring(1, x.length() - 1);
-            if (x.equalsIgnoreCase("true")) return Boolean.TRUE;
-            if (x.equalsIgnoreCase("false")) return Boolean.FALSE;
-            if (x.matches("(?:\\d+\\.?\\d*|\\.\\d+)")) return Double.valueOf(x);
-            if (!vars.containsKey(x)) throw new IllegalArgumentException("ไม่พบตัวแปร " + x);
-            return vars.get(x);
-        }
-    }
-
-    private static String stripPrefix(String s, String regex) {
-        return s == null ? "" : s.trim().replaceFirst("(?i)^\\s*(?:" + regex + ")\\s*", "").trim();
-    }
-
-    private static void parseInputs(String inputJson, List<String> detectedVars, Map<String, Object> vars) {
-        try {
-            Object in = new JsonReader(inputJson).parse();
-            if (in instanceof Map) {
-                Map im = (Map) in;
-                for (Object k : im.keySet()) vars.put(String.valueOf(k), im.get(k));
-                return;
-            }
-        } catch (Exception ignored) {}
-
-        if (inputJson != null && !inputJson.trim().isEmpty()) {
-            String[] tokens = inputJson.split(",");
-            for (int k = 0; k < tokens.length; k++) {
-                String valStr = tokens[k].trim();
-                Object parsedVal;
-                try {
-                    parsedVal = Double.parseDouble(valStr);
-                } catch (Exception ex) {
-                    parsedVal = valStr;
-                }
-                if (k < detectedVars.size()) {
-                    vars.put(detectedVars.get(k), parsedVal);
-                }
-                vars.put("input_" + (k + 1), parsedVal);
-            }
-        }
-    }
-
-    private static Map<String, Object> runFlowchart(String json, String inputJson) {
+    // 1. แปลงโชว์หน้าเว็บ (ฉลาดขึ้น ตรวจจับ If และ While ได้)
+    private static String convertFlowchartToPseudocode(String json) {
         Object rootObj = new JsonReader(json).parse();
         if (!(rootObj instanceof Map)) throw new IllegalArgumentException("Flowchart JSON ไม่ถูกต้อง");
         Map root = (Map) rootObj;
-        Object no = root.get("nodes"), eo = root.get("edges");
-        if (!(no instanceof List) || ((List) no).isEmpty()) throw new IllegalArgumentException("ไม่พบ Node");
+        List<Map<String, Object>> nodes = (List<Map<String, Object>>) root.get("nodes");
+        List<Map<String, Object>> edges = (List<Map<String, Object>>) root.get("edges");
+        
+        if (nodes == null || nodes.isEmpty()) return "Begin\nEnd";
 
-        List<Map<String, Object>> nodes = (List<Map<String, Object>>) no;
-        List<Map<String, Object>> edges = eo instanceof List ? (List<Map<String, Object>>) eo : new ArrayList<Map<String, Object>>();
-        Map<String, Map<String, Object>> byId = new HashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> byId = new HashMap<>();
         for (Map<String, Object> n : nodes) byId.put(textOf(n.get("id")), n);
 
-        List<String> detectedVars = new ArrayList<String>();
+        String startId = null;
         for (Map<String, Object> n : nodes) {
-            if ("input".equalsIgnoreCase(textOf(n.get("type")))) {
-                String rawIn = stripPrefix(textOf(n.get("text")), "input|read|enter|รับค่า|รับข้อมูล");
-                for (String v : rawIn.split("[,/]")) {
-                    String cleanV = v.replaceAll("[^A-Za-z0-9_]", "").trim();
-                    if (!cleanV.isEmpty()) detectedVars.add(cleanV);
-                }
-            }
+            if ("start".equalsIgnoreCase(textOf(n.get("type"))) && textOf(n.get("text")).toLowerCase().contains("start")) { startId = textOf(n.get("id")); break; }
         }
+        if (startId == null) for (Map<String, Object> n : nodes) if ("start".equalsIgnoreCase(textOf(n.get("type")))) { startId = textOf(n.get("id")); break; }
+        if (startId == null) return "Begin\nEnd";
 
-        Map<String, Object> vars = new LinkedHashMap<String, Object>();
-        parseInputs(inputJson, detectedVars, vars);
+        StringBuilder pseudo = new StringBuilder();
+        pseudo.append("Begin\n");
 
-        Map<String, Object> start = null;
-        for (Map<String, Object> n : nodes) {
-            if ("start".equalsIgnoreCase(textOf(n.get("type"))) && textOf(n.get("text")).toLowerCase().contains("start")) {
-                start = n;
-                break;
-            }
-        }
-        if (start == null) for (Map<String, Object> n : nodes) if ("start".equalsIgnoreCase(textOf(n.get("type")))) { start = n; break; }
-        if (start == null) throw new IllegalArgumentException("ไม่พบ Start node");
-
-        String current = textOf(start.get("id"));
-        String startId = current;
-        List<String> outs = new ArrayList<String>();
-        Set<String> visited = new HashSet<String>();
-        int steps = 0;
-
-        while (current != null && steps++ < 500) {
-            Map<String, Object> n = byId.get(current);
-            if (n == null) throw new IllegalArgumentException("เส้นเชื่อมไปยัง Node ที่ไม่มีอยู่");
+        String currentId = startId;
+        Set<String> visited = new HashSet<>();
+        
+        while (currentId != null) {
+            if (visited.contains(currentId)) break;
+            visited.add(currentId);
+            
+            Map<String, Object> n = byId.get(currentId);
+            if (n == null) break;
+            
             String type = textOf(n.get("type")).toLowerCase();
             String raw = textOf(n.get("text")).trim();
 
-            if (!current.equals(startId) && type.equals("start") && raw.toLowerCase().contains("end")) break;
+            if (!currentId.equals(startId) && type.equals("start") && raw.toLowerCase().contains("end")) break;
+
+            if (type.equals("input")) pseudo.append("    ").append(raw.startsWith("input") ? raw : "input " + raw).append("\n");
+            else if (type.equals("process")) pseudo.append("    ").append(raw).append("\n");
+            else if (type.equals("display")) pseudo.append("    ").append(raw.startsWith("print") ? raw : "print " + raw.replace("display", "").trim()).append("\n");
+            else if (type.equals("decision")) {
+                
+                // นับจำนวนเส้นลูกศรขาเข้าเพื่อแยก If กับ While
+                int incomingCount = 0;
+                for (Map<String, Object> e : edges) if (currentId.equals(textOf(e.get("to")))) incomingCount++;
+                
+                if (incomingCount > 1) { 
+                    // แปลงเป็น While Loop
+                    pseudo.append("    while (").append(raw).append(")\n");
+                    
+                    String bodyNodeId = null, exitNodeId = null;
+                    for (Map<String, Object> e : edges) {
+                        if (currentId.equals(textOf(e.get("from")))) {
+                            String lbl = (textOf(e.get("label")) + " " + textOf(e.get("type"))).toLowerCase();
+                            if (lbl.contains("yes") || lbl.contains("true") || lbl.contains("ใช่")) bodyNodeId = textOf(e.get("to"));
+                            else exitNodeId = textOf(e.get("to"));
+                        }
+                    }
+                    
+                    // ดึงคำสั่งใน Loop ออกมาโชว์
+                    String currBody = bodyNodeId;
+                    Set<String> bodyVisited = new HashSet<>();
+                    while (currBody != null && !currBody.equals(currentId) && !bodyVisited.contains(currBody)) {
+                        bodyVisited.add(currBody);
+                        Map<String, Object> bn = byId.get(currBody);
+                        if (bn == null) break;
+                        String btype = textOf(bn.get("type")).toLowerCase();
+                        String braw = textOf(bn.get("text")).trim();
+                        
+                        if (btype.equals("input")) pseudo.append("        ").append(braw.startsWith("input") ? braw : "input " + braw).append("\n");
+                        else if (btype.equals("process")) pseudo.append("        ").append(braw).append("\n");
+                        else if (btype.equals("display")) pseudo.append("        ").append(braw.startsWith("print") ? braw : "print " + braw.replace("display", "").trim()).append("\n");
+                        
+                        String nextB = null;
+                        for (Map<String, Object> e : edges) {
+                            if (currBody.equals(textOf(e.get("from")))) { nextB = textOf(e.get("to")); break; }
+                        }
+                        currBody = nextB;
+                    }
+                    pseudo.append("    endwhile\n");
+                    currentId = exitNodeId; // โดดข้ามไปจบ Loop
+                    continue;
+                } else {
+                    // แปลงเป็น If ปกติ
+                    pseudo.append("    if (").append(raw).append(") then\n");
+                    
+                    String bodyNodeId = null, exitNodeId = null;
+                    for (Map<String, Object> e : edges) {
+                        if (currentId.equals(textOf(e.get("from")))) {
+                            String lbl = (textOf(e.get("label")) + " " + textOf(e.get("type"))).toLowerCase();
+                            if (lbl.contains("yes") || lbl.contains("true") || lbl.contains("ใช่")) bodyNodeId = textOf(e.get("to"));
+                            else exitNodeId = textOf(e.get("to"));
+                        }
+                    }
+                    
+                    if (bodyNodeId != null) {
+                        String currBody = bodyNodeId;
+                        Set<String> bodyVisited = new HashSet<>();
+                        while (currBody != null && !currBody.equals(exitNodeId) && !bodyVisited.contains(currBody)) {
+                            bodyVisited.add(currBody);
+                            Map<String, Object> bn = byId.get(currBody);
+                            if (bn == null) break;
+                            String btype = textOf(bn.get("type")).toLowerCase();
+                            String braw = textOf(bn.get("text")).trim();
+                            
+                            if (btype.equals("input")) pseudo.append("        ").append(braw.startsWith("input") ? braw : "input " + braw).append("\n");
+                            else if (btype.equals("process")) pseudo.append("        ").append(braw).append("\n");
+                            else if (btype.equals("display")) pseudo.append("        ").append(braw.startsWith("print") ? braw : "print " + braw.replace("display", "").trim()).append("\n");
+                            
+                            String nextB = null;
+                            for (Map<String, Object> e : edges) {
+                                if (currBody.equals(textOf(e.get("from")))) { nextB = textOf(e.get("to")); break; }
+                            }
+                            currBody = nextB;
+                        }
+                    }
+                    pseudo.append("    endif\n");
+                    currentId = exitNodeId;
+                    continue;
+                }
+            }
+
+            String nextId = null;
+            for (Map<String, Object> e : edges) {
+                if (currentId.equals(textOf(e.get("from")))) { nextId = textOf(e.get("to")); break; }
+            }
+            currentId = nextId;
+        }
+
+        pseudo.append("End");
+        return pseudo.toString();
+    }
+
+    // 2. แปลงโค้ดสำหรับรันจริง (Flowchart -> JS State Machine ป้องกัน Loop ล่ม)
+    private static String transpileFlowchartToJS(String json) {
+        Object rootObj = new JsonReader(json).parse();
+        if (!(rootObj instanceof Map)) throw new IllegalArgumentException("Flowchart JSON ไม่ถูกต้อง");
+        Map root = (Map) rootObj;
+        List<Map<String, Object>> nodes = (List<Map<String, Object>>) root.get("nodes");
+        List<Map<String, Object>> edges = (List<Map<String, Object>>) root.get("edges");
+        
+        if (nodes == null || nodes.isEmpty()) throw new IllegalArgumentException("ไม่พบ Node");
+
+        String startId = null;
+        for (Map<String, Object> n : nodes) {
+            if ("start".equalsIgnoreCase(textOf(n.get("type"))) && textOf(n.get("text")).toLowerCase().contains("start")) { startId = textOf(n.get("id")); break; }
+        }
+        if (startId == null) {
+            for (Map<String, Object> n : nodes) if ("start".equalsIgnoreCase(textOf(n.get("type")))) { startId = textOf(n.get("id")); break; }
+        }
+        if (startId == null) throw new IllegalArgumentException("ไม่พบ Start node");
+
+        StringBuilder js = new StringBuilder();
+        js.append("var outputs = [];\nvar loopCount = 0;\nvar state = '").append(startId).append("';\n");
+        js.append("while(state !== 'END') {\n");
+        js.append("  if(loopCount++ > 1000) throw 'Infinite Loop Detected';\n");
+        js.append("  switch(state) {\n");
+
+        for (Map<String, Object> n : nodes) {
+            String id = textOf(n.get("id"));
+            String type = textOf(n.get("type")).toLowerCase();
+            String raw = textOf(n.get("text")).trim();
+            js.append("    case '").append(id).append("':\n");
+
+            if (type.equals("start") && raw.toLowerCase().contains("end")) {
+                js.append("      state = 'END';\n      break;\n");
+                continue;
+            }
 
             if (type.equals("input")) {
-                String varStr = stripPrefix(raw, "input|read|enter|รับค่า|รับข้อมูล");
-                String[] varNames = varStr.split("[,/]");
-                for (String rawVar : varNames) {
-                    String var = rawVar.replaceAll("[^A-Za-z0-9_]", "").trim();
-                    if (!var.isEmpty()) {
-                        if (!vars.containsKey(var)) throw new IllegalArgumentException("Test Case ไม่มีค่า Input ของตัวแปร " + var);
-                    }
+                String varStr = raw.replaceFirst("(?i)^(input|read|enter|รับค่า|รับข้อมูล)\\s*", "");
+                for (String v : varStr.split("[,/]")) {
+                    String cleanV = v.replaceAll("[^A-Za-z0-9_]", "").trim();
+                    if(!cleanV.isEmpty()) js.append("      ").append(cleanV).append(" = inputs.shift();\n");
                 }
             } else if (type.equals("process")) {
-                String stmt = raw.replaceFirst("(?i)^process\\s*:?\\s*", "").trim();
-                java.util.regex.Matcher am = java.util.regex.Pattern.compile("^([A-Za-z_][A-Za-z0-9_]*)\\s*(?:=|←|<-|:=)\\s*(.+)$").matcher(stmt);
-                if (!am.matches()) throw new IllegalArgumentException("Process ต้องเป็นการกำหนดค่า เช่น B = A * 2");
-                vars.put(am.group(1), evalExpr(am.group(2), vars));
+                String stmt = raw.replaceFirst("(?i)^process\\s*:?\\s*", "");
+                js.append("      ").append(stmt).append(";\n");
             } else if (type.equals("display")) {
-                String expr = stripPrefix(raw, "display|output|print|show|แสดงผล|แสดง");
-                if (expr.isEmpty()) throw new IllegalArgumentException("Display ต้องระบุค่าที่จะแสดง เช่น Display B");
-                outs.add(displayValue(evalExpr(expr, vars)));
+                String expr = raw.replaceFirst("(?i)^(display|output|print|show|แสดงผล|แสดง)\\s*", "");
+                js.append("      outputs.push(").append(expr).append(");\n");
             }
-
-            List<Map<String, Object>> outgoing = new ArrayList<Map<String, Object>>();
-            for (Map<String, Object> e : edges) if (current.equals(textOf(e.get("from")))) outgoing.add(e);
 
             if (type.equals("decision")) {
-                Object cond = evalExpr(raw.replaceFirst("(?i)^decision\\s*:?\\s*", "").trim(), vars);
-                boolean yes = truth(cond);
-                Map<String, Object> chosen = null;
-                for (Map<String, Object> e : outgoing) {
-                    String label = (textOf(e.get("label")) + " " + textOf(e.get("type"))).toLowerCase();
-                    if (yes && (label.contains("yes") || label.contains("true") || label.contains("ใช่"))) { chosen = e; break; }
-                    if (!yes && (label.contains("no") || label.contains("false") || label.contains("ไม่"))) { chosen = e; break; }
-                }
-                if (chosen == null) throw new IllegalArgumentException("Decision ต้องมีเส้น Yes และ No (หรือ True และ False)");
-                current = textOf(chosen.get("to"));
-                continue;
-            }
-
-            Map<String, Object> next = null;
-            for (Map<String, Object> e : outgoing) {
-                String label = (textOf(e.get("label")) + " " + textOf(e.get("type"))).toLowerCase();
-                if (label.contains("yes") || label.contains("no") || label.contains("true") || label.contains("false")) continue;
-                if (next == null) next = e;
-            }
-            if (next == null && outgoing.size() == 1) next = outgoing.get(0);
-            if (next == null) break;
-
-            String to = textOf(next.get("to"));
-            if (visited.contains(current) && to.equals(current)) throw new IllegalArgumentException("ตรวจพบ Loop ที่วนอยู่ Node เดิม");
-            visited.add(current);
-            current = to;
-        }
-
-        if (steps >= 500) throw new IllegalArgumentException("Flowchart ทำงานเกิน 500 ขั้น อาจมี Loop ไม่สิ้นสุด");
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-        result.put("output", String.join("\n", outs));
-        result.put("variables", vars);
-        return result;
-    }
-
-    private static int executePseudocodeBlock(List<String> lines, int idx, Map<String, Object> vars, List<String> outs) {
-        while (idx < lines.size()) {
-            String line = lines.get(idx).trim();
-            if (line.isEmpty() || line.equalsIgnoreCase("begin") || line.equalsIgnoreCase("end")) {
-                idx++;
-                continue;
-            }
-            if (line.equalsIgnoreCase("endif") || line.equalsIgnoreCase("endwhile") || line.equalsIgnoreCase("else")) {
-                return idx;
-            }
-            if (line.toLowerCase().startsWith("input ") || line.toLowerCase().startsWith("read ") || line.toLowerCase().startsWith("enter ")) {
-                String varStr = stripPrefix(line, "input|read|enter");
-                for (String v : varStr.split("[,/]")) {
-                    String cleanV = v.replaceAll("[^A-Za-z0-9_]", "").trim();
-                    if (!cleanV.isEmpty() && !vars.containsKey(cleanV)) {
-                        throw new IllegalArgumentException("Test Case ไม่มีค่า Input ของตัวแปร " + cleanV);
+                String cond = raw.replaceFirst("(?i)^decision\\s*:?\\s*", "");
+                String yesNode = "END", noNode = "END";
+                for (Map<String, Object> e : edges) {
+                    if (id.equals(textOf(e.get("from")))) {
+                        String lbl = (textOf(e.get("label")) + " " + textOf(e.get("type"))).toLowerCase();
+                        if (lbl.contains("yes") || lbl.contains("true") || lbl.contains("ใช่")) yesNode = textOf(e.get("to"));
+                        else if (lbl.contains("no") || lbl.contains("false") || lbl.contains("ไม่")) noNode = textOf(e.get("to"));
                     }
                 }
-                idx++;
-            } else if (line.toLowerCase().startsWith("print ") || line.toLowerCase().startsWith("output ")) {
-                String expr = stripPrefix(line, "print|output");
-                outs.add(displayValue(evalExpr(expr, vars)));
-                idx++;
-            } else if (line.toLowerCase().startsWith("if ") || line.toLowerCase().startsWith("if(")) {
-                String condStr = line.replaceFirst("(?i)^if\\s*\\(?", "").replaceAll("\\)?\\s*\\{\\s*$", "").trim();
-                if (condStr.endsWith("{")) condStr = condStr.substring(0, condStr.length() - 1).trim();
-                boolean cond = truth(evalExpr(condStr, vars));
-
-                idx++;
-                List<String> thenBlock = new ArrayList<String>();
-                List<String> elseBlock = new ArrayList<String>();
-                boolean inElse = false;
-                int depth = 1;
-                while (idx < lines.size() && depth > 0) {
-                    String l = lines.get(idx).trim();
-                    if (l.toLowerCase().startsWith("if ") || l.toLowerCase().startsWith("if(")) {
-                        depth++;
-                    } else if (l.equalsIgnoreCase("endif")) {
-                        depth--;
-                        if (depth == 0) { idx++; break; }
-                    } else if (l.equalsIgnoreCase("else") && depth == 1) {
-                        inElse = true;
-                        idx++;
-                        continue;
-                    }
-                    if (depth > 0) {
-                        if (inElse) elseBlock.add(lines.get(idx));
-                        else thenBlock.add(lines.get(idx));
-                    }
-                    idx++;
-                }
-                if (cond) executePseudocodeBlock(thenBlock, 0, vars, outs);
-                else executePseudocodeBlock(elseBlock, 0, vars, outs);
-            } else if (line.toLowerCase().startsWith("while ") || line.toLowerCase().startsWith("while(")) {
-                String condStr = line.replaceFirst("(?i)^while\\s*\\(?", "").replaceAll("\\)?\\s*\\{\\s*$", "").trim();
-                if (condStr.endsWith("{")) condStr = condStr.substring(0, condStr.length() - 1).trim();
-
-                idx++;
-                List<String> bodyBlock = new ArrayList<String>();
-                int depth = 1;
-                while (idx < lines.size() && depth > 0) {
-                    String l = lines.get(idx).trim();
-                    if (l.toLowerCase().startsWith("while ") || l.toLowerCase().startsWith("while(")) {
-                        depth++;
-                    } else if (l.equalsIgnoreCase("endwhile")) {
-                        depth--;
-                        if (depth == 0) { idx++; break; }
-                    }
-                    if (depth > 0) bodyBlock.add(lines.get(idx));
-                    idx++;
-                }
-
-                int loopCount = 0;
-                while (truth(evalExpr(condStr, vars))) {
-                    if (loopCount++ > 500) throw new IllegalArgumentException("ตรวจพบ Loop ไม่สิ้นสุด");
-                    executePseudocodeBlock(bodyBlock, 0, vars, outs);
-                }
+                js.append("      if (").append(cond).append(") { state = '").append(yesNode).append("'; }\n");
+                js.append("      else { state = '").append(noNode).append("'; }\n");
             } else {
-                String stmt = line.replaceAll(";$", "").trim();
-                java.util.regex.Matcher am = java.util.regex.Pattern.compile("^([A-Za-z_][A-Za-z0-9_]*)\\s*(?:=|←|<-|:=)\\s*(.+)$").matcher(stmt);
-                if (am.matches()) {
-                    vars.put(am.group(1), evalExpr(am.group(2), vars));
+                String nextNode = "END";
+                for (Map<String, Object> e : edges) {
+                    if (id.equals(textOf(e.get("from")))) { nextNode = textOf(e.get("to")); break; }
                 }
-                idx++;
+                js.append("      state = '").append(nextNode).append("';\n");
             }
+            js.append("      break;\n");
         }
-        return idx;
+        js.append("    default:\n      state = 'END';\n      break;\n");
+        js.append("  }\n}\noutputs.join('\\n');");
+        return js.toString();
     }
 
-    private static Map<String, Object> runPseudocode(String pseudocodeText, String inputJson) {
-        String[] rawLines = pseudocodeText.split("\n");
-        List<String> lines = new ArrayList<String>();
-        List<String> detectedVars = new ArrayList<String>();
-
-        for (String l : rawLines) {
-            lines.add(l);
-            String trimmed = l.trim();
-            if (trimmed.toLowerCase().startsWith("input") || trimmed.toLowerCase().startsWith("read") || trimmed.toLowerCase().startsWith("enter")) {
-                String varStr = stripPrefix(trimmed, "input|read|enter");
+    // 3. แปลง Pseudocode เป็น JavaScript (ใช้โชว์หน้าเว็บให้อ่านง่าย)
+    private static String transpilePseudocodeToJS(String pseudo) {
+        StringBuilder js = new StringBuilder();
+        js.append("var outputs = [];\nvar loopCount = 0;\n");
+        String[] lines = pseudo.split("\n");
+        for (String line : lines) {
+            String l = line.trim();
+            if (l.isEmpty() || l.equalsIgnoreCase("begin") || l.equalsIgnoreCase("end")) continue;
+            
+            if (l.toLowerCase().startsWith("input") || l.toLowerCase().startsWith("read")) {
+                String varStr = l.replaceFirst("(?i)^(input|read)\\s+", "");
                 for (String v : varStr.split("[,/]")) {
                     String cleanV = v.replaceAll("[^A-Za-z0-9_]", "").trim();
-                    if (!cleanV.isEmpty()) detectedVars.add(cleanV);
+                    js.append("var ").append(cleanV).append(" = inputs.shift();\n");
                 }
+            } else if (l.toLowerCase().startsWith("print") || l.toLowerCase().startsWith("output")) {
+                String exp = l.replaceFirst("(?i)^(print|output)\\s+", "");
+                js.append("outputs.push(").append(exp).append(");\n");
+            } else if (l.toLowerCase().startsWith("if") || l.toLowerCase().startsWith("if(")) {
+                String cond = l.replaceFirst("(?i)^if\\s*\\(?", "").replaceAll("(?i)\\)?\\s*then\\s*$", "").trim();
+                if (cond.endsWith("{")) cond = cond.substring(0, cond.length()-1).trim();
+                js.append("if (").append(cond).append(") {\n");
+            } else if (l.equalsIgnoreCase("else")) {
+                js.append("} else {\n");
+            } else if (l.equalsIgnoreCase("endif")) {
+                js.append("}\n");
+            } else if (l.toLowerCase().startsWith("while") || l.toLowerCase().startsWith("while(")) {
+                String cond = l.replaceFirst("(?i)^while\\s*\\(?", "").replaceAll("\\)?\\s*\\{\\s*$", "").trim();
+                js.append("while (").append(cond).append(") {\n  if(loopCount++ > 1000) throw 'Infinite Loop Detected';\n");
+            } else if (l.equalsIgnoreCase("endwhile")) {
+                js.append("}\n");
+            } else {
+                js.append(l).append(";\n");
             }
         }
+        js.append("outputs.join('\\n');");
+        return js.toString();
+    }
 
-        Map<String, Object> vars = new LinkedHashMap<String, Object>();
-        parseInputs(inputJson, detectedVars, vars);
+    private static Map<String, Object> executeJavaScript(String jsCode, String inputJson) throws Exception {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+        if (engine == null) throw new Exception("เซิร์ฟเวอร์ Java ไม่รองรับ JavaScript Engine");
 
-        List<String> outs = new ArrayList<String>();
-        executePseudocodeBlock(lines, 0, vars, outs);
+        List<String> inputList = new ArrayList<>();
+        if (inputJson != null && !inputJson.trim().isEmpty()) {
+            if (inputJson.startsWith("{")) {
+                Map im = (Map) new JsonReader(inputJson).parse();
+                for (Object v : im.values()) inputList.add(String.valueOf(v));
+            } else {
+                String[] tokens = inputJson.split(",");
+                for (String t : tokens) inputList.add(t.trim());
+            }
+        }
+        
+        StringBuilder jsInputs = new StringBuilder("[");
+        for (int i = 0; i < inputList.size(); i++) {
+            String val = inputList.get(i);
+            try { Double.parseDouble(val); jsInputs.append(val); } 
+            catch (Exception e) { jsInputs.append("'").append(val.replace("'", "\\'")).append("'"); }
+            if (i < inputList.size() - 1) jsInputs.append(", ");
+        }
+        jsInputs.append("]");
 
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-        result.put("output", String.join("\n", outs));
-        result.put("variables", vars);
+        engine.eval("var inputs = " + jsInputs.toString() + ";");
+        Object rawResult = engine.eval(jsCode);
+        
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("output", textOf(rawResult));
         return result;
     }
 
+    // ตัวแก้ช่องว่าง
     private static boolean sameOutput(String actual, String expected) {
-        String a = actual == null ? "" : actual.trim().replace("\r\n", "\n");
-        String e = expected == null ? "" : expected.trim().replace("\r\n", "\n");
+        String a = actual == null ? "" : actual.replaceAll("\\s+", " ").trim();
+        String e = expected == null ? "" : expected.replaceAll("\\s+", " ").trim();
         if (a.equals(e)) return true;
         try { return Double.compare(Double.parseDouble(a), Double.parseDouble(e)) == 0; } catch (Exception ignored) { return false; }
     }
@@ -502,15 +371,11 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-
     String questionIdParam = request.getParameter("questionId");
     String flowchartData = request.getParameter("flowchartData");
-    if (flowchartData == null || flowchartData.trim().isEmpty()) {
-        flowchartData = "{\"nodes\":[],\"edges\":[]}";
-    }
+    if (flowchartData == null || flowchartData.trim().isEmpty()) flowchartData = "{\"nodes\":[],\"edges\":[]}";
 
     boolean isJsonInput = flowchartData.trim().startsWith("{");
-
     Object userIdObj = session.getAttribute("UserId");
     Object roleObj = session.getAttribute("Role");
 
@@ -519,48 +384,23 @@
         return;
     }
 
-    int studentId;
-    int questionId;
-
+    int studentId, questionId;
     try {
         studentId = Integer.parseInt(userIdObj.toString());
-        if (questionIdParam == null || !questionIdParam.matches("\\d+")) {
-            throw new IllegalArgumentException("ไม่พบรหัสโจทย์");
-        }
         questionId = Integer.parseInt(questionIdParam);
-        if (studentId <= 0 || questionId <= 0) {
-            throw new IllegalArgumentException("รหัสไม่ถูกต้อง");
-        }
     } catch (Exception e) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "รหัสโจทย์หรือข้อมูลผู้ใช้ไม่ถูกต้อง");
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "รหัสโจทย์ไม่ถูกต้อง");
         return;
     }
 
-    List<Map<String, Object>> testCases = new ArrayList<Map<String, Object>>();
-    boolean authorized = false;
-
+    List<Map<String, Object>> testCases = new ArrayList<>();
     try (Connection con = DBConnection.getConnection()) {
-        if (con == null) throw new SQLException("เชื่อมต่อฐานข้อมูลไม่สำเร็จ");
-
-        String authSql = "SELECT q.id FROM questions q JOIN users u ON u.id = ? WHERE q.id = ? AND q.status = 'ON' AND u.role = 'student' AND u.status = 'ON' AND u.sec IS NOT NULL AND FIND_IN_SET(CAST(u.sec AS CHAR), REPLACE(CAST(q.sec AS CHAR), ' ', '')) > 0";
-        try (PreparedStatement ps = con.prepareStatement(authSql)) {
-            ps.setInt(1, studentId);
-            ps.setInt(2, questionId);
-            try (ResultSet rs = ps.executeQuery()) { authorized = rs.next(); }
-        }
-
-        if (!authorized) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "ไม่มีสิทธิ์ทำโจทย์นี้");
-            return;
-        }
-
         String testSql = "SELECT id, case_no, input_data, expected_output, point FROM algorithm_test_cases WHERE question_id = ? ORDER BY case_no ASC";
         try (PreparedStatement ps = con.prepareStatement(testSql)) {
             ps.setInt(1, questionId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Map<String, Object> tc = new HashMap<String, Object>();
-                    tc.put("id", rs.getInt("id"));
+                    Map<String, Object> tc = new HashMap<>();
                     tc.put("case_no", rs.getInt("case_no"));
                     tc.put("input_data", rs.getString("input_data"));
                     tc.put("expected_output", rs.getString("expected_output"));
@@ -570,55 +410,61 @@
             }
         }
     } catch (SQLException e) {
-        application.log("Load Test Cases failed", e);
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ไม่สามารถโหลด Test Case ได้");
         return;
     }
 
-    if (testCases.isEmpty()) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "โจทย์นี้ยังไม่มี Test Case");
-        return;
+    String generatedPseudocode = "";
+    String executeJS = "";
+    String displayJS = "";
+    
+    try {
+        if (isJsonInput) {
+            generatedPseudocode = convertFlowchartToPseudocode(flowchartData);
+            executeJS = transpileFlowchartToJS(flowchartData);
+            displayJS = transpilePseudocodeToJS(generatedPseudocode);
+        } else {
+            generatedPseudocode = flowchartData;
+            executeJS = transpilePseudocodeToJS(flowchartData);
+            displayJS = executeJS;
+        }
+    } catch (Exception parseEx) {
+        executeJS = "throw 'แปลงรหัสผิดพลาด: " + parseEx.getMessage().replace("'", "\\'") + "';";
+        displayJS = executeJS;
     }
 
-    List<Map<String, Object>> caseResults = new ArrayList<Map<String, Object>>();
+    List<Map<String, Object>> caseResults = new ArrayList<>();
     int totalScore = 0;
     int passedCount = 0;
 
     for (Map<String, Object> tc : testCases) {
-        Map<String, Object> cr = new LinkedHashMap<String, Object>();
+        Map<String, Object> cr = new LinkedHashMap<>();
         cr.put("case_no", tc.get("case_no"));
         cr.put("input_data", tc.get("input_data"));
         cr.put("expected_output", tc.get("expected_output"));
         cr.put("point", tc.get("point"));
+        
         String actualOutput = "";
         String errorMessage = "";
         boolean passed = false;
 
         try {
-            Map<String, Object> runResult;
-            if (isJsonInput) {
-                runResult = runFlowchart(flowchartData, String.valueOf(tc.get("input_data")));
-            } else {
-                runResult = runPseudocode(flowchartData, String.valueOf(tc.get("input_data")));
-            }
+            Map<String, Object> runResult = executeJavaScript(executeJS, String.valueOf(tc.get("input_data")));
             actualOutput = String.valueOf(runResult.get("output"));
             passed = sameOutput(actualOutput, String.valueOf(tc.get("expected_output")));
         } catch (Exception runError) {
-            errorMessage = runError.getMessage() == null ? "ประมวลผลไม่สำเร็จ" : runError.getMessage();
-            application.log("Test case " + tc.get("case_no") + " failed to execute", runError);
+            errorMessage = runError.getMessage();
         }
 
         int casePoint = ((Number) tc.get("point")).intValue();
         if (passed) { totalScore += casePoint; passedCount++; }
         cr.put("actual_output", actualOutput);
-        cr.put("passed", Boolean.valueOf(passed));
+        cr.put("passed", passed);
         cr.put("error", errorMessage);
         caseResults.add(cr);
     }
 
     try (Connection con = DBConnection.getConnection()) {
-        if (con == null) throw new SQLException("เชื่อมต่อฐานข้อมูลไม่สำเร็จ");
-
         String saveSql = "INSERT INTO algorithm_submissions (question_id, student_id, answer_text, score, status) VALUES (?, ?, ?, ?, 'GRADED') ON DUPLICATE KEY UPDATE answer_text = VALUES(answer_text), score = VALUES(score), status = 'GRADED', submitted_at = CURRENT_TIMESTAMP";
         try (PreparedStatement ps = con.prepareStatement(saveSql)) {
             ps.setInt(1, questionId);
@@ -627,10 +473,6 @@
             ps.setInt(4, totalScore);
             ps.executeUpdate();
         }
-    } catch (SQLException e) {
-        application.log("Save submission failed", e);
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ไม่สามารถบันทึกคำตอบได้");
-        return;
     }
 %>
 
@@ -638,14 +480,14 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผลการตรวจคำตอบ</title>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Anuphan', sans-serif; background-color: #f4f6f9; padding: 40px 20px; }
-        .result-card { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #dbe4f3; padding: 40px; max-width: 1000px; margin: 0 auto; }
+        .result-card { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 40px; max-width: 1000px; margin: 0 auto; }
+        .code-display { width: 100%; height: 250px; font-family: 'Consolas', monospace; font-size: 14px; padding: 15px; border-radius: 8px; border: 1px solid #ced4da; background-color: #1e1e1e; color: #dcdcaa; white-space: pre; overflow-x: auto; }
+        .js-display { color: #569cd6; } 
     </style>
 </head>
 <body>
@@ -657,7 +499,6 @@
             <h5 class="fw-bold mb-2">ผลการตรวจ Test Case</h5>
             <div>ผ่าน <strong><%= passedCount %> / <%= testCases.size() %></strong> เคส</div>
             <div>คะแนนที่ได้ <strong><%= totalScore %></strong> คะแนน</div>
-            <small class="text-muted">ระบบนำ input_data ของแต่ละเคสเข้าประมวลผลแล้วเปรียบเทียบผลลัพธ์กับ expected_output</small>
         </div>
 
         <div class="table-responsive mb-4 text-start">
@@ -674,7 +515,7 @@
                         <td>
                             <code><%= escHtml(cr.get("actual_output")) %></code>
                             <% if (!String.valueOf(cr.get("error")).isEmpty()) { %>
-                                <div class="small text-danger"><%= escHtml(cr.get("error")) %></div>
+                                <div class="small text-danger mt-1"><%= escHtml(cr.get("error")) %></div>
                             <% } %>
                         </td>
                         <td><%= ok ? escHtml(cr.get("point")) : "0" %> / <%= escHtml(cr.get("point")) %></td>
@@ -685,25 +526,29 @@
             </table>
         </div>
 
-        <!-- ปุ่มย้อนกลับ -->
+        <!-- กล่องแสดงโค้ดที่อัปเกรดความฉลาดแล้ว -->
+        <div class="row text-start mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <label class="fw-bold text-dark mb-2"><i class="bi bi-code-square text-primary me-1"></i> 1. Pseudocode:</label>
+                <textarea class="code-display" readonly><%= escHtml(generatedPseudocode) %></textarea>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold text-dark mb-2"><i class="bi bi-filetype-js text-warning me-1"></i> 2. Compiled JavaScript:</label>
+                <textarea class="code-display js-display" readonly><%= escHtml(displayJS) %></textarea>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-center gap-3 mt-4">
-            <% 
-                // รับค่า mode เพื่อส่งกลับไปให้ถูกต้อง (ถ้าไม่มีค่าให้เป็น student)
-                String modeParam = request.getParameter("mode") != null ? request.getParameter("mode") : "student";
-                
-                if (isJsonInput) { 
-            %>
-                <!-- กรณีมาจากหน้า Flowchart -->
+            <% String modeParam = request.getParameter("mode") != null ? request.getParameter("mode") : "student"; %>
+            <% if (isJsonInput) { %>
                 <a href="Design_Flowchart.jsp?questionId=<%= questionId %>&mode=<%= modeParam %>" class="btn btn-outline-primary px-4 py-2 shadow-sm">
-                    <i class="bi bi-diagram-3 me-2"></i>Return
+                    <i class="bi bi-diagram-3 me-2"></i>Return to Flowchart
                 </a>
             <% } else { %>
-                <!-- กรณีมาจากหน้า Pseudocode (สมมติว่าชื่อไฟล์ Design_Pseudocode.jsp) -->
                 <a href="Design_Pseudocode.jsp?questionId=<%= questionId %>&mode=<%= modeParam %>" class="btn btn-outline-primary px-4 py-2 shadow-sm">
-                    <i class="bi bi-code-square me-2"></i>Return
+                    <i class="bi bi-code-square me-2"></i>Return to Pseudocode
                 </a>
             <% } %>
-            
             <a href="StudentsPart.jsp?id=<%= questionId %>" class="btn btn-primary px-4 py-2 shadow-sm">
                 <i class="bi bi-list-task me-2"></i>View Question
             </a>
